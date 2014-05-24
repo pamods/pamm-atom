@@ -1,0 +1,627 @@
+html {
+	height: 100%;
+}
+
+img {
+	border: 0px;
+}
+
+body {
+	background-color: #141414;
+	color: #F9F9F9;
+	font-family: "Arial";
+	padding-left: 5px;
+	padding-right: 5px;
+	height: 500px;
+	position:relative;
+	min-width: 550px;
+	min-height: 300px;
+	margin-top: 5px;
+	margin-left: 5px;
+	font-size: 16px;
+}
+
+a {
+	color: #008cff;
+	text-decoration: none;
+}
+
+a:visited {
+	color: #008cff;
+}
+
+a:hover {
+	text-decoration: underline;
+}
+
+#container {
+	position: relative;
+	width: 100%;
+	height: 100%;
+	margin: auto;
+}
+
+.banner_heading {
+	position: absolute;
+	top: 65px;
+	left: 92px;
+	color: #008cff;
+	font-family: "Verdana";
+	margin: 5px;
+	padding: 0;
+	font-size: 19px;
+	font-weight: bold;
+}
+
+.banner_image {
+	top: 5px;
+	position: absolute;
+}
+
+/******************
+ * Interface Tabs *
+ ******************/
+ 
+.ui_tabs {
+    position: absolute;
+	top: 88px;
+	color: #888888;
+}
+
+.ui_tab_link {
+	margin-top: 7px;
+	margin-bottom: 7px;
+	margin-left: 6px;
+	margin-right: 6px;
+	float: left;
+}
+
+.ui_tab_link_selected {
+	color: #f9f9f9 !important;
+}
+
+.ui_tab_link a {
+	color: #888888;
+}
+
+
+.ui_tab_link_image {
+	padding-top: 4px;
+}
+
+.ui_tab_label {
+	padding-top: 3px;
+	padding-left: 4px;
+	padding-right: 4px;
+	float: left;
+}
+
+.ui_tab_edges {
+	color: #444444;
+	float: left;
+	font-size: 18px;
+}
+
+/*******************************************
+ * Installed Mods - Updates required alert *
+ *******************************************/
+
+.alert_area {
+	width: 100%;
+	padding-left: 9px;
+	padding-top: 3px;
+	padding-bottom: 3px;
+	background-color: #6B4900;
+	border-bottom: 1px solid #515151;
+	font-size: 14px;
+}
+
+.alert_img {
+	float: left;
+}
+
+.alert_message {
+	margin-top: 7px;
+	float: left;
+}
+
+.alert_link {
+	padding-left: 4px;
+	color: #888888;
+}
+
+.alert_link a {
+	color: #cc8800;
+}
+
+.alert_link a:hover {
+	color: #cc8800;
+}
+
+/**************
+ * Filter bar *
+ **************/
+
+.filter_area {
+	width: 100%;
+	padding-left: 9px;
+	padding-top: 3px;
+	padding-bottom: 3px;
+	background-color: #202020;
+	border-bottom: 1px solid #515151;
+	font-size: 12px;
+}
+
+.filter_area_container {
+	width: 100%;
+}
+
+.filter_area_additional_options_toggle {
+	position:absolute; 
+	right: 12px; 
+	top: 8px;
+}
+
+.filter_area_filter_heading {
+	width: 75px;
+	font-weight: bold;
+}
+
+.filter_area_filter_list {
+	padding-right: 38px !important;
+	color: #888888;
+}
+
+.filter_area_filter_list a{
+	color: #888888;
+}
+
+.filter_area_text_filter {
+	padding-right: 180px !important;
+}
+
+.filter_area_filter_item_selected {
+	color: #f9f9f9 !important;
+}
+
+.filter_area_link {
+	padding-left: 4px;
+	color: #888888;
+}
+
+.filter_area_message {
+	margin-top: 2px;
+}
+
+.filter_area_img {
+	float: left;
+	padding-right: 7px;
+	padding-left: 8px;
+}
+
+.filter_area_textbox {
+	color: #f9f9f9;
+    background-color: #202020; 
+    border: solid 1px #888888; 
+    outline: none; 
+	width: 100%;
+}
+
+.filter_area_category {
+	float: left;
+	width: 110px;
+	font-size: 11px;
+}
+
+.filter_area_option_img {
+	float: left;
+}
+
+.filter_area_option_text {
+	float: left;
+	padding-right: 8px;
+}
+
+.filter_area table {
+	width: 100%;
+}
+
+.filter_area td {
+	padding: 0px;
+	padding-bottom: 4px;
+}
+
+
+/*************
+ * Mod Entry *
+ *************/
+
+.mod_entry {
+	position: relative;
+	float: left;
+	width: 502px;
+	height: 110px;
+	margin: 10px;
+	padding: 6px;
+	cursor: default;
+	font-size: 11px;
+}
+
+.mod_entry:hover  {
+	background-color: #202020;
+	border: 1px solid #515151;
+	padding: 5px;
+}
+
+.mod_entry_filtered {
+	display: none;
+}
+
+.mod_entry_container {
+	height: 100%;
+}
+
+.mod_entry_icon {
+	float: left;
+	padding-right: 10px;
+	width: 100px;
+	height: 100px;
+	display: block;
+}
+
+.mod_entry_icon_disabled {
+	display: none;
+}
+
+.mod_entry_enabled {
+	display: none;
+}
+
+.mod_entry_enabled_image {
+	float: left;
+	padding-right: 8px;
+	font-size: 0px;
+}
+
+.mod_entry_name {
+	display: inline;
+	font-family: "Verdana";
+	font-size: 16px;
+	padding-right: 5px;
+	font-weight: bold;
+}
+
+.mod_entry_filter_update_available .mod_entry_name{
+	color: #cc8800;
+}
+
+.mod_entry_author {
+	display: inline;
+	font-style: italic;
+	padding-top: 4px;
+	padding-left: 2px;
+}
+
+.mod_entry_details {
+	width: 100%;
+	font-style: italic;
+	color: #888888;
+	padding-right: 3px;
+}
+
+.mod_entry_new {
+	font-style: italic;
+	color: #cc8800;
+}
+
+.mod_entry_requires {
+	color: #888888;
+}
+
+.mod_entry_description {
+	font-size: 12px;
+	display: block;
+	max-height: 30px;
+	text-overflow: ellipsis;
+	overflow: hidden;
+}
+
+.mod_entry_categories {
+	color: #888888;
+	text-transform:uppercase;
+	display: block;
+}
+
+.mod_entry_link {
+	margin-right: 10px;
+	display: inline;
+	font-size: 12px;
+	padding-top: 3px;
+	color: #888888;
+}
+
+.mod_entry_link a {
+	color: #008cff;
+}
+
+.mod_entry_update_link a {
+	color: #cc8800;
+}
+
+.mod_entry_uninstall_link a {
+	color: #888888;
+}
+
+.mod_entry_reinstall_link a {
+	color: #888888;
+}
+
+.mod_entry_count {
+	display: inline;
+	font-style: italic;
+	color: #888888;
+	padding-left: 16px;
+}
+
+.mod_entry_likes {
+	display: inline;
+	font-style: italic;
+	color: #888888;
+	padding-left: 22px;
+}
+
+/* Mod List Overview Style */
+
+.mod_entry_summary {
+	height: 62px;
+	margin-top: 5px;
+	margin-bottom: 5px;
+}
+
+.mod_entry_summary .mod_entry_icon {
+	width: 60px;
+	height: 60px;
+}
+
+.mod_entry_summary .mod_entry_description {
+	display: none;
+}
+
+.mod_entry_summary .mod_entry_categories {
+	display: none;
+}
+
+
+
+
+
+
+
+
+/**********
+ * Shared *
+ **********/
+
+.brackets {
+	color: #888888;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.tab_content {
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	border: 1px solid #515151;
+	background-color: #0B0B0B;
+	overflow-y: scroll;
+	overflow-x: hidden;
+	left: 0px;
+	margin-top: 120px;
+	z-index: 1;
+}
+
+/* AVAILABLE MODS TAB */
+
+.mod_download_options {
+	display: none;
+}
+
+.log_level3 {
+	display: none;
+}
+
+.log_level4 {
+	display: none;
+}
+
+.mod_build_old {
+	color: #cc8800;
+}
+
+.mod_build_current{
+	color: #007800;
+}
+
+
+.mod_requirement {
+	color: #007800;
+}
+
+.mod_requirement_missing {
+	color: #cc8800;
+}
+
+
+
+
+.log_entry, .log_entry_debug {
+	margin-top: 4px;
+	margin-bottom: 2px;
+	font-size: 0.8em;
+	color: #F9F9F9;
+}
+
+.buttons {
+	position: absolute;
+	bottom: -160px;
+	left: 0px;
+}
+
+.buttons input {
+	float: left;
+	width: 90px;
+	margin-right: 6px;
+	margin-top: 3px;
+}
+
+.openModsFolderButton {
+	float: right;
+	width: 90px;
+	margin-top: 3px;
+}
+
+.loading {
+	position: absolute;
+	padding-top: 12px;
+	padding-left: 12px;
+	color: #cc8800;
+	font-weight: bold;
+}
+
+#downloading {
+	position: absolute;
+	bottom: -172px;
+	right: -8px;
+	display: none;
+}
+
+.news_container {
+	padding: 4px;
+}
+
+.news_item {
+	border-bottom: 1px solid #515151;
+	padding-left: 3px;
+	padding-right: 3px;
+	padding-top: 3px;
+	padding-bottom: 14px;
+	margin-bottom: 14px;
+}
+
+.news_title {
+	font-family: "Verdana";
+	font-size: 16px;
+	font-weight: bold;
+}
+
+.news_date {
+	font-size: 0.7em;
+	color: #888888;
+	font-style: italic;
+	padding-bottom: 3px;
+}
+
+.news_body {
+	font-size: 0.8em;
+	color: #F9F9F9;
+}
+
+			
+.log_url {
+	color: #008cff;
+}
+
+.log_time {
+	float: left;
+	color: #888888;
+	width: 55px;
+}
+
+.log_type {
+	float: left;
+	color: #008cff;
+	width: 60px;
+}
+
+.log_entry_debug .log_type {
+	float: left;
+	color: #cc8800;
+	width: 60px;
+}
+
+.log_entry {
+	padding-left: 7px;
+	padding-right: 7px;
+	padding-top: 4px;
+}
+
+.log_entry_debug {
+	color: #888888;
+	padding-left: 7px;
+	padding-right: 7px;
+	padding-top: 4px;
+}
+
+.settings_items {
+	padding: 7px;
+}
+.about_items {
+	padding: 9px;
+}
+
+.tab_heading {
+	color: #008cff;
+	font-family: "Verdana";
+	font-size: 18px;
+	padding: 7px;
+}
+
+.tab_subheading {
+	color: #008cff;
+	font-family: "Verdana";
+	font-size: 14px;
+}
+
+#settings td {
+	vertical-align: top;
+}
+
+.textInput {
+	width: 500px;
+}
+
+.setting_heading {
+	font-size: 0.8em;
+}
+
+.tab_about_text {
+	font-size: 14px;
+	color: #888888;
+}
+
+.tab_about_value {
+	color: #f9f9f9;
+}
+
+
+.tab_about_user a {
+	color: #cc8800;
+}
+
+.ui_tab_installed_needing_update_count {
+	color: #cc8800;
+}

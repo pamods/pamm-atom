@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <link href="assets/css/pamm.css" rel="stylesheet" type="text/css">
+	<script src="assets/js/locale.js"></script>
+    <title>PA UI Mod Manager</title>
+  </head>
+  <body>
+    <div id="container">
+      <div class="banner_heading"><span class="LOC_MOD_MANAGER">LOC_MOD_MANAGER</span></div>
+      <div class="banner_image"><img src="assets/img/img_pa_logo_start_rest.png"></div>
+      <div class="ui_tabs">
+        <div class="ui_tab_link"><span class="ui_tab_edges">[</span> <div class="ui_tab_label"><a href="#" data-target='news'><span class="LOC_NEWS">NEWS</span></a></div> <span class="ui_tab_edges">]</span></div>
+        <div class="ui_tab_link"><span class="ui_tab_edges">[</span> <div class="ui_tab_label"><a href="#" data-target='installed'><span class="LOC_INSTALLED_MODS">INSTALLED MODS</span></a><span id="ui_tab_installed_needing_update"></span></div> <span class="ui_tab_edges">]</span></div>
+        <div class="ui_tab_link"><span class="ui_tab_edges">[</span> <div class="ui_tab_label"><a href="#" data-target='download'><span class="LOC_AVAILABLE_MODS">AVAILABLE MODS</span></a></div> <span class="ui_tab_edges">]</span></div>
+        <div class="ui_tab_link ui_tab_link_image"><a href="#" data-target='log'><img id="log_icon" src="assets/img/log.png"></a></div>
+        <div class="ui_tab_link ui_tab_link_image"><a href="#" data-target='settings'><img id="settings_icon" src="assets/img/settings.png"></a></div>
+        <div class="ui_tab_link ui_tab_link_image"><a href="#" data-target='about'><img id="about_icon" src="assets/img/about.png"></a></div>
+      </div>
+      
+      <div id="installed" class="tab">
+        <div id="mod_list_installed" class="tab_content">
+        </div>
+      </div>
+      <div id="download" class="tab">
+        <div class="mod_download_options">
+          <div class="filter_options">
+            <span class="LOC_SHOW">SHOW</span>: <a href="#" id="filter_text" onmousedown="jsToggleAvailableModsFilter()"><span class="LOC_ALL">ALL</span></a>
+          </div>
+          <div class="sort_options">
+            <span class="LOC_SORT">SORT</span>: <span id="sort_text"><a href="#" onmousedown="jsToggleAvailableModsSort()"><span class="LOC_LAST_UPDATED">LAST UPDATED</span></a></span>
+          </div>
+          <div class="filter_options">
+            <span class="LOC_FILTER">FILTER</span>: <input type="text" id="show_filter" />
+          </div>
+        </div>
+        <div id="mod_list_available" class="tab_content">
+        </div>
+      </div>
+      <div id="news" class="tab">
+        <div id="news_data" class="tab_content">
+          
+        </div>
+      </div>
+      <div id="log" class="tab">
+        <div id="log_data" class="tab_content">
+          <div class="tab_heading"><span class="LOC_LOG">LOG</span></div>
+        </div>
+      </div>
+      <div id="settings" class="tab">
+        <div id="settings_data" class="tab_content">
+          <div class="tab_heading"><span class="LOC_SETTINGS">SETTINGS</span></div>
+          <div class="settings_items">
+            <table class="settings_table">
+              <tr>
+                <td><span class="setting_heading"><span class="LOC_Language">Language</span>:</span></td>
+                <td>
+                  <select id="setting_language" onChange="jsSetLanguage()">
+                    <option value="en">ENGLISH</option>
+                    <option value="fr">FRANÇAIS</option>
+                    <option value="nl">NEDERLANDS</option>
+                    <option value="de">DEUTSCH</option>
+                  </select>
+                </td>
+              </tr>
+              <tr>
+                <td><span class="setting_heading"><span class="LOC_Default_Tab">Default Tab</span>:</span></td>
+                <td>
+                  <select id="setting_defaultTab" onChange="jsSetDefaultTab()">
+                    <option value="news" class="LOC_NEWS">NEWS</option>
+                    <option value="installed" class="LOC_INSTALLED_MODS">INSTALLED MODS</option>
+                    <option value="download" class="LOC_AVAILABLE_MODS">AVAILABLE MODS</option>
+                  </select>
+                </td>
+              </tr>
+              
+              <tr style="display:none">
+                <td><span class="setting_heading"><span class="LOC_Verbose_Log">Verbose Log</span>:</span></td>
+                <td><input id="setting_verbose" type="checkbox" onClick="jsToggleVerboseMode()"/></td>
+              </tr>
+              <tr>
+                <td><span class="setting_heading"><span class="LOC_Debug_Mode">Debug Mode</span>:</span></td>
+                <td><input id="setting_debug" type="checkbox" onClick="jsToggleDebugMode()"/></td>
+              </tr>
+              <tr>
+                <td><span class="setting_heading"><span class="LOC_Mod_Likes">Load Mod Likes</span>:</span></td>
+                <td><input id="setting_likes" type="checkbox" onClick="jsToggleModLikes()"/> (<span class="LOC_Requires_Refresh">Requires Refresh</span>)</td>
+              </tr>
+              <tr>
+                <td><span class="setting_heading"><span class="LOC_Installed_Mods_List_View">Installed Mods List View</span>:</span></td>
+                <td>
+                  <select id="setting_installed_view" onChange="jsSetModsListView(true)">
+                    <option value="summary" class="LOC_SUMMARY_VIEW">SUMMARY VIEW</option>
+                    <option value="detailed" class="LOC_DETAILED_VIEW">DETAILED VIEW</option>
+                  </select>
+                  <br/>
+                  <input id="setting_installed_icon" type="checkbox" onClick="jsSetModsListIcon(true)"/><span class="LOC_Show_Icon">Show Icon</span>
+                </td>
+              </tr>
+              <tr>
+                <td><span class="setting_heading"><span class="LOC_Available_Mods_List_View">Available Mods List View</span>:</span></td>
+                <td>
+                  <select id="setting_available_view" onChange="jsSetModsListView(false)">
+                    <option value="summary" class="LOC_SUMMARY_VIEW">SUMMARY VIEW</option>
+                    <option value="detailed" class="LOC_DETAILED_VIEW">DETAILED VIEW</option>
+                  </select>
+                  <br/>
+                  <input id="setting_available_icon" type="checkbox" onClick="jsSetModsListIcon(false)"/><span class="LOC_Show_Icon">Show Icon</span>
+                </td>
+              </tr>
+              <tr>
+                <td colspan="2">
+                  <span class="setting_heading"><span class="LOC_PA_Install_Location">PA Install Location</span>:</span><br/>
+                  <input id="setting_installLocation" type="text" disabled="true" class="textInput"/>
+                </td>
+              </tr>
+              <tr>
+                <td colspan="2">
+                  <span class="setting_heading"><span class="LOC_PA_Mod_Location">PA Mods Location</span>:</span><br/>
+                  <input id="setting_modLocation" type="text" disabled="true" class="textInput"/>
+                  <input type="button" value="Open" class="LOC_Open openModsFolderButton" onClick="OpenModsFolder()"/>
+                </td>
+              </tr>
+            </table>
+          </div>
+        </div>
+      </div>
+      <div id="about" class="tab">
+        <div id="about_data" class="tab_content">
+          <div class="tab_heading"><span class="LOC_ABOUT">ABOUT</span></div>
+          <div class="about_items">
+            <div class="tab_subheading"><span class="LOC_Planetary_Annihilation_Mod_Manager">Planetary Annihilation Mod Manager</span></div>
+            <div class="tab_about_text"><span class="LOC_Version">Version</span>: <span class="tab_about_value"></span></div>
+            <div class="tab_about_text"><span class="LOC_Current_PA_Build">Current PA Build</span>: <span id="current_pa_build" class="tab_about_value"><span class="LOC_Loading">Loading</span>...</span></div>
+            <div class='mod_entry_link'>[ <a href='#' onClick='LaunchURL("https://forums.uberent.com/threads/rel-pa-mod-manager-v3-2-0.50726/")'><span class='LOC_forum'>forum</span></a> ]</div>
+            <br/><br/>
+            <div class="tab_subheading"><span class="LOC_Statistics">Statistics</span></div>
+            <div class="tab_about_text"><span class="LOC_Total_Available_Mods">Total Available Mods</span>: <span id="total_available_mods" class="tab_about_value">Loading...</span></div>
+            <div class="tab_about_text"><span class="LOC_Total_Mod_Downloads">Total Mod Downloads</span>: <span id="total_available_mod_downloads" class="tab_about_value">Loading...</span></div>
+            <div class="tab_about_text"><span class="LOC_Current_Mods_Installed">Current Mods Installed</span>: <span id="total_installed_mods" class="tab_about_value">Loading...</span></div>
+            <br/>
+            <div class="tab_subheading"><span class="LOC_Credits">Credits</span></div>
+            <div class="tab_about_text"><span class="LOC_Created_by">Created by</span> <span class="tab_about_user"><a href='#' onClick='LaunchURL("https://forums.uberent.com/members/?username=Raevn")'>raevn</a></span></div>
+            <div class="tab_about_text"><span class="LOC_Mac_Linux_port_created_by">Mac/Linux port created by</span> <span class="tab_about_user"><a href='#' onClick='LaunchURL("https://forums.uberent.com/members/?username=DeathByDenim")'>DeathByDenim</a></span></div>
+            <div class="tab_about_text"><span class="LOC_Mod_list_generator_created_by">Mod list generator created by</span> <span class="tab_about_user"><a href='#' onClick='LaunchURL("https://forums.uberent.com/members/?username=elitedanzel")'>elitedanzel</a></span> <span class="LOC_and">and</span> <span class="tab_about_user"><a href='#' onClick='LaunchURL("https://forums.uberent.com/members/?username=proeleert")'>proeleert</a></span></div>
+            <div class="tab_about_text"><span class="LOC_Thanks_also">Thanks also to those on the Uber Entertainment forums who tested and provided feedback on this program, especially</span> <span class="tab_about_user"><a href='#' onClick='LaunchURL("https://forums.uberent.com/members/?username=Cola_Colin")'>Cola_Colin</a></span>, <span class="tab_about_user"><a href='#' onClick='LaunchURL("https://forums.uberent.com/members/?username=dfanz0r")'>dfanz0r</a></span> <span class="LOC_and">and</span> <span class="tab_about_user"><a href='#' onClick='LaunchURL("https://forums.uberent.com/members/?username=LavaSnake")'>LavaSnake</a></span></div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="buttons">
+        <input id="btnLaunch" type="button" value="Launch PA" class="LOC_Launch_PA" onClick="LaunchPA()"/>
+        <input type="button" value="Refresh" class="LOC_Refresh" onClick="jsRefresh(true, true)"/>
+        <input type="button" value="Exit" class="LOC_Exit" onClick="ClosePAMM()"/>
+      </div>
+      <div id="downloading">
+        <img src="assets/img/loading.gif">
+      </div>
+    </div>
+    <script src="assets/js/pamm.js"></script>
+  </body>
+</html>
