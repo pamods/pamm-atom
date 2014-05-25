@@ -32,13 +32,20 @@ var MANAGE_URL = "http://pa.raevn.com/manage.php";
 var MOD_IS_NEW_PERIOD_DAYS = 7;
 var NEWS_URL = "http://pamods.github.io/news.html";
 var PAMM_VERSION_DATA_URL = "http://pa.raevn.com/pammversion.json";
-var PAMM_MOD_ID = "rPAMM";
 var PAMM_OPTIONS_FILENAME = "pamm.json";
 var PAMM_ONLINE_TEST_URL = "http://pa.raevn.com/pamm_online.txt";
 var MOD_GENERIC_ICON_URL = "assets/img/generic.png";
 var PAMM_DEFAULT_LOCALE = "en";
 
+var PAMM_MOD_ID = "PAMM";
+var PAMM_MOD_IDENTIFIER = "com.pa.deathbydenim.dpamm";
+if(process.platform === 'win32') {
+    PAMM_MOD_ID = "rPAMM";
+    PAMM_MOD_IDENTIFIER = "com.pa.raevn.rpamm";
+}
+
 var strModsDirectoryPath;
+var strPammModDirectoryPath;
 var strPAMMCacheDirectoryPath;
 
 var datePAMM = "2014/04/30";
@@ -1510,33 +1517,31 @@ function Initialise() {
     }
     
     strModsDirectoryPath = localpath + "/Uber Entertainment/Planetary Annihilation/mods"
+    strPammModDirectoryPath = strModsDirectoryPath + "/" + PAMM_MOD_ID;
     strPAMMCacheDirectoryPath = localpath + "/Uber Entertainment/Planetary Annihilation/pamm_cache"
     
     CreateFolderIfNotExists(localpath + "/Uber Entertainment");
     CreateFolderIfNotExists(localpath + "/Uber Entertainment/Planetary Annihilation");
     CreateFolderIfNotExists(strPAMMCacheDirectoryPath);
     CreateFolderIfNotExists(strModsDirectoryPath);
-    CreateFolderIfNotExists(strModsDirectoryPath + "/rPAMM");
-    CreateFolderIfNotExists(strModsDirectoryPath + "/rPAMM/ui");
-    CreateFolderIfNotExists(strModsDirectoryPath + "/rPAMM/ui/mods");
+    CreateFolderIfNotExists(strPammModDirectoryPath);
+    CreateFolderIfNotExists(strPammModDirectoryPath + "/ui");
+    CreateFolderIfNotExists(strPammModDirectoryPath + "/ui/mods");
     
-    var modinfopath = strModsDirectoryPath + "/rPAMM/modinfo.json";
-    if(!fs.existsSync(modinfopath)) {
-        var modinfo = {
-            "context": "client",
-            "identifier": "com.pa.raevn.rpamm",
-            "display_name": "PA Mod Manager UI Mods List",
-            "description": "Test",
-            "author": "Raevn",
-            "version": "1.0",
-            "build": "66503",
-            "signature": "not yet implemented",
-            "priority": 0,
-            "enabled": true,
-            "id": "rPAMM"
-        };
-        fs.writeFileSync(modinfopath, JSON.stringify(modinfo, null, 4));
-    }
+    var modinfo = {
+        "context": "client",
+        "identifier": PAMM_MOD_IDENTIFIER,
+        "display_name": "PA Mod Manager",
+        "description": " ",
+        "author": "pamm-atom",
+        "version": strPAMMversion,
+        "build": strPABuild,
+        "signature": "not yet implemented",
+        "priority": 0,
+        "enabled": true,
+        "id": PAMM_MOD_ID
+    };
+    fs.writeFileSync(strPammModDirectoryPath + "/modinfo.json", JSON.stringify(modinfo, null, 4));
 }
 
 function CreateFolderIfNotExists(path) {
@@ -1633,13 +1638,13 @@ function WriteOptionsJSON() {
 function WriteUIModListJS() {
     jsAddLogMessage("Writing ui_mod_list.js", 4);
     var data = "var global_mod_list = " + jsGetUIModListGlobalDataString() + ";\n\nvar scene_mod_list = " + jsGetUIModListSceneDataString();
-    fs.writeFileSync(strModsDirectoryPath + "/rPAMM/ui/mods/ui_mod_list.js", data);
+    fs.writeFileSync(strPammModDirectoryPath + "/ui/mods/ui_mod_list.js", data);
 }
 
 function WriterModListJS() {
     jsAddLogMessage("Writing mods_list.json", 4);
     var data = jsGetInstalledModListDataString();
-    fs.writeFileSync(strModsDirectoryPath + "/rPAMM/ui/mods/mods_list.json", data);
+    fs.writeFileSync(strPammModDirectoryPath + "/ui/mods/mods_list.json", data);
 }
 
 function WriteModsJSON() {
