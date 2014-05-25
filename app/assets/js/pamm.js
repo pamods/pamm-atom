@@ -1725,7 +1725,10 @@ function CheckPAPresent(strPath) {
 
 function LaunchPA() {
     var child_process = require('child_process');
-	var child = child_process.spawn("notepad.exe", null, { detached: true });
+	var path = require('path');
+	var papath = jsGetOption("pa_path");
+	var wd = path.dirname(papath);
+	var child = child_process.spawn(papath, null, { cwd: wd, detached: true });
 	child.unref();
 	ClosePAMM();
 }
