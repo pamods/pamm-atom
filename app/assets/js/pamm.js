@@ -1795,7 +1795,6 @@ $(function() {
     
     jsApplyLocaleText();
 	$('.tab_about_value').text(strPAMMversion);
-    jsDisplayPanel('news');
     jsRefresh(true, true);
 });
 
