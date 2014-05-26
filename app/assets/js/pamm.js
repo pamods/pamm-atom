@@ -7,6 +7,7 @@ var shell = require('shell');
 var url = require('url');
 var http = require('http');
 var fs = require('fs');
+var path = require('path');
 
 var proxy; //"http://proxy.domain.tld:8080";
 
@@ -44,6 +45,7 @@ if(process.platform === 'win32') {
     PAMM_MOD_IDENTIFIER = "com.pa.raevn.rpamm";
 }
 
+var strLocalPath;
 var strModsDirectoryPath;
 var strPammModDirectoryPath;
 var strPAMMCacheDirectoryPath;
@@ -54,7 +56,7 @@ var strPAMMversion = (function() {
 	var app = remote.require('app');
 	return app.getVersion();
 })();
-var strPABuild = "66503";
+var strPABuild = "";
 
 /* Localisation Functions */
 function jsGetLocaleText(strKey, strLocale) {
@@ -219,29 +221,32 @@ function jsLoadOptionsData(strOptionsDataString) {
     } catch (err) {
         alert("An error occurred loading options file");
     }
-    if (objOptions["pa_path"] == null) {
-        objOptions["pa_path"] = "c:\\Program Files (x86)\\Planetary Annihilation\\PA\\PA.exe"
-        if (CheckPAPresent(objOptions["pa_path"]) == false) {
-            objOptions["pa_path"] = "C:\\Program Files (x86)\\Steam\\SteamApps\\common\\Planetary Annihilation\\PA.exe"
+    
+    var papath = objOptions["pa_path"];
+    if (!papath || !CheckPAPresent(papath)) {
+        papath = findPA();
+        if(papath && !CheckPAPresent(papath)) {
+            papath = "";
         }
+        objOptions["pa_path"] = papath;
     }
     
-	var papresent = true;
-    while (!CheckPAPresent(objOptions["pa_path"])) {
-		papresent = false;
-        //strPrompt = prompt("Could not find Planetary Annihilation. Please enter path to PA.exe", objOptions["pa_path"]);
-        
-		var remote = require('remote');
-		var dialog = remote.require('dialog');
-		var files = dialog.showOpenDialog(remote.getCurrentWindow(), { title: "Please enter path to PA.exe", properties: ["openFile"] });
-		
-		if(!files) {
-			break;
-		}
-		
-		objOptions["pa_path"] = files[0];
-		papresent = true;
+    var forcetab;
+    if(!papath) {
+        var remote = require('remote');
+        var dialog = remote.require('dialog');
+        dialog.showMessageBox(remote.getCurrentWindow(), {
+            title : "Planetary Annihilation Not Found"
+            ,message : "Could not find Planetary Annihilation. Please start Planetary Annihilation manually at least once before restarting PAMM."
+            ,buttons : ["Ok"]
+        });
+        forcetab = "settings";
     }
+    else {
+        strPABuild = findPAVersion();
+        $('#current_pa_build').text(strPABuild);
+    }
+    document.getElementById("btnLaunch").disabled = (papath?false:true);
     
     document.getElementById("setting_installLocation").value = objOptions["pa_path"];
 	
@@ -292,7 +297,7 @@ function jsLoadOptionsData(strOptionsDataString) {
         objOptions["tab"] = 'news';
     }
     document.getElementById('setting_defaultTab').value = objOptions["tab"];
-    jsDisplayPanel(objOptions["tab"]);
+    jsDisplayPanel(forcetab?forcetab:objOptions["tab"]);
     
     if (objOptions["locale"] != null) {
         document.getElementById('setting_language').value = objOptions["locale"];
@@ -335,7 +340,6 @@ function jsLoadOptionsData(strOptionsDataString) {
     }
     jsUpdateOptionsToggle(true)
     
-    document.getElementById("btnLaunch").disabled = !papresent;
     WriteOptionsJSON();
 }
 
@@ -1231,7 +1235,6 @@ function jsRefresh_asynch(boolDownloadData) {
         document.getElementById("mod_list_available").innerHTML = "<div class=\"loading\">" + jsGetLocaleText('Mod_Manager_is_offline', objOptions["locale"]) + "</div>";
         document.getElementById('total_available_mods').innerHTML = jsGetLocaleText('Mod_Manager_is_offline', objOptions["locale"]);
         document.getElementById('total_available_mod_downloads').innerHTML = jsGetLocaleText('Mod_Manager_is_offline', objOptions["locale"]);
-        document.getElementById('current_pa_build').innerHTML = jsGetLocaleText('Mod_Manager_is_offline', objOptions["locale"]) + " (" + jsGetLocaleText('Last_known_build', objOptions["locale"]) + ": " + strPABuild + ")";
     }
     
     if (boolOnline == true) {
@@ -1465,9 +1468,6 @@ function jsDownloadPAMMversion() {
 				try {
 					objPAMMVersionData = JSON.parse(data);
 					var dateLatestPAMM = new Date(objPAMMVersionData.date);
-					strPABuild = objPAMMVersionData.build;
-					
-					document.getElementById('current_pa_build').innerHTML = strPABuild;
 					
 					jsAddLogMessage("Latest version of PAMM: " + objPAMMVersionData.version + " (" + objPAMMVersionData.date + ")", 2);
 					if (new Date(datePAMM) < dateLatestPAMM) {
@@ -1478,7 +1478,6 @@ function jsDownloadPAMMversion() {
 					}
 				} catch (e) {
 					jsAddLogMessage("Error loading PAMM version data: " + e.message, 1);
-					document.getElementById('current_pa_build').innerHTML = strPABuild;
 				}
 			}
         });
@@ -1516,9 +1515,10 @@ function Initialise() {
         throw "Unsupported platform: " + process.platform;
     }
     
-    strModsDirectoryPath = localpath + "/Uber Entertainment/Planetary Annihilation/mods"
+    strLocalPath = localpath + "/Uber Entertainment/Planetary Annihilation"
+    strModsDirectoryPath = strLocalPath + "/mods"
     strPammModDirectoryPath = strModsDirectoryPath + "/" + PAMM_MOD_ID;
-    strPAMMCacheDirectoryPath = localpath + "/Uber Entertainment/Planetary Annihilation/pamm_cache"
+    strPAMMCacheDirectoryPath = strLocalPath + "/pamm_cache"
     
     CreateFolderIfNotExists(localpath + "/Uber Entertainment");
     CreateFolderIfNotExists(localpath + "/Uber Entertainment/Planetary Annihilation");
@@ -1725,7 +1725,13 @@ function UninstallMod(strModID) {
 }
 
 function CheckPAPresent(strPath) {
-    return fs.existsSync(strPath);
+    if (!fs.existsSync(strPath))
+        return false;
+    
+    if(!fs.statSync(strPath).isFile())
+        return false;
+    
+    return true;
 }
 
 function LaunchPA() {
@@ -1751,7 +1757,7 @@ function unzipSync(modid, zipfile, targetfolder) {
     var zipdata = fs.readFileSync(zipfile);
     var zip = new JSZip(zipdata.toArrayBuffer());
     
-    // zip.folders not reliable, some directory are not detected as directory (eg. instant_sandbox zip)
+    // zip.folders not reliable, some directories are not detected as directory (eg. instant_sandbox zip)
     
     for(var i in zip.files) {
         var file = zip.files[i];
@@ -1781,12 +1787,76 @@ function rmdirRecurseSync(dir) {
             // rmdir recursively
             rmdirRecurseSync(filename);
         } else {
-            // rm fiilename
+            // rm filename
             fs.unlinkSync(filename);
         }
     }
     fs.rmdirSync(dir);
 };
+
+function findPA() {
+    var logpath = strLocalPath + '/log';
+    var logfiles = fs.readdirSync(logpath);
+    
+    if(logfiles.length === 0)
+        return "";
+    
+    // find last log file
+    var lastlogfile;
+    var laststat;
+    for(var i=0; i<logfiles.length; ++i) {
+        var logfile = logpath + '/' + logfiles[i];
+        var stat = fs.statSync(logfile);
+        if(lastlogfile) {
+            if(stat.mtime.getTime() < laststat.mtime.getTime())
+                continue;
+        }
+        lastlogfile = logfile;
+        laststat = stat;
+    }
+    
+    // read log file & split to lines
+    var logs = fs.readFileSync(lastlogfile, { encoding: 'utf8' });
+    var lines = logs.split(/\r?\n/);
+    
+    // find the right line
+    for(var i=0; i<lines.length; ++i) {
+        var line = lines[i];
+        if(line.indexOf("Coherent host dir: ") !== -1) {
+            // extract PA path
+            var spos = line.indexOf('"') + 1;
+            var epos = line.lastIndexOf('"');
+            var papath = line.substring(spos, epos);
+            if(process.platform === "win32") {
+                papath = papath.replace(/\\\\/g, "\\");
+                papath = path.dirname(path.dirname(papath)); // remove /xXX/host
+                papath = papath + "\\PA.exe";
+            }
+            else {
+                papath = path.dirname(papath); // remove /host
+                papath = papath + "/PA";
+            }
+            
+            return papath;
+        }
+    }
+    
+    return "";
+}
+
+function findPAVersion() {
+    var papath = objOptions["pa_path"];
+    
+    if(!papath)
+        return "";
+    
+    // read version number
+    var versionpath = path.join(path.dirname(papath),'version.txt');
+    if(fs.existsSync(versionpath))
+        return fs.readFileSync(versionpath, { encoding: 'utf8' });
+    
+    return "";
+}
 
 $(function() {
     $('.ui_tabs').on('click', 'a', function() {
@@ -1794,12 +1864,32 @@ $(function() {
         jsDisplayPanel(panel);
     });
     
-    Initialise();
+    var setting_installLocation_timeout;
+    $('#setting_installLocation').on('input',function(e){
+        clearTimeout(setting_installLocation_timeout);
+        var $input = $(this);
+        setting_installLocation_timeout = setTimeout(function() {
+            var papath = $input.val();
+            if(CheckPAPresent(papath)) {
+                objOptions["pa_path"] = papath;
+                strPABuild = findPAVersion();
+                WriteOptionsJSON();
+            }
+            else {
+                papath = "";
+                objOptions["pa_path"] = "";
+                strPABuild = "";
+            }
+            $('#current_pa_build').text(strPABuild);
+            document.getElementById("btnLaunch").disabled = (papath?false:true);
+        }, 500);
+    });
     
+    Initialise();
     LoadOptions();
     
     jsApplyLocaleText();
-	$('.tab_about_value').text(strPAMMversion);
+	$('#current_pamm_version').text(strPAMMversion);
     jsRefresh(true, true);
 });
 
