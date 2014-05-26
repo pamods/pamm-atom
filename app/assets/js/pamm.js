@@ -1885,6 +1885,14 @@ $(function() {
         }, 500);
     });
     
+    // autoresize body with window
+    var $window = $(window);
+    var $body = $('body');
+    $window.on('resize', function() {
+        $body.height($window.height() - 180);
+    });
+    $window.trigger('resize');
+    
     Initialise();
     LoadOptions();
     
