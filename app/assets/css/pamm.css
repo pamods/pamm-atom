@@ -120,8 +120,7 @@ a:hover {
 }
 
 .alert_message {
-	margin-top: 7px;
-	float: left;
+	line-height: 30px;
 }
 
 .alert_link {
