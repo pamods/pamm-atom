@@ -9,7 +9,7 @@ var http = require('http');
 var fs = require('fs');
 var path = require('path');
 
-var proxy; //"http://proxy.domain.tld:8080";
+var params = require('remote').getGlobal('params');
 
 var objInstalledMods = [];
 var objOnlineMods = [];
@@ -1122,8 +1122,8 @@ function jsDownload(strURL, opts) {
     if(!opts) opts = {};
 	
 	var options = url.parse(strURL);
-    if(proxy) {
-        var proxyOpts = url.parse(proxy);
+    if(params.proxy) {
+        var proxyOpts = url.parse(params.proxy);
         proxyOpts.path = strURL;
         proxyOpts.headers = {
             Host: options.host
@@ -1352,16 +1352,16 @@ function jsDownloadOnlineMods() {
         jsDownload(ONLINE_MODS_LIST_URL, {
 			success: function(data) {
 				try {
-					objOnlineMods = [];
-					objOnlineModCategories = {};
+					tmpOnlineMods = [];
+					tmpOnlineModCategories = {};
 					
-					objOnlineModCategories["ALL"] = 0;
+					tmpOnlineModCategories["ALL"] = 0;
 				
 					var objModData = JSON.parse(data);
 					for (var id in objModData) {
 						objModData[id]["id"] = id;
 						objModData[id]["likes"] = -2;
-						objOnlineMods.push(objModData[id]);
+						tmpOnlineMods.push(objModData[id]);
 						if (jsGetInstalledMod(id) != null && jsGetInstalledMod(id)["date"] < objModData[id]["date"]) {
 							jsAddLogMessage("Update available for installed mod '" + jsGetInstalledMod(id)["display_name"] + "': " + objModData[id]["version"] + " (" + objModData[id]["date"] + ")", 3);
 						}
@@ -1369,15 +1369,19 @@ function jsDownloadOnlineMods() {
 						if (objModData[id].category != null) {
 							for (var i = 0; i < objModData[id].category.length; i++) {
 								var strCurrentCategory = objModData[id].category[i].replace(" ", "-").toUpperCase();
-								if (objOnlineModCategories[strCurrentCategory] == null) {
-									objOnlineModCategories[strCurrentCategory] = 1;
+								if (tmpOnlineModCategories[strCurrentCategory] == null) {
+									tmpOnlineModCategories[strCurrentCategory] = 1;
 								} else {
-									objOnlineModCategories[strCurrentCategory]++;
+									tmpOnlineModCategories[strCurrentCategory]++;
 								}
 							}
 						}
-						objOnlineModCategories["ALL"]++;
+						tmpOnlineModCategories["ALL"]++;
 					}
+                    
+                    objOnlineMods = tmpOnlineMods;
+                    objOnlineModCategories = tmpOnlineModCategories;
+                    
 					document.getElementById('total_available_mods').innerHTML = objOnlineMods.length;
 					jsDownloadOnlineModDownloadCount();
 				} catch (e) {
@@ -1406,7 +1410,7 @@ function jsDownloadOnlineModDownloadCount() {
 					if (objOptions["modlikes"] == true) {
 						jsDownloadOnlineModLikeCount();
 					}
-					//WriterModListJS();
+                    
 				} catch (e) {
 					jsAddLogMessage("Error loading online mod download count data: " + e.message, 1);
 				}
@@ -1899,6 +1903,25 @@ $(function() {
     jsApplyLocaleText();
 	$('#current_pamm_version').text(strPAMMversion);
     jsRefresh(true, true);
+    
+    if(params.install) {
+        var intervalId = setInterval(function() {
+            //check objOnlineMods exists and is populated
+            if (objOnlineMods && objOnlineMods.length > 0) {
+                //find mod url from mod id
+				var modid = params.install;
+                var mod = jsGetOnlineMod(modid);
+				if (mod) {
+					jsPreInstallMod(mod.url, modid, {});
+					alert("Installing '" + mod.display_name + "'");
+				} else {
+					jsAddLogMessage("Failed to install from commandline with mod id = " + mod_id_str, 1);
+				}
+                
+                clearInterval(intervalId);
+            }
+        }, 1000);
+    }
 });
 
 //})();
