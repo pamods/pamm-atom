@@ -37,6 +37,7 @@ var NEWS_URL = "http://pamods.github.io/news.html";
 var PAMM_VERSION_DATA_URL = "https://raw.githubusercontent.com/%(author)s/%(name)s/stable/app/package.json";
 var PAMM_OPTIONS_FILENAME = "pamm.json";
 var PAMM_ONLINE_TEST_URL = "http://pa.raevn.com/pamm_online.txt";
+var PA_VERSION_URL = "https://uberent.com/launcher/clientversion?titleid=4";
 var MOD_GENERIC_ICON_URL = "assets/img/generic.png";
 var PAMM_DEFAULT_LOCALE = "en";
 
@@ -1497,6 +1498,21 @@ function jsDownloadNews() {
     }
 }
 
+function checkVersionPA() {
+    jsAddLogMessage("Checking for PA updates", 2);
+    jsDownload(PA_VERSION_URL, {
+        success: function(build) {
+            if(strPABuild && build !== strPABuild) {
+                jsAddLogMessage("PA update: " + strPABuild + " => " + build, 2);
+                setTimeout(function() { alert("PA update available: " + build + "\nUse the UberLauncher to update your installation."); }, 1);
+            }
+            else {
+                jsAddLogMessage("PA update: NONE", 2);
+            }
+        }
+    });
+}
+
 /**
 ** Old VBSCRIPT part
 **/
@@ -1903,6 +1919,8 @@ $(function() {
     jsApplyLocaleText();
 	$('#current_pamm_version').text(strPAMMversion);
     jsRefresh(true, true);
+    
+    checkVersionPA();
     
     if(params.install) {
         var intervalId = setInterval(function() {
