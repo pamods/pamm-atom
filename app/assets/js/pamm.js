@@ -1,4 +1,6 @@
 window.$ = window.jQuery = require('./assets/js/jquery-1.10.2.min.js');
+var semver = require('./assets/js/semver.min.js');
+var sprintf = require('./assets/js/sprintf.min.js').sprintf;
 var JSZip = require('./assets/js/jszip.min.js');
 var shell = require('shell');
 
@@ -6,6 +8,7 @@ var shell = require('shell');
 
 var url = require('url');
 var http = require('http');
+var https = require('https');
 var fs = require('fs');
 var path = require('path');
 
@@ -13,7 +16,6 @@ var params = require('remote').getGlobal('params');
 
 var objInstalledMods = [];
 var objOnlineMods = [];
-var objPAMMVersionData = {};
 var objOptions = {};
 var objOnlineModCategories = {};
 var objInstalledModCategories = {};
@@ -32,7 +34,7 @@ var ONLINE_MODS_DOWNLOAD_COUNT_URL = "http://pa.raevn.com/modcount_json.php";
 var MANAGE_URL = "http://pa.raevn.com/manage.php";
 var MOD_IS_NEW_PERIOD_DAYS = 7;
 var NEWS_URL = "http://pamods.github.io/news.html";
-var PAMM_VERSION_DATA_URL = "http://pa.raevn.com/pammversion.json";
+var PAMM_VERSION_DATA_URL = "https://raw.githubusercontent.com/%(author)s/%(name)s/stable/app/package.json";
 var PAMM_OPTIONS_FILENAME = "pamm.json";
 var PAMM_ONLINE_TEST_URL = "http://pa.raevn.com/pamm_online.txt";
 var MOD_GENERIC_ICON_URL = "assets/img/generic.png";
@@ -51,11 +53,7 @@ var strPammModDirectoryPath;
 var strPAMMCacheDirectoryPath;
 
 var datePAMM = "2014/04/30";
-var strPAMMversion = (function() {
-	var remote = require('remote');
-	var app = remote.require('app');
-	return app.getVersion();
-})();
+var strPAMMversion = params.info.version;
 var strPABuild = "";
 
 /* Localisation Functions */
@@ -1122,14 +1120,6 @@ function jsDownload(strURL, opts) {
     if(!opts) opts = {};
 	
 	var options = url.parse(strURL);
-    if(params.proxy) {
-        var proxyOpts = url.parse(params.proxy);
-        proxyOpts.path = strURL;
-        proxyOpts.headers = {
-            Host: options.host
-        }
-        options = proxyOpts;
-    }
     
     var outputstream;
     if(opts.tofile) {
@@ -1139,7 +1129,12 @@ function jsDownload(strURL, opts) {
     intMessageID++;
     var intCurrentMessageID = intMessageID;
     
-    var req = http.request(options, function(res) {
+    var http2 = http;
+    if(options.protocol === "https:") {
+        http2 = https;
+    }
+    
+    var req = http2.request(options, function(res) {
         jsAddLogMessage("[Message ID: " + intCurrentMessageID + "] HTTP " + res.statusCode, 4);
         
 		res.on("end", function() {
@@ -1467,23 +1462,26 @@ function jsDownloadOnlineModLikeCount() {
 function jsDownloadPAMMversion() {
     if (boolOnline == true) {
         jsAddLogMessage("Checking for PAMM updates", 2);
-        jsDownload(PAMM_VERSION_DATA_URL, {
-			success: function(data) {
-				try {
-					objPAMMVersionData = JSON.parse(data);
-					var dateLatestPAMM = new Date(objPAMMVersionData.date);
-					
-					jsAddLogMessage("Latest version of PAMM: " + objPAMMVersionData.version + " (" + objPAMMVersionData.date + ")", 2);
-					if (new Date(datePAMM) < dateLatestPAMM) {
-						jsAddLogMessage("New version of PAMM available: " + objPAMMVersionData.version + " (" + objPAMMVersionData.date + ")", 2);
-						//UpdatePAMM(objPAMMVersionData.version, objPAMMVersionData.filename);
-					} else {
-						jsAddLogMessage("Latest version of PAMM installed", 2);
-					}
-				} catch (e) {
-					jsAddLogMessage("Error loading PAMM version data: " + e.message, 1);
-				}
-			}
+        var intCurrentMessageID = ++intMessageID;
+        var packageurl = sprintf(PAMM_VERSION_DATA_URL, params.info);
+        
+        jsDownload(packageurl, {
+            success: function(data) {
+                try {
+                    var lastinfo = JSON.parse(data);
+                    if (semver.gt(lastinfo.version, params.info.version)) {
+                        jsAddLogMessage("PAMM update: " + params.info.version + " => " + lastinfo.version, 2);
+                        setTimeout(function() { alert('PAMM update available: ' + lastinfo.version); }, 1);
+                        //UpdatePAMM(objPAMMVersionData.version, objPAMMVersionData.filename);
+                    }
+                    else {
+                        jsAddLogMessage("PAMM update: NONE", 2);
+                    }
+                }
+                catch(e) {
+                    jsAddLogMessage("Error loading PAMM version data: " + e.message, 1);
+                }
+            }
         });
     }
 }
@@ -1863,6 +1861,8 @@ function findPAVersion() {
 }
 
 $(function() {
+    jsAddLogMessage("PAMM version: " + params.info.version, 2);
+    
     $('.ui_tabs').on('click', 'a', function() {
         var panel = $(this).data('target');
         jsDisplayPanel(panel);
