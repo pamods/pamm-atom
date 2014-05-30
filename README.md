@@ -40,5 +40,4 @@ atom-shell/resources/app
 ```
 
 Then execute `Atom.app` (or `atom` on Linux, and `atom.exe` on Windows), and
-atom-shell will start as your app. The `atom-shell` directory would then be
-your distribution that should be delivered to final users.
+atom-shell will start PAMM.
