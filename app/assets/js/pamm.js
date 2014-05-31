@@ -1,4 +1,3 @@
-window.$ = window.jQuery = require('./assets/js/jquery-1.10.2.min.js');
 var semver = require('./assets/js/semver.min.js');
 var sprintf = require('./assets/js/sprintf.min.js').sprintf;
 var JSZip = require('./assets/js/jszip.min.js');
@@ -7,8 +6,6 @@ var shell = require('shell');
 //(function() {
 
 var url = require('url');
-var http = require('http');
-var https = require('https');
 var fs = require('fs');
 var path = require('path');
 
@@ -53,7 +50,6 @@ var strModsDirectoryPath;
 var strPammModDirectoryPath;
 var strPAMMCacheDirectoryPath;
 
-var datePAMM = "2014/04/30";
 var strPAMMversion = params.info.version;
 var strPABuild = "";
 
@@ -1119,84 +1115,38 @@ function jsCheckOnlineStatus() {
 
 function jsDownload(strURL, opts) {
     if(!opts) opts = {};
-	
-	var options = url.parse(strURL);
     
-    var outputstream;
-    if(opts.tofile) {
-        outputstream = fs.createWriteStream(opts.tofile);
-    }
+    var intCurrentMessageID = ++intMessageID;
+    var datatype = opts.tofile ? "arraybuffer" : "text";
     
-    intMessageID++;
-    var intCurrentMessageID = intMessageID;
-    
-    var http2 = http;
-    if(options.protocol === "https:") {
-        http2 = https;
-    }
-    
-    var req = http2.request(options, function(res) {
-        jsAddLogMessage("[Message ID: " + intCurrentMessageID + "] HTTP " + res.statusCode, 4);
-        
-		res.on("end", function() {
-			intDownloading--;
-			if (intDownloading == 0) {
-				document.getElementById("downloading").style.display = "none";
-			}
-		});
-        
-		if(res.statusCode !== 200) {
-			if(outputstream) {
-				outputstream.end();
-			}
-			if(opts.error) {
-				opts.error();
-			}
-			return;
-		}
-		
-        var body = "";
-        
-        if(opts.success) {
-            if(outputstream) {
-                outputstream.on("finish", function() {
-                    opts.success();
-                });
-            }
-            else {
-                res.on("end", function() {
-                    opts.success(body);
-                });
-            }
-        }
-        
-        if(outputstream) {
-            res.pipe(outputstream);
-        }
-        else {
-            res.on("data", function(chunk) {
-                body = body + chunk;
-            });
-        }
-    });
-    
-    req.on('error', function(e) {
-        intDownloading--;
-        if (intDownloading == 0) {
-            document.getElementById("downloading").style.display = "none";
-        }
-        jsAddLogMessage("Network Error: attempting to send request to " + strURL + ": " + e.message, 1);
-		
-		if(opts.error) {
-			opts.error();
-		}
-    });
-    
+    intDownloading++;
     document.getElementById("downloading").style.display = "block";
     jsAddLogMessage("[Message ID: " + intCurrentMessageID + "] GET <code class='log_url'>" + strURL + "</code>", 4);
-    intDownloading++;
     
-    req.end();
+    $.get(strURL, function(data, textStatus, jqXHR) {
+        jsAddLogMessage("[Message ID: " + intCurrentMessageID + "] HTTP " + jqXHR.status, 4);
+        
+        if(opts.tofile) {
+            fs.writeFileSync(opts.tofile, new Buffer(new Uint8Array(data)));
+        }
+        
+        if(opts.success) {
+            opts.success(data);
+        }
+    }, datatype)
+    .fail(function(jqXHR, textStatus, errorThrown) {
+        jsAddLogMessage("[Message ID: " + intCurrentMessageID + "] ERROR: " + errorThrown, 1);
+        
+        if(opts.error) {
+            opts.error();
+        }
+    })
+    .always(function() {
+        var nbdl = --intDownloading;
+        if (nbdl == 0) {
+            document.getElementById("downloading").style.display = "none";
+        }
+    });
 }
 
 /* Refresh & Update Functions */
