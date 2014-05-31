@@ -32,6 +32,7 @@ var MANAGE_URL = "http://pa.raevn.com/manage.php";
 var MOD_IS_NEW_PERIOD_DAYS = 7;
 var NEWS_URL = "http://pamods.github.io/news.html";
 var PAMM_VERSION_DATA_URL = "https://raw.githubusercontent.com/%(author)s/%(name)s/stable/app/package.json";
+var PAMM_UPDATE_URL = "https://github.com/%(author)s/%(name)s/archive/stable.zip";
 var PAMM_OPTIONS_FILENAME = "pamm.json";
 var PAMM_ONLINE_TEST_URL = "http://pa.raevn.com/pamm_online.txt";
 var PA_VERSION_URL = "https://uberent.com/launcher/clientversion?titleid=4";
@@ -1138,7 +1139,7 @@ function jsDownload(strURL, opts) {
         jsAddLogMessage("[Message ID: " + intCurrentMessageID + "] ERROR: " + errorThrown, 1);
         
         if(opts.error) {
-            opts.error();
+            opts.error(errorThrown);
         }
     })
     .always(function() {
@@ -1422,8 +1423,7 @@ function jsDownloadPAMMversion() {
                     var lastinfo = JSON.parse(data);
                     if (semver.gt(lastinfo.version, params.info.version)) {
                         jsAddLogMessage("PAMM update: " + params.info.version + " => " + lastinfo.version, 2);
-                        setTimeout(function() { alert('PAMM update available: ' + lastinfo.version); }, 1);
-                        //UpdatePAMM(objPAMMVersionData.version, objPAMMVersionData.filename);
+                        UpdatePAMM(lastinfo);
                     }
                     else {
                         jsAddLogMessage("PAMM update: NONE", 2);
@@ -1717,6 +1717,58 @@ function OpenModsFolder() {
     //shell.showItemInFolder(item.replace(/\//g,"\\"));
 }
 
+function UpdatePAMM(info) {
+    var updateurl = sprintf(PAMM_UPDATE_URL, params.info);
+    var zipfile = strPAMMCacheDirectoryPath + "/" + params.info.name + ".zip";
+    
+    jsDownload(updateurl, {
+		tofile: zipfile
+		,success: function() {
+            try {
+                var temppath = path.dirname(__dirname) + '/app_tmp';
+                var bkppath = path.dirname(__dirname) + '/app_backup';
+                
+                var zipdata = fs.readFileSync(zipfile);
+                var zip = new JSZip(zipdata.toArrayBuffer());
+                
+                for(var i in zip.files) {
+                    var file = zip.files[i];
+                    
+                    if(file.name.indexOf(info.name + '-stable/app/') !== 0)
+                        continue;
+                    
+                    var path2 = temppath + '/' + file.name.substring(21);
+
+                    if(path2.indexOf('/', path2.length - 1) !== -1) {
+                        if (fs.existsSync(path2))
+                            continue;
+                        fs.mkdirSync(path2);
+                    }
+                    else {
+                        fs.writeFileSync(path2, new Buffer(file.asUint8Array()));
+                    }
+                }
+                
+                if(fs.existsSync(bkppath)) {
+                    rmdirRecurseSync(bkppath);
+                }
+                fs.renameSync(__dirname, bkppath);
+                fs.renameSync(temppath, __dirname);
+                
+                alert('PAMM has been updated to ' + info.version);
+                ClosePAMM();
+            }
+            catch(e) {
+                jsAddLogMessage(e, 1);
+                alert('PAMM failed to update itself to ' + info.version + ' (' + e + ')');
+            }
+		}
+        ,error: function(e) {
+            alert('PAMM failed to update itself to ' + info.version + ' (' + e + ')');
+        }
+    });
+}
+
 function unzipSync(modid, zipfile, targetfolder) {
     if(!fs.existsSync(targetfolder)) {
         throw targetfolder + ' folder does not exists.' ;
@@ -1726,7 +1778,7 @@ function unzipSync(modid, zipfile, targetfolder) {
     var zip = new JSZip(zipdata.toArrayBuffer());
     
     // zip.folders not reliable, some directories are not detected as directory (eg. instant_sandbox zip)
-    
+     
     for(var i in zip.files) {
         var file = zip.files[i];
         
