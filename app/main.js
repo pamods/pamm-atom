@@ -33,8 +33,17 @@ app.on('ready', function() {
     for(var i = 0; i < argv.length; ++i) {
       var arg = argv[i];
       if(arg.indexOf('pamm://') === 0) {
-        var modid = arg.substring(7);
-        params.install = modid;
+        var values = arg.substring(7).split('/');
+        
+        if (values.length === 1) {
+            params.install = values[0];
+        }
+        else if (values[0] === "install") {
+            params.install = values[1];
+        }
+        else {
+            console.log("Unsupported verb '" + values[0] + "' in '" + arg + "'");
+        }
       }
       else if (arg === 'devmode') {
         params.devmode = true;
