@@ -34,7 +34,6 @@ var NEWS_URL = "http://pamods.github.io/news.html";
 var PAMM_VERSION_DATA_URL = "https://raw.githubusercontent.com/%(author)s/%(name)s/stable/app/package.json";
 var PAMM_UPDATE_URL = "https://github.com/%(author)s/%(name)s/archive/stable.zip";
 var PAMM_OPTIONS_FILENAME = "pamm.json";
-var PAMM_ONLINE_TEST_URL = "http://pa.raevn.com/pamm_online.txt";
 var PA_VERSION_URL = "https://uberent.com/launcher/clientversion?titleid=4";
 var MOD_GENERIC_ICON_URL = "assets/img/generic.png";
 var PAMM_DEFAULT_LOCALE = "en";
@@ -1097,23 +1096,6 @@ function jsSetModsListIcon(boolInstalled, boolSupressWrite) {
     }
 }
 
-/* Download Functions */
-function jsCheckOnlineStatus() {
-    jsAddLogMessage("Checking online status", 3);
-    boolOnline = false;
-    jsDownload(PAMM_ONLINE_TEST_URL, {
-        success: function() {
-            boolOnline = true;
-            jsAddLogMessage("Online status: " + (boolOnline == true ? "ONLINE" : "OFFLINE"), 2);
-            jsRefresh_asynch(true);
-        }
-        ,error: function() {
-            jsAddLogMessage("Online status: " + (boolOnline == true ? "ONLINE" : "OFFLINE"), 2);
-            jsRefresh_asynch(true);
-        }
-    });
-}
-
 function jsDownload(strURL, opts) {
     if(!opts) opts = {};
     
@@ -1168,12 +1150,7 @@ function jsRefresh(boolShowLoading, boolDownloadData) {
         document.getElementById('total_available_mods').innerHTML = jsGetLocaleText('Loading', objOptions["locale"]) + "...";
         document.getElementById('total_available_mod_downloads').innerHTML = jsGetLocaleText('Loading', objOptions["locale"]) + "...";
     }
-    
-    if (boolDownloadData == true) {
-        jsCheckOnlineStatus();
-    } else {
-        jsRefresh_asynch(boolDownloadData)
-    }
+    jsRefresh_asynch(boolDownloadData);
 }
 
 function jsRefresh_asynch(boolDownloadData) {
