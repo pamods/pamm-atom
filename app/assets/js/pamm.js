@@ -245,11 +245,11 @@ function jsLoadOptionsData(strOptionsDataString) {
     document.getElementById("btnLaunch").disabled = (papath?false:true);
     
     document.getElementById("setting_installLocation").value = objOptions["pa_path"];
-	
-	var modLocation = strModsDirectoryPath;
-	if(process.platform === 'win32') {
-		modLocation = modLocation.replace(/\//g, "\\");
-	}
+    
+    var modLocation = strModsDirectoryPath;
+    if(process.platform === 'win32') {
+        modLocation = modLocation.replace(/\//g, "\\");
+    }
     document.getElementById("setting_modLocation").value = modLocation;
     
     if (objOptions["debug"] != null) {
@@ -279,11 +279,11 @@ function jsLoadOptionsData(strOptionsDataString) {
     
     if (objOptions["available_category"] == null) {
         objOptions["available_category"] = 'ALL';
-    }			
+    }            
     
     if (objOptions["installed_category"] == null) {
         objOptions["installed_category"] = 'ALL';
-    }			
+    }            
     
     if (objOptions["sort"] == null) {
         objOptions["sort"] = 'LAST_UPDATED';
@@ -415,7 +415,7 @@ function jsModEnabledToggle(strModID) {
         $image.attr('src', "assets/img/checkbox_unchecked.png");
     }
     
-    jsSetModEnabledStatus(strModID, document.getElementById("mod" + strModID).checked);			
+    jsSetModEnabledStatus(strModID, document.getElementById("mod" + strModID).checked);            
     jsUpdateFiles();
 }
 
@@ -650,7 +650,7 @@ function jsGenerateModEntryHTML(objMod, boolIsInstalled) {
         /* Install Count */
         strHTML_downloads = "<img src='assets/img/download.png' style='position: absolute; margin-top:4px'> <div class='mod_entry_count'>" + objMod.downloads + "</div>"; //TODO: Fix Up
         
-        /* Like Count */			
+        /* Like Count */            
         if (objOptions["loadlikes"] == true) {
             if (objMod.likes != null) {
                 if (objMod.likes == -2) {
@@ -1102,16 +1102,16 @@ function jsCheckOnlineStatus() {
     jsAddLogMessage("Checking online status", 3);
     boolOnline = false;
     jsDownload(PAMM_ONLINE_TEST_URL, {
-		success: function() {
-			boolOnline = true;
-			jsAddLogMessage("Online status: " + (boolOnline == true ? "ONLINE" : "OFFLINE"), 2);
-			jsRefresh_asynch(true);
-		}
-		,error: function() {
-			jsAddLogMessage("Online status: " + (boolOnline == true ? "ONLINE" : "OFFLINE"), 2);
-			jsRefresh_asynch(true);
-		}
-	});
+        success: function() {
+            boolOnline = true;
+            jsAddLogMessage("Online status: " + (boolOnline == true ? "ONLINE" : "OFFLINE"), 2);
+            jsRefresh_asynch(true);
+        }
+        ,error: function() {
+            jsAddLogMessage("Online status: " + (boolOnline == true ? "ONLINE" : "OFFLINE"), 2);
+            jsRefresh_asynch(true);
+        }
+    });
 }
 
 function jsDownload(strURL, opts) {
@@ -1178,7 +1178,7 @@ function jsRefresh(boolShowLoading, boolDownloadData) {
 
 function jsRefresh_asynch(boolDownloadData) {
     if (boolOnline == false) {
-        document.getElementById("news_data").innerHTML = "<div class=\"loading\">" + jsGetLocaleText('Mod_Manager_is_offline', objOptions["locale"]) + "</div>";	
+        document.getElementById("news_data").innerHTML = "<div class=\"loading\">" + jsGetLocaleText('Mod_Manager_is_offline', objOptions["locale"]) + "</div>";    
         document.getElementById("mod_list_available").innerHTML = "<div class=\"loading\">" + jsGetLocaleText('Mod_Manager_is_offline', objOptions["locale"]) + "</div>";
         document.getElementById('total_available_mods').innerHTML = jsGetLocaleText('Mod_Manager_is_offline', objOptions["locale"]);
         document.getElementById('total_available_mod_downloads').innerHTML = jsGetLocaleText('Mod_Manager_is_offline', objOptions["locale"]);
@@ -1250,7 +1250,7 @@ function jsSetDefaultTab(boolSupressWrite) {
 }
 
 function jsAddLogMessage(strText, intLevel) {
-	console.log('LOG: ' + strText);
+    console.log('LOG: ' + strText);
     var strType = "INFO";
     if (intLevel == 1) { 
         strType = "ERROR"; 
@@ -1297,45 +1297,45 @@ function jsDownloadOnlineMods() {
     if (boolOnline == true) {
         jsAddLogMessage("Downloading available mods list", 2);
         jsDownload(ONLINE_MODS_LIST_URL, {
-			success: function(data) {
-				try {
-					tmpOnlineMods = [];
-					tmpOnlineModCategories = {};
-					
-					tmpOnlineModCategories["ALL"] = 0;
-				
-					var objModData = JSON.parse(data);
-					for (var id in objModData) {
-						objModData[id]["id"] = id;
-						objModData[id]["likes"] = -2;
-						tmpOnlineMods.push(objModData[id]);
-						if (jsGetInstalledMod(id) != null && jsGetInstalledMod(id)["date"] < objModData[id]["date"]) {
-							jsAddLogMessage("Update available for installed mod '" + jsGetInstalledMod(id)["display_name"] + "': " + objModData[id]["version"] + " (" + objModData[id]["date"] + ")", 3);
-						}
-						
-						if (objModData[id].category != null) {
-							for (var i = 0; i < objModData[id].category.length; i++) {
-								var strCurrentCategory = objModData[id].category[i].replace(" ", "-").toUpperCase();
-								if (tmpOnlineModCategories[strCurrentCategory] == null) {
-									tmpOnlineModCategories[strCurrentCategory] = 1;
-								} else {
-									tmpOnlineModCategories[strCurrentCategory]++;
-								}
-							}
-						}
-						tmpOnlineModCategories["ALL"]++;
-					}
+            success: function(data) {
+                try {
+                    tmpOnlineMods = [];
+                    tmpOnlineModCategories = {};
+                    
+                    tmpOnlineModCategories["ALL"] = 0;
+                
+                    var objModData = JSON.parse(data);
+                    for (var id in objModData) {
+                        objModData[id]["id"] = id;
+                        objModData[id]["likes"] = -2;
+                        tmpOnlineMods.push(objModData[id]);
+                        if (jsGetInstalledMod(id) != null && jsGetInstalledMod(id)["date"] < objModData[id]["date"]) {
+                            jsAddLogMessage("Update available for installed mod '" + jsGetInstalledMod(id)["display_name"] + "': " + objModData[id]["version"] + " (" + objModData[id]["date"] + ")", 3);
+                        }
+                        
+                        if (objModData[id].category != null) {
+                            for (var i = 0; i < objModData[id].category.length; i++) {
+                                var strCurrentCategory = objModData[id].category[i].replace(" ", "-").toUpperCase();
+                                if (tmpOnlineModCategories[strCurrentCategory] == null) {
+                                    tmpOnlineModCategories[strCurrentCategory] = 1;
+                                } else {
+                                    tmpOnlineModCategories[strCurrentCategory]++;
+                                }
+                            }
+                        }
+                        tmpOnlineModCategories["ALL"]++;
+                    }
                     
                     objOnlineMods = tmpOnlineMods;
                     objOnlineModCategories = tmpOnlineModCategories;
                     
-					document.getElementById('total_available_mods').innerHTML = objOnlineMods.length;
-					jsDownloadOnlineModDownloadCount();
-				} catch (e) {
-					jsAddLogMessage("Error loading online mod data: " + e.message, 1);
-				}
-			}
-		});
+                    document.getElementById('total_available_mods').innerHTML = objOnlineMods.length;
+                    jsDownloadOnlineModDownloadCount();
+                } catch (e) {
+                    jsAddLogMessage("Error loading online mod data: " + e.message, 1);
+                }
+            }
+        });
     }
 }
 
@@ -1343,26 +1343,26 @@ function jsDownloadOnlineModDownloadCount() {
     if (boolOnline == true) {
         jsAddLogMessage("Getting availailable mod download counts", 2);
         jsDownload(ONLINE_MODS_DOWNLOAD_COUNT_URL, {
-			success: function(strResult) {
-				var intTotalDownloadCount = 0;
-				try {
-					var objOnlineModsDownloadCount = JSON.parse(strResult);
-					for (var i = 0; i < objOnlineMods.length; i++) {
-						objOnlineMods[i]["downloads"] = objOnlineModsDownloadCount[objOnlineMods[i].id] ? objOnlineModsDownloadCount[objOnlineMods[i].id] : 0;
-						intTotalDownloadCount += objOnlineMods[i]["downloads"];
-					}
-					
-					jsGenerateOnlineModsListHTML();
-					jsGenerateInstalledModsListHTML();
-					if (objOptions["modlikes"] == true) {
-						jsDownloadOnlineModLikeCount();
-					}
+            success: function(strResult) {
+                var intTotalDownloadCount = 0;
+                try {
+                    var objOnlineModsDownloadCount = JSON.parse(strResult);
+                    for (var i = 0; i < objOnlineMods.length; i++) {
+                        objOnlineMods[i]["downloads"] = objOnlineModsDownloadCount[objOnlineMods[i].id] ? objOnlineModsDownloadCount[objOnlineMods[i].id] : 0;
+                        intTotalDownloadCount += objOnlineMods[i]["downloads"];
+                    }
                     
-				} catch (e) {
-					jsAddLogMessage("Error loading online mod download count data: " + e.message, 1);
-				}
-				document.getElementById('total_available_mod_downloads').innerHTML = intTotalDownloadCount;
-			}
+                    jsGenerateOnlineModsListHTML();
+                    jsGenerateInstalledModsListHTML();
+                    if (objOptions["modlikes"] == true) {
+                        jsDownloadOnlineModLikeCount();
+                    }
+                    
+                } catch (e) {
+                    jsAddLogMessage("Error loading online mod download count data: " + e.message, 1);
+                }
+                document.getElementById('total_available_mod_downloads').innerHTML = intTotalDownloadCount;
+            }
         });
     }
 }
@@ -1374,24 +1374,24 @@ function jsDownloadOnlineModLikeCount() {
             if (objOnlineMods[i]["forum"].indexOf("forums.uberent.com") > -1) {
                 intLikeCountRemaining++;
                 jsDownload(objOnlineMods[i]["forum"], {
-					success: function(strResult) {
-						var intModID = objOnlineMods[i].id;
-						var objOnlineMod = jsGetOnlineMod(intModID);
-						try {
-							var objNodes = $(strResult).find(".message").first().find(".LikeText");
-							var intLikes = objNodes.children(".username").length;
-							if  (objNodes.children(".OverlayTrigger").length > 0) {
-								var strText = objNodes.children(".OverlayTrigger").text();
-								intLikes += parseInt(strText);
-							}
-							objOnlineMod["likes"] = intLikes;
-							jsAddLogMessage("Like count for mod '" + objOnlineMod["display_name"] + "': " + intLikes, 3);
-						} catch (e) {
-							jsAddLogMessage("Error loading online mod like count data: " + e.message, 1);
-							objOnlineMod["likes"] = -1;
-						}
-						intLikeCountRemaining--;
-					}
+                    success: function(strResult) {
+                        var intModID = objOnlineMods[i].id;
+                        var objOnlineMod = jsGetOnlineMod(intModID);
+                        try {
+                            var objNodes = $(strResult).find(".message").first().find(".LikeText");
+                            var intLikes = objNodes.children(".username").length;
+                            if  (objNodes.children(".OverlayTrigger").length > 0) {
+                                var strText = objNodes.children(".OverlayTrigger").text();
+                                intLikes += parseInt(strText);
+                            }
+                            objOnlineMod["likes"] = intLikes;
+                            jsAddLogMessage("Like count for mod '" + objOnlineMod["display_name"] + "': " + intLikes, 3);
+                        } catch (e) {
+                            jsAddLogMessage("Error loading online mod like count data: " + e.message, 1);
+                            objOnlineMod["likes"] = -1;
+                        }
+                        intLikeCountRemaining--;
+                    }
                 });
             } else {
                 jsAddLogMessage("Invalid forum link for mod '" + objOnlineMods[i]["display_name"] + "' (Not from forums.uberent.com)", 3);
@@ -1441,9 +1441,9 @@ function jsDownloadNews() {
     if (boolOnline == true) {
         jsAddLogMessage("Downloading news", 2);
         jsDownload(NEWS_URL, {
-			success: function(html) {
-				document.getElementById("news_data").innerHTML = html;
-			}
+            success: function(html) {
+                document.getElementById("news_data").innerHTML = html;
+            }
         });
     }
 }
@@ -1543,35 +1543,35 @@ function FindInstalledMods() {
             
             var strModID = modname;
             var objCurrentMod = {};
-			try {
-				objCurrentMod = JSON.parse(strmodinfo);
-				
-				objCurrentMod["priority"] = objCurrentMod["priority"] ? objCurrentMod["priority"] : 100;
-				if (objCurrentMod["enabled"] == null || strModID == PAMM_MOD_ID) {
-					objCurrentMod["enabled"] = true;
-				}
-				objCurrentMod["id"] = strModID;
-				
-				if (objCurrentMod.category != null) {
-					for (var i = 0; i < objCurrentMod.category.length; i++) {
-						var strCurrentCategory = objCurrentMod.category[i].replace(" ", "-").toUpperCase();
-						if (objInstalledModCategories[strCurrentCategory] == null) {
-							objInstalledModCategories[strCurrentCategory] = 1;
-						} else {
-							objInstalledModCategories[strCurrentCategory]++;
-						}
-					}
-				}
-				
-				objInstalledModCategories["ALL"]++;
-				objInstalledMods.push(objCurrentMod);
-			} catch (err) {
-				var strName = strModID;
-				if (objCurrentMod["display_name"] != null) {
-					strName = objCurrentMod["display_name"];
-				}
-				alert("Error loading installed mod '" + strName + "'");
-			}
+            try {
+                objCurrentMod = JSON.parse(strmodinfo);
+                
+                objCurrentMod["priority"] = objCurrentMod["priority"] ? objCurrentMod["priority"] : 100;
+                if (objCurrentMod["enabled"] == null || strModID == PAMM_MOD_ID) {
+                    objCurrentMod["enabled"] = true;
+                }
+                objCurrentMod["id"] = strModID;
+                
+                if (objCurrentMod.category != null) {
+                    for (var i = 0; i < objCurrentMod.category.length; i++) {
+                        var strCurrentCategory = objCurrentMod.category[i].replace(" ", "-").toUpperCase();
+                        if (objInstalledModCategories[strCurrentCategory] == null) {
+                            objInstalledModCategories[strCurrentCategory] = 1;
+                        } else {
+                            objInstalledModCategories[strCurrentCategory]++;
+                        }
+                    }
+                }
+                
+                objInstalledModCategories["ALL"]++;
+                objInstalledMods.push(objCurrentMod);
+            } catch (err) {
+                var strName = strModID;
+                if (objCurrentMod["display_name"] != null) {
+                    strName = objCurrentMod["display_name"];
+                }
+                alert("Error loading installed mod '" + strName + "'");
+            }
             
             intMods = intMods + 1;
         }
@@ -1647,11 +1647,11 @@ function InstallMod(strURL, strModID) {
     
     jsAddLogMessage("Downloading mod '" + strModID + "'", 3)
     jsDownload(strURL, {
-		tofile: strPAMMCacheDirectoryPath + "/" + strModFileName
-		,success: function() {
-			UninstallMod(strModID);
-			ExtractMod(strModFileName, strModID);
-		}
+        tofile: strPAMMCacheDirectoryPath + "/" + strModFileName
+        ,success: function() {
+            UninstallMod(strModID);
+            ExtractMod(strModFileName, strModID);
+        }
     });
 }
 
@@ -1704,12 +1704,12 @@ function CheckPAPresent(strPath) {
 
 function LaunchPA() {
     var child_process = require('child_process');
-	var path = require('path');
-	var papath = jsGetOption("pa_path");
-	var wd = path.dirname(papath);
-	var child = child_process.spawn(papath, null, { cwd: wd, detached: true });
-	child.unref();
-	ClosePAMM();
+    var path = require('path');
+    var papath = jsGetOption("pa_path");
+    var wd = path.dirname(papath);
+    var child = child_process.spawn(papath, null, { cwd: wd, detached: true });
+    child.unref();
+    ClosePAMM();
 }
 
 function OpenModsFolder() {
@@ -1722,8 +1722,8 @@ function UpdatePAMM(info) {
     var zipfile = strPAMMCacheDirectoryPath + "/" + params.info.name + ".zip";
     
     jsDownload(updateurl, {
-		tofile: zipfile
-		,success: function() {
+        tofile: zipfile
+        ,success: function() {
             try {
                 var temppath = path.dirname(__dirname) + '/app_tmp';
                 var bkppath = path.dirname(__dirname) + '/app_backup';
@@ -1762,7 +1762,7 @@ function UpdatePAMM(info) {
                 jsAddLogMessage(e, 1);
                 alert('PAMM failed to update itself to ' + info.version + ' (' + e + ')');
             }
-		}
+        }
         ,error: function(e) {
             alert('PAMM failed to update itself to ' + info.version + ' (' + e + ')');
         }
@@ -1919,7 +1919,7 @@ $(function() {
     LoadOptions();
     
     jsApplyLocaleText();
-	$('#current_pamm_version').text(strPAMMversion);
+    $('#current_pamm_version').text(strPAMMversion);
     jsRefresh(true, true);
     
     checkVersionPA();
@@ -1929,14 +1929,14 @@ $(function() {
             //check objOnlineMods exists and is populated
             if (objOnlineMods && objOnlineMods.length > 0) {
                 //find mod url from mod id
-				var modid = params.install;
+                var modid = params.install;
                 var mod = jsGetOnlineMod(modid);
-				if (mod) {
-					jsPreInstallMod(mod.url, modid, {});
-					alert("Installing '" + mod.display_name + "'");
-				} else {
-					jsAddLogMessage("Failed to install from commandline with mod id = " + mod_id_str, 1);
-				}
+                if (mod) {
+                    jsPreInstallMod(mod.url, modid, {});
+                    alert("Installing '" + mod.display_name + "'");
+                } else {
+                    jsAddLogMessage("Failed to install from commandline with mod id = " + mod_id_str, 1);
+                }
                 
                 clearInterval(intervalId);
             }
