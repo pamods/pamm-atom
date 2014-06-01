@@ -48,6 +48,9 @@ app.on('ready', function() {
       else if (arg === 'devmode') {
         params.devmode = true;
       }
+      else if (arg === 'offline') {
+        params.offline = true;
+      }
     }
     
     console.log('Mod to install: ' + (params.install ? params.install : 'none'));

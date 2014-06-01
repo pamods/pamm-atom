@@ -18,7 +18,7 @@ var objOnlineModCategories = {};
 var objInstalledModCategories = {};
 
 var boolAutoWrite = true;
-var boolOnline = true;
+var boolOnline = params.offline ? false : true;
 var intMessageID = 0;
 var intDownloading = 0;
 var strModInstalling = "";
