@@ -1144,7 +1144,6 @@ function jsUpdateFiles() {
 function jsRefresh(boolShowLoading, boolDownloadData) {
     //TODO: Localisation
     if (boolShowLoading == true) {
-        document.getElementById("news_data").innerHTML = "<div class=\"loading\">" + jsGetLocaleText('Loading', objOptions["locale"]) + "...</div>";
         document.getElementById("mod_list_installed").innerHTML = "<div class=\"loading\">" + jsGetLocaleText('Loading', objOptions["locale"]) + "...</div>";
         document.getElementById("mod_list_available").innerHTML = "<div class=\"loading\">" + jsGetLocaleText('Loading', objOptions["locale"]) + "...</div>";
         document.getElementById('total_available_mods').innerHTML = jsGetLocaleText('Loading', objOptions["locale"]) + "...";
@@ -1417,9 +1416,12 @@ function jsDownloadPAMMversion() {
 function jsDownloadNews() {
     if (boolOnline == true) {
         jsAddLogMessage("Downloading news", 2);
-        jsDownload(NEWS_URL, {
-            success: function(html) {
-                document.getElementById("news_data").innerHTML = html;
+        var $news = $("#news_data");
+        $news.html("<div class=\"loading\">" + jsGetLocaleText('Loading', objOptions["locale"]) + "...</div>");
+        $news.load(NEWS_URL, function( response, status, xhr ) {
+            if ( status == "error" ) {
+                var msg = "Sorry but there was an error: ";
+                $news.html("<div class=\"loading\">" +msg + xhr.status + " " + xhr.statusText + "</div>");
             }
         });
     }
