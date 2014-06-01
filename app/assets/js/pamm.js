@@ -1622,7 +1622,9 @@ function InstallMod(strURL, strModID) {
 
     RemoveFileFromCache(strModFileName);
     
-    //jsDownload(MANAGE_URL + "?download=" + strModID);
+    if(!params.devmode) {
+        jsDownload(MANAGE_URL + "?download=" + strModID);
+    }
     
     jsAddLogMessage("Downloading mod '" + strModID + "'", 3)
     jsDownload(strURL, {
