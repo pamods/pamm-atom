@@ -33,6 +33,9 @@ app.on('ready', function() {
     for(var i = 0; i < argv.length; ++i) {
       var arg = argv[i];
       if(arg.indexOf('pamm://') === 0) {
+        if(arg.slice(-1) === '/') {
+            arg = arg.substring(0, arg.length-1)
+        }
         var values = arg.substring(7).split('/');
         
         if (values.length === 1) {
