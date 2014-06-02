@@ -650,7 +650,7 @@ function jsGenerateModEntryHTML(objMod, boolIsInstalled) {
         strHTML_downloads = "<img src='assets/img/download.png' style='position: absolute; margin-top:4px'> <div class='mod_entry_count'>" + objMod.downloads + "</div>"; //TODO: Fix Up
         
         /* Like Count */            
-        if (objOptions["loadlikes"] == true) {
+        if (objOptions["modlikes"] == true) {
             if (objMod.likes != null) {
                 if (objMod.likes == -2) {
                     strHTML_likes = "<span id='" + id + "_like_count' class='mod_entry_likes'>" + jsGetLocaleText('Loading', objOptions["locale"]) + "...</span>" //TODO: Fix Up
@@ -1346,37 +1346,44 @@ function jsDownloadOnlineModDownloadCount() {
 function jsDownloadOnlineModLikeCount() {
     jsAddLogMessage("Getting mod likes", 2);
     for (var i = 0; i < objOnlineMods.length; i++) {
-        if (objOnlineMods[i]["forum"] != null) {
-            if (objOnlineMods[i]["forum"].indexOf("forums.uberent.com") > -1) {
-                intLikeCountRemaining++;
-                jsDownload(objOnlineMods[i]["forum"], {
-                    success: function(strResult) {
-                        var intModID = objOnlineMods[i].id;
-                        var objOnlineMod = jsGetOnlineMod(intModID);
-                        try {
-                            var objNodes = $(strResult).find(".message").first().find(".LikeText");
-                            var intLikes = objNodes.children(".username").length;
-                            if  (objNodes.children(".OverlayTrigger").length > 0) {
-                                var strText = objNodes.children(".OverlayTrigger").text();
-                                intLikes += parseInt(strText);
+        (function() {
+            var mod = objOnlineMods[i];
+            if (mod.forum) {
+                if (mod.forum.match(/https?:\/\/forums.uberent.com\/threads\/[^\/]*\d+/)) {
+                    intLikeCountRemaining++;
+                    jsDownload(mod.forum, {
+                        success: function(html) {
+                            try {
+                                var istart = html.indexOf('<span class="LikeText">');
+                                var iend = html.indexOf('</span>', istart);
+                                var html = html.substring(istart, iend+7);
+                                var objNodes = $(html);
+                                var intLikes = objNodes.children(".username").length;
+                                if  (objNodes.children(".OverlayTrigger").length > 0) {
+                                    var strText = objNodes.children(".OverlayTrigger").text();
+                                    intLikes += parseInt(strText);
+                                }
+                                mod.likes = intLikes;
+                                jsAddLogMessage("Like count for mod '" + mod.display_name + "': " + intLikes, 3);
+                            } catch (e) {
+                                jsAddLogMessage("Error loading online mod like count data: " + e.message, 1);
+                                mod.likes = -1;
                             }
-                            objOnlineMod["likes"] = intLikes;
-                            jsAddLogMessage("Like count for mod '" + objOnlineMod["display_name"] + "': " + intLikes, 3);
-                        } catch (e) {
-                            jsAddLogMessage("Error loading online mod like count data: " + e.message, 1);
-                            objOnlineMod["likes"] = -1;
+                            intLikeCountRemaining--;
                         }
-                        intLikeCountRemaining--;
-                    }
-                });
+                        ,error: function() {
+                            intLikeCountRemaining--;
+                        }
+                    });
+                } else {
+                    jsAddLogMessage("Invalid forum link for mod '" + mod.display_name + "': " + mod.forum, 3);
+                    mod.likes = -1;
+                }
             } else {
-                jsAddLogMessage("Invalid forum link for mod '" + objOnlineMods[i]["display_name"] + "' (Not from forums.uberent.com)", 3);
-                objOnlineMods[i]["likes"] = -1;
+                jsAddLogMessage("Missing forum link for mod '" + mod.display_name + "'", 3);
+                mod.likes = -1;
             }
-        } else {
-            jsAddLogMessage("Missing forum link for mod '" + objOnlineMods[i]["display_name"] + "'", 3);
-            objOnlineMods[i]["likes"] = -1;
-        }
+        })();
     }
     
     var objTimer = setInterval(function() {
@@ -1384,7 +1391,7 @@ function jsDownloadOnlineModLikeCount() {
             jsGenerateOnlineModsListHTML();
             clearInterval(objTimer);
         }
-    }, 100);
+    }, 500);
 }
 
 function jsDownloadPAMMversion() {
