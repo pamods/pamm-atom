@@ -65,11 +65,13 @@ $ErrorActionPreference = "Stop"
             try {
                 $Shortcut = $WshShell.CreateShortcut("$PammDir\PAMM.lnk")
                 $Shortcut.TargetPath = "`"$AtomDir\pamm.exe`""
+                $Shortcut.Arguments = ""
                 $Shortcut.IconLocation = "$AppDir\assets\img\favicon.ico"
                 $Shortcut.Save()
 
                 $Shortcut = $WshShell.CreateShortcut("$Home\Desktop\PAMM.lnk")
                 $Shortcut.TargetPath = "`"$AtomDir\pamm.exe`""
+                $Shortcut.Arguments = ""
                 $Shortcut.IconLocation = "$AppDir\assets\img\favicon.ico"
                 $Shortcut.Save()
             }
