@@ -97,6 +97,8 @@ $ErrorActionPreference = "Stop"
 
             Write-Host "PAMM has been successfully installed." -ForegroundColor Green
             Write-Host "  => $PammDir" -ForegroundColor Green
+            
+            Start-Process "cmd.exe" "/C start pamm.exe" -WorkingDirectory $AtomDir
         }
         else {
             Write-Host "Last Atom Shell release not found." -ForegroundColor Red
