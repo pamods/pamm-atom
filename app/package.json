@@ -1,6 +1,6 @@
 {
   "name"    : "pamm-atom",
   "author"  : "mereth",
-  "version" : "0.5.2",
+  "version" : "0.5.3",
   "main"    : "main.js"
 }
