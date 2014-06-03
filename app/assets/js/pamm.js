@@ -1514,6 +1514,16 @@ function ClosePAMM() {
     app.quit();
 }
 
+function RestartPAMM() {
+    var child_process = require('child_process');
+    var path = require('path');
+    var argv = require('remote').process.argv;
+    
+    var child = child_process.spawn(argv[0], argv.splice(1), { detached: true });
+    child.unref();
+    ClosePAMM();
+}
+
 function FindInstalledMods() {
     var intMods = 0;
     objInstalledMods = [];
@@ -1743,8 +1753,8 @@ function UpdatePAMM(info) {
                 fs.renameSync(__dirname, bkppath);
                 fs.renameSync(temppath, __dirname);
                 
-                alert('PAMM has been updated to ' + info.version);
-                ClosePAMM();
+                alert('PAMM has been updated to ' + info.version + '\nIt should now restart automatically.');
+                RestartPAMM();
             }
             catch(e) {
                 jsAddLogMessage(e, 1);
