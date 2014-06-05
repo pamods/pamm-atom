@@ -6,13 +6,13 @@ $ErrorActionPreference = "Stop"
     $AtomDir = "$PammDir"
     $AppDir = "$PammDir\resources\app"
 
-    $ReleasesURL = "https://github.com/atom/atom-shell/releases"
+    $ReleasesURL = "https://github.com/atom/atom-shell/releases/latest"
 
     try {
-        Write-Host "Find last Atom Shell release..."
+        Write-Host "Find latest Atom Shell release..."
         $Html = (New-Object System.Net.WebClient).DownloadString($ReleasesURL)
 
-        if($Html -match "href=`"(/atom/atom-shell/releases/download/[^`"]+-win32.zip)") {
+        if($Html -match "href=`"(/atom/atom-shell/releases/download/[^`"]+-win32-ia32.zip)") {
 
             # Prepare PAMM installation folder
 
@@ -22,7 +22,7 @@ $ErrorActionPreference = "Stop"
             }
             [void](New-Item -ItemType directory -Path $PammDir)
 
-            # Download last Atom Shell release
+            # Download latest Atom Shell release
 
             Write-Host "Downloading Atom Shell..."
 
@@ -98,10 +98,12 @@ $ErrorActionPreference = "Stop"
             Write-Host "PAMM has been successfully installed." -ForegroundColor Green
             Write-Host "  => $PammDir" -ForegroundColor Green
             
+            # Start PAMM
+            
             Start-Process "cmd.exe" "/C start pamm.exe" -WorkingDirectory $AtomDir
         }
         else {
-            Write-Host "Last Atom Shell release not found." -ForegroundColor Red
+            Write-Host "Latest Atom Shell release not found." -ForegroundColor Red
             Exit 1
         }
     }
