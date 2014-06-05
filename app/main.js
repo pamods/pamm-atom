@@ -1,7 +1,12 @@
-var app = require('app');  // Module to control application life.
+// Atom Shell modules
+var app = require('app');
+var BrowserWindow = require('browser-window');
+var dialog = require('dialog');
+
+// Node.js modules
 var fs = require('fs'); 
 var path = require('path'); 
-var BrowserWindow = require('browser-window');  // Module to create native browser window.
+var semver = require('semver');
 
 var params = {
     info: {}
@@ -27,6 +32,8 @@ app.on('ready', function() {
   fs.readFile(__dirname + path.sep + 'package.json', { encoding: 'utf8' }, function(err, data) {
     if (err) throw err;
     params.info = JSON.parse(data);
+    
+    checkEngine();
     
     console.log('Parsing arguments');
     var argv = process.argv;
@@ -81,3 +88,18 @@ app.on('ready', function() {
     });
   });
 });
+
+var checkEngine = function() {
+    var current = process.versions['atom-shell'];
+    var expected = params.info.engines['atom-shell'];
+
+    if(!semver.satisfies(current, expected)) {
+        dialog.showMessageBox({
+            type: "warning"
+            ,buttons: ["Quit"]
+            ,title: "Incompatible version"
+            ,message: "The Atom Shell version currently used to run PAMM is outdated and will be unable to run as expected.\n\nPlease reinstall PAMM or upgrade Atom Shell manually."
+        });
+        app.quit();
+    }
+}

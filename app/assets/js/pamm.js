@@ -1,4 +1,4 @@
-var semver = require('./assets/js/semver.min.js');
+var semver = require('semver');
 var sprintf = require('./assets/js/sprintf.min.js').sprintf;
 var JSZip = require('./assets/js/jszip.min.js');
 var shell = require('shell');

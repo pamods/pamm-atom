@@ -2,5 +2,11 @@
   "name"    : "pamm-atom",
   "author"  : "mereth",
   "version" : "0.5.3",
-  "main"    : "main.js"
+  "main"    : "main.js",
+  "bundledDependencies" : {
+    "semver" : ">=2.3.0"
+  },
+  "engines" : {
+    "atom-shell" : ">=0.12.7"
+  }
 }
