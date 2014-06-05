@@ -5,9 +5,10 @@
   "main"    : "main.js",
   "bundledDependencies" : {
     "semver" : ">=2.3.0",
-    "sprintf" : ">=1.0.0"
+    "sprintf" : ">=1.0.0",
+    "jszip" : ">=2.2.2"
   },
   "engines" : {
-    "atom-shell" : ">=0.12.7"
+    "atom-shell" : ">=0.12.5"
   }
 }

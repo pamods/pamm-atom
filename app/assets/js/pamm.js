@@ -1,6 +1,6 @@
 var semver = require('semver');
 var sprintf = require('sprintf').sprintf;
-var JSZip = require('./assets/js/jszip.min.js');
+var JSZip = require('jszip');
 var shell = require('shell');
 
 //(function() {
