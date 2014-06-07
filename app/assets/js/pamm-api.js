@@ -261,12 +261,10 @@ var _enablemod = function(id, force) {
     for(var i = 0; i < ids.length; ++i) {
         var mod = installed[ids[i]];
         
-        if(mod && mod.enabled === false) {
+        if(mod && !mod.enabled) {
             jsAddLogMessage("Mod '" + mod.id + "' ENABLED", 3);
             enabled.push(mod.id);
-            var modinfopath = path.join(paths.mods, mod.id, "modinfo.json");
             mod.enabled = true;
-            fs.writeFileSync(modinfopath, JSON.stringify(mod, null, 4), { encoding: 'utf8' });
         }
     }
     return enabled;
@@ -284,12 +282,10 @@ var _disablemod = function(id) {
     for(var i = 0; i < ids.length; ++i) {
         var mod = installed[ids[i]];
         
-        if(mod && mod.enabled !== false) {
+        if(mod && mod.enabled) {
             jsAddLogMessage("Mod '" + mod.id + "' DISABLED", 3);
             disabled.push(mod.id);
-            var modinfopath = path.join(paths.mods, mod.id, "modinfo.json");
             mod.enabled = false;
-            fs.writeFileSync(modinfopath, JSON.stringify(mod, null, 4), { encoding: 'utf8' });
         }
     }
     return disabled;
@@ -304,23 +300,45 @@ var CreateFolderIfNotExists = function(path) {
 var findInstalledMods = function() {
     var mods = {};
     var categories = {};
+    var mounted = [PAMM_MOD_IDENTIFIER];
+    
+    // load mounted mods list (aka enabled mods)
+    var modsjsonpath = path.join(paths.mods, 'mods.json');
+    if(fs.existsSync(modsjsonpath)) {
+        var modsjson = fs.readFileSync(modsjsonpath, { encoding: 'utf8' });
+        modsjson = JSON.parse(modsjson);
+        if(modsjson.mount_order) {
+            mounted = _.union(mounted, modsjson.mount_order);
+        }
+    }
+    
+    // load user mods
     var moddirs = fs.readdirSync(strModsDirectoryPath);
     for (var i = 0; i < moddirs.length; ++i) {
         var id = moddirs[i];
         var moddir = strModsDirectoryPath + '/' + id;
         if (fs.statSync(moddir).isDirectory()) {
-            //jsAddLogMessage("Found installed mod: " + id, 3)
+            jsAddLogMessage("Found installed mod: " + id, 3)
             
-            var strmodinfo = fs.readFileSync(moddir + '/modinfo.json', {encoding: 'utf8'});
+            var modinfopath = moddir + '/modinfo.json';
+            var strmodinfo = fs.readFileSync(modinfopath, {encoding: 'utf8'});
             
             var mod = {};
             try {
                 mod = JSON.parse(strmodinfo);
                 
+                if(mod.enabled === false) {
+                    // revert old modinfo updates, or mod packaging error
+                    mod.enabled = true;
+                    fs.writeFileSync(modinfopath, JSON.stringify(mod, null, 4), { encoding: 'utf8' });
+                }
+                
                 mod.id = id;
                 
                 if (!mod.priority)
                     mod.priority = 100;
+                
+                mod.enabled = (_.indexOf(mounted, mod.identifier) !== -1);
                 
                 mods[id] = mod;
             } catch (err) {
@@ -329,8 +347,8 @@ var findInstalledMods = function() {
             }
         }
     }
-    
     installed = mods;
+    
     _updateFiles();
 }
 
