@@ -3,6 +3,9 @@ var sprintf = require('sprintf').sprintf;
 var JSZip = require('jszip');
 var shell = require('shell');
 
+var jsDownload = require('./assets/js/download.js').download;
+var pamm = require('./assets/js/pamm-api.js');
+
 //(function() {
 
 var url = require('url');
@@ -17,7 +20,6 @@ var objOptions = {};
 var objOnlineModCategories = {};
 var objInstalledModCategories = {};
 
-var boolAutoWrite = true;
 var boolOnline = params.offline ? false : true;
 var intMessageID = 0;
 var intDownloading = 0;
@@ -26,7 +28,6 @@ var intLogLevel = 0;
 var intLogNumber = 0;
 var intLikeCountRemaining = 0;
 
-var ONLINE_MODS_LIST_URL = "http://pamods.github.io/modlist.json";
 var ONLINE_MODS_DOWNLOAD_COUNT_URL = "http://pa.raevn.com/modcount_json.php";
 var MANAGE_URL = "http://pa.raevn.com/manage.php";
 var MOD_IS_NEW_PERIOD_DAYS = 7;
@@ -37,13 +38,6 @@ var PAMM_OPTIONS_FILENAME = "pamm.json";
 var PA_VERSION_URL = "https://uberent.com/launcher/clientversion?titleid=4";
 var MOD_GENERIC_ICON_URL = "assets/img/generic.png";
 var PAMM_DEFAULT_LOCALE = "en";
-
-var PAMM_MOD_ID = "PAMM";
-var PAMM_MOD_IDENTIFIER = "com.pa.deathbydenim.dpamm";
-if(process.platform === 'win32') {
-    PAMM_MOD_ID = "rPAMM";
-    PAMM_MOD_IDENTIFIER = "com.pa.raevn.rpamm";
-}
 
 var strLocalPath;
 var strModsDirectoryPath;
@@ -123,89 +117,6 @@ function jsSortOnlineMods() {
             $("#filter_area_sort_last_random").addClass('filter_area_filter_item_selected');
             break;
     }
-}
-
-/* Data Strings */
-function jsGetInstalledModListDataString() {
-    var strInstalledModsList = {};
-    
-    for (var i = 0; i < objInstalledMods.length; i++) {
-        strInstalledModsList[objInstalledMods[i].id] = objInstalledMods[i]
-    }
-    return JSON.stringify(strInstalledModsList, null, 4);
-}
-
-function jsGetUIModListGlobalDataString() {
-    var global_mod_list = [];
-    objInstalledMods.sort(sort_by('priority', true, parseInt));
-
-    for (var i = 0; i < objInstalledMods.length; i++) {
-        if (objInstalledMods[i].enabled == true) {
-            if (objInstalledMods[i]["global_mod_list"] != null) {
-                for (var j = 0; j < objInstalledMods[i]["global_mod_list"].length; j++) {
-                    global_mod_list.push(objInstalledMods[i]["global_mod_list"][j]);
-                }
-            }
-            if (objInstalledMods[i]["scenes"] != null && objInstalledMods[i]["scenes"]["global_mod_list"] != null) {
-                for (var j = 0; j < objInstalledMods[i]["scenes"]["global_mod_list"].length; j++) {
-                    global_mod_list.push(objInstalledMods[i]["scenes"]["global_mod_list"][j]);
-                }
-            }
-        }
-    }
-    return JSON.stringify(global_mod_list, null, 4);
-}
-
-function jsGetUIModListSceneDataString() {
-    var scene_mod_list  = {"armory": [], "building_planets": [], "connect_to_game": [], "game_over": [], "icon_atlas": [], "live_game": [], "live_game_econ": [], "live_game_hover": [], "load_planet": [], "lobby": [], "matchmaking": [], "new_game": [], "replay_browser": [], "server_browser": [], "settings": [], "social": [], "special_icon_atlas": [], "start": [], "system_editor": [], "transit": []};
-    objInstalledMods.sort(sort_by('priority', true, parseInt));
-    
-    for (var i = 0; i < objInstalledMods.length; i++) {
-        if (objInstalledMods[i].enabled == true) {
-            for(var scene in objInstalledMods[i]) {
-                if (scene_mod_list[scene] != null) {
-                    for(var j = 0; j < objInstalledMods[i][scene].length; j++) {
-                        scene_mod_list[scene].push(objInstalledMods[i][scene][j]);
-                    }
-                }
-                if (scene == "scenes") {
-                    for(var subscene in objInstalledMods[i][scene]) {
-                        if (subscene != "global_mod_list") {
-                            if (scene_mod_list[subscene] == null) {
-                                scene_mod_list[subscene] = [];
-                            }
-                            for(var j = 0; j < objInstalledMods[i][scene][subscene].length; j++) {
-                                scene_mod_list[subscene].push(objInstalledMods[i][scene][subscene][j]);
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-    return JSON.stringify(scene_mod_list, null, 4);
-}
-
-function jsGetInstalledModDataString(strModID) {
-    if (jsGetInstalledMod(strModID) != null) { 
-        return JSON.stringify(jsGetInstalledMod(strModID), null, 4);
-    } else {
-        return "";
-    }
-}
-
-function jsGetModsJSONDataString() {
-    var strOutput = {};
-    strOutput["mount_order"] = [];
-    
-    objInstalledMods.sort(sort_by('priority', true, parseInt));
-    
-    for (var i = 0; i < objInstalledMods.length; i++) {
-        if (objInstalledMods[i].enabled == true) {
-            strOutput["mount_order"].push(objInstalledMods[i].identifier);
-        }
-    }
-    return JSON.stringify(strOutput, null, 4);
 }
 
 /* Option Functions */
@@ -354,117 +265,61 @@ function jsUpdateAll() {
         }
     }
 }
-    
-function jsLoadInstalledModData(strModID, strModDataString) {
-    var objCurrentMod = {};
-    try {
-        objCurrentMod = JSON.parse(strModDataString);
-        
-        objCurrentMod["priority"] = objCurrentMod["priority"] ? objCurrentMod["priority"] : 100;
-        if (objCurrentMod["enabled"] == null || strModID == PAMM_MOD_ID) {
-            objCurrentMod["enabled"] = true;
-        }
-        objCurrentMod["id"] = strModID;
-        
-        
-        if (objCurrentMod.category != null) {
-            for (var i = 0; i < objCurrentMod.category.length; i++) {
-                var strCurrentCategory = objCurrentMod.category[i].replace(" ", "-").toUpperCase();
-                if (objInstalledModCategories[strCurrentCategory] == null) {
-                    objInstalledModCategories[strCurrentCategory] = 1;
-                } else {
-                    objInstalledModCategories[strCurrentCategory]++;
-                }
-            }
-        }
-        
-        objInstalledModCategories["ALL"]++;
-        objInstalledMods.push(objCurrentMod);
-    } catch (err) {
-        var strName = strModID;
-        if (objCurrentMod["display_name"] != null) {
-            strName = objCurrentMod["display_name"];
-        }
-        alert("Error loading installed mod '" + strName + "'");
-    }
-}
 
 function jsClearInstalledModData() {
     objInstalledMods = [];
 }
 
-function jsRemoveInstalledMod(strModID) {
-    jsSetModEnabledStatus(strModID, false);
-    for (var i = 0; i < objInstalledMods.length; i++) {
-        if (objInstalledMods[i].id == strModID) {
-            objInstalledMods.splice(i,1);
-        }
-    }
-}
-
 function jsModEnabledToggle(strModID) {
+    console.log(this);
     var $checkbox = $('#mod' + strModID);
-    var $image = $checkbox.next('#modimg' + strModID);
-    
-    $checkbox.prop("checked", !($checkbox.prop("checked")));
-    
-    if($checkbox.prop("checked") == true) {
-        $image.attr('src', "assets/img/checkbox_checked.png");
-    } else {
-        $image.attr('src', "assets/img/checkbox_unchecked.png");
-    }
-    
-    jsSetModEnabledStatus(strModID, document.getElementById("mod" + strModID).checked);            
-    jsUpdateFiles();
+	var enabled = $checkbox.prop("checked") ? false : true;
+	
+	try {
+        var ids = pamm.setEnabled(strModID, enabled);
+	}
+	catch(e) {
+		alert(e);
+		return;
+	}
+	
+	for(var i = 0; i < ids.length; ++i) {
+		var id = ids[i];
+		
+		var $checkbox = $('#mod' + id);
+		var $image = $('#modimg' + id);
+		
+		$checkbox.prop("checked", enabled);
+		if(enabled === true) {
+			$image.attr('src', "assets/img/checkbox_checked.png");
+		} else {
+			$image.attr('src', "assets/img/checkbox_unchecked.png");
+		}
+	}
 }
 
-function jsSetModEnabledStatus(strModID, boolEnabled) {
-    var objThisMod = jsGetInstalledMod(strModID);
-    objThisMod.enabled = boolEnabled;
-    jsAddLogMessage("Mod '" + objThisMod.display_name + "' " + (boolEnabled ? "ENABLED" : "DISABLED"), 3);
-                
-    if (boolEnabled == true) {
-        var boolReadyToEnable = true;
-        if (objThisMod["requires"] != null) {
-            for (var i = 0; i < objThisMod["requires"].length; i++) {
-                if (jsGetInstalledMod(objThisMod["requires"][i]) == null) {
-                    
-                    var strName = objThisMod["requires"][i];
-                    if (jsGetOnlineMod(objThisMod["requires"][i]) != null) {
-                        strName = jsGetOnlineMod(objThisMod["requires"][i]).display_name;
-                    }
-                    alert("Cannot enable Mod: Required dependency '" + strName + "' is missing");
-                    boolReadyToEnable = false;
-                } else {
-                    jsSetModEnabledStatus(objThisMod["requires"][i], boolEnabled);
-                }
-            }
-        }
-        if (document.getElementById("mod" + strModID)) {
-            document.getElementById("mod" + strModID).checked = boolReadyToEnable;
-            
-            if (boolReadyToEnable) {
-                document.getElementById("modimg" + strModID).src = "assets/img/checkbox_checked.png";
-            } else {
-                document.getElementById("modimg" + strModID).src = "assets/img/checkbox_unchecked.png";
-            }
-        }
-    } else {
-        for(var i = 0; i < objInstalledMods.length; i++) {
-            if (objInstalledMods[i]["requires"] != null) {
-                for (var j = 0; j < objInstalledMods[i]["requires"].length; j++) {
-                    if (objInstalledMods[i]["requires"][j] == strModID) {
-                        jsSetModEnabledStatus(objInstalledMods[i].id, false);
-                    }
-                }
-            }
-        }
-        if (document.getElementById("mod" + strModID)) {
-            document.getElementById("mod" + strModID).checked = false;
-            document.getElementById("modimg" + strModID).src = "assets/img/checkbox_unchecked.png";
-        }
-    }
-    WriteModinfoJSON(strModID);
+function jsSetAllModStatus(enabled) {
+	try {
+        var ids = pamm.setAllEnabled(enabled);
+	}
+	catch(e) {
+		alert(e);
+		return;
+	}
+    
+	for(var i = 0; i < ids.length; ++i) {
+		var id = ids[i];
+		
+		var $checkbox = $('#mod' + id);
+		var $image = $('#modimg' + id);
+		
+		$checkbox.prop("checked", enabled);
+		if(enabled === true) {
+			$image.attr('src', "assets/img/checkbox_checked.png");
+		} else {
+			$image.attr('src', "assets/img/checkbox_unchecked.png");
+		}
+	}
 }
 
 function jsGenerateModEntryHTML(objMod, boolIsInstalled) {
@@ -582,7 +437,7 @@ function jsGenerateModEntryHTML(objMod, boolIsInstalled) {
         }
         
         /* Mod OnClick Function */
-        strHTML_entry_onclick = "onClick='jsModEnabledToggle(\"" + id + "\");'"
+        strHTML_entry_onclick = " data-mod='" + id + "'";
         
         /* Update Available Notification */
         if (objOnlineMod != null) {
@@ -792,9 +647,7 @@ function jsGenerateInstalledModsListHTML() {
     var strHTML = "";
     
     for(var i = 0; i < objInstalledMods.length; i++) {
-        if (objInstalledMods[i].id != PAMM_MOD_ID) {
-            strHTML += jsGenerateModEntryHTML(objInstalledMods[i], true);
-        }
+        strHTML += jsGenerateModEntryHTML(objInstalledMods[i], true);
     }
     
     if (jsGetModsRequiringUpdates() > 0) {
@@ -836,16 +689,6 @@ function jsGetInstalledMod(strModID) {
 }
 
 /* HTML Function Calls */
-function jsSetAllModStatus(boolStatus) {
-    for (var i = 0; i < objInstalledMods.length; i++) {
-        if (objInstalledMods[i].id != PAMM_MOD_ID) {
-            if (objInstalledMods[i].enabled != boolStatus) {
-                jsModEnabledToggle(objInstalledMods[i].id);
-            }
-        }
-    }
-}
-
 function jsToggleModListOptions(boolInstalled) {
     var strListName = 'available';
     if (boolInstalled == true) {
@@ -1013,48 +856,30 @@ function jsDisplayPanel(strPanelName) {
 }
 
 function jsPreInstallMod(strURL, strModID, objModsPreInstalled) {
-    
-    var objThisMod = jsGetOnlineMod(strModID);
-    
-    if (objThisMod["requires"] != null) {
-        for (var i = 0; i < objThisMod["requires"].length; i++) {
-            if (jsGetInstalledMod(objThisMod["requires"][i]) == null && objModsPreInstalled[objThisMod["requires"][i]] == null) {
-                objModsPreInstalled[objThisMod["requires"][i]] = true;
-                var strName = objThisMod["requires"][i];
-                if (jsGetOnlineMod(objThisMod["requires"][i]) != null) {
-                    strName = jsGetOnlineMod(objThisMod["requires"][i]).display_name;
-                    var boolConfirm = confirm("Install required dependency '" + strName + "'?");
-                    if (boolConfirm == true) {
-                        objModsPreInstalled = jsPreInstallMod(jsGetOnlineMod(objThisMod["requires"][i]).url, objThisMod["requires"][i], objModsPreInstalled);
-                    }
-                } else {
-                    alert("Warning: Required dependency '" + strName + "' unavailable");
-                }
-            }
+    var requires = pamm.getRequires(strModID);
+    if(requires.length) {
+        if(!confirm("Install required dependency '" + requires.join("', '") + "'?")) {
+            return;
         }
     }
     
-    jsDelayedInstall(strURL, strModID);
-    return objModsPreInstalled;
-}
-
-function jsDelayedInstall(strURL, strModID) {
-    if (strModInstalling != "") {
-        setTimeout(function() { 
-            jsDelayedInstall(strURL, strModID);
-        }, 500);
-    } else {
-        strModInstalling = strModID;
-        InstallMod(strURL, strModID);
-    }
+    pamm.install(strModID, function(e, id) {
+        if(!e) {
+            if(!params.devmode) {
+                jsDownload(MANAGE_URL + "?download=" + strModID);
+            }
+            jsRefresh(false, false);
+        }
+    });
 }
 
 function jsPreUninstallMod(strModID) {
     var boolConfirm = confirm("Are you sure you want to uninstall '" + jsGetInstalledMod(strModID).display_name + "'?");
     
     if (boolConfirm == true) {
-        UninstallMod(strModID);
-        jsRefresh(false, false);
+        pamm.uninstall(strModID, function() {
+            jsRefresh(false, false);
+        });
     }
 }
 
@@ -1096,49 +921,9 @@ function jsSetModsListIcon(boolInstalled, boolSupressWrite) {
     }
 }
 
-function jsDownload(strURL, opts) {
-    if(!opts) opts = {};
-    
-    var intCurrentMessageID = ++intMessageID;
-    var datatype = opts.tofile ? "arraybuffer" : "text";
-    
-    intDownloading++;
-    document.getElementById("downloading").style.display = "block";
-    jsAddLogMessage("[Message ID: " + intCurrentMessageID + "] GET <code class='log_url'>" + strURL + "</code>", 4);
-    
-    $.get(strURL, function(data, textStatus, jqXHR) {
-        jsAddLogMessage("[Message ID: " + intCurrentMessageID + "] HTTP " + jqXHR.status, 4);
-        
-        if(opts.tofile) {
-            fs.writeFileSync(opts.tofile, new Buffer(new Uint8Array(data)));
-        }
-        
-        if(opts.success) {
-            opts.success(data);
-        }
-    }, datatype)
-    .fail(function(jqXHR, textStatus, errorThrown) {
-        jsAddLogMessage("[Message ID: " + intCurrentMessageID + "] ERROR: " + errorThrown, 1);
-        
-        if(opts.error) {
-            opts.error(errorThrown);
-        }
-    })
-    .always(function() {
-        var nbdl = --intDownloading;
-        if (nbdl == 0) {
-            document.getElementById("downloading").style.display = "none";
-        }
-    });
-}
-
 /* Refresh & Update Functions */
 function jsUpdateFiles() {
-    if (boolAutoWrite == true) {
-        WriteModsJSON();
-        WriteUIModListJS();
-        WriterModListJS();
-    }
+
 }
 
 function jsRefresh(boolShowLoading, boolDownloadData) {
@@ -1272,45 +1057,13 @@ function jsSetLogLevel(intLevel) {
 function jsDownloadOnlineMods() {
     if (boolOnline == true) {
         jsAddLogMessage("Downloading available mods list", 2);
-        jsDownload(ONLINE_MODS_LIST_URL, {
-            success: function(data) {
-                try {
-                    tmpOnlineMods = [];
-                    tmpOnlineModCategories = {};
-                    
-                    tmpOnlineModCategories["ALL"] = 0;
-                
-                    var objModData = JSON.parse(data);
-                    for (var id in objModData) {
-                        objModData[id]["id"] = id;
-                        objModData[id]["likes"] = -2;
-                        tmpOnlineMods.push(objModData[id]);
-                        if (jsGetInstalledMod(id) != null && jsGetInstalledMod(id)["date"] < objModData[id]["date"]) {
-                            jsAddLogMessage("Update available for installed mod '" + jsGetInstalledMod(id)["display_name"] + "': " + objModData[id]["version"] + " (" + objModData[id]["date"] + ")", 3);
-                        }
-                        
-                        if (objModData[id].category != null) {
-                            for (var i = 0; i < objModData[id].category.length; i++) {
-                                var strCurrentCategory = objModData[id].category[i].replace(" ", "-").toUpperCase();
-                                if (tmpOnlineModCategories[strCurrentCategory] == null) {
-                                    tmpOnlineModCategories[strCurrentCategory] = 1;
-                                } else {
-                                    tmpOnlineModCategories[strCurrentCategory]++;
-                                }
-                            }
-                        }
-                        tmpOnlineModCategories["ALL"]++;
-                    }
-                    
-                    objOnlineMods = tmpOnlineMods;
-                    objOnlineModCategories = tmpOnlineModCategories;
-                    
-                    document.getElementById('total_available_mods').innerHTML = objOnlineMods.length;
-                    jsDownloadOnlineModDownloadCount();
-                } catch (e) {
-                    jsAddLogMessage("Error loading online mod data: " + e.message, 1);
-                }
-            }
+        
+        pamm.getAvailableMods(function(mods) {
+            objOnlineMods = mods;
+            objOnlineModCategories = pamm.groupByCategories(mods);
+            
+            document.getElementById('total_available_mods').innerHTML = objOnlineMods.length;
+            jsDownloadOnlineModDownloadCount();
         });
     }
 }
@@ -1454,54 +1207,10 @@ function checkVersionPA() {
 **/
 
 function Initialise() {
-    var localpath;
-    if(process.platform === 'win32') {
-        localpath = process.env.LOCALAPPDATA
-        localpath = localpath.replace(/\\/g,"/");
-    }
-    else if(process.platform === 'linux') {
-        localpath = process.env.HOME + "/.local"
-    }
-    else if(process.platform === 'darwin') {
-        localpath = process.env.HOME + "/Library/Application Support"
-    }
-    else {
-        throw "Unsupported platform: " + process.platform;
-    }
-    
-    strLocalPath = localpath + "/Uber Entertainment/Planetary Annihilation"
-    strModsDirectoryPath = strLocalPath + "/mods"
-    strPammModDirectoryPath = strModsDirectoryPath + "/" + PAMM_MOD_ID;
-    strPAMMCacheDirectoryPath = strLocalPath + "/pamm_cache"
-    
-    CreateFolderIfNotExists(localpath + "/Uber Entertainment");
-    CreateFolderIfNotExists(localpath + "/Uber Entertainment/Planetary Annihilation");
-    CreateFolderIfNotExists(strPAMMCacheDirectoryPath);
-    CreateFolderIfNotExists(strModsDirectoryPath);
-    CreateFolderIfNotExists(strPammModDirectoryPath);
-    CreateFolderIfNotExists(strPammModDirectoryPath + "/ui");
-    CreateFolderIfNotExists(strPammModDirectoryPath + "/ui/mods");
-    
-    var modinfo = {
-        "context": "client",
-        "identifier": PAMM_MOD_IDENTIFIER,
-        "display_name": "PA Mod Manager",
-        "description": " ",
-        "author": "pamm-atom",
-        "version": strPAMMversion,
-        "build": strPABuild,
-        "signature": "not yet implemented",
-        "priority": 0,
-        "enabled": true,
-        "id": PAMM_MOD_ID
-    };
-    fs.writeFileSync(strPammModDirectoryPath + "/modinfo.json", JSON.stringify(modinfo, null, 4));
-}
-
-function CreateFolderIfNotExists(path) {
-    if(!fs.existsSync(path)) {
-        fs.mkdirSync(path);
-    }
+    strLocalPath = pamm.getPaths().local;
+    strModsDirectoryPath = pamm.getPaths().mods;
+    strPammModDirectoryPath = pamm.getPaths().pamm;
+    strPAMMCacheDirectoryPath = pamm.getPaths().cache;
 }
 
 function LaunchURL(strURL) {
@@ -1525,56 +1234,12 @@ function RestartPAMM() {
 }
 
 function FindInstalledMods() {
-    var intMods = 0;
-    objInstalledMods = [];
-    
-    var moddirs = fs.readdirSync(strModsDirectoryPath);
-    for(var i in moddirs) {
-        var modname = moddirs[i];
-        var moddir = strModsDirectoryPath + '/' + modname;
-        if(fs.statSync(moddir).isDirectory()) {
-            jsAddLogMessage("Found installed mod: " + modname, 3)
-            
-            var strmodinfo = fs.readFileSync(moddir + '/modinfo.json', {encoding: 'utf8'});
-            
-            var strModID = modname;
-            var objCurrentMod = {};
-            try {
-                objCurrentMod = JSON.parse(strmodinfo);
-                
-                objCurrentMod["priority"] = objCurrentMod["priority"] ? objCurrentMod["priority"] : 100;
-                if (objCurrentMod["enabled"] == null || strModID == PAMM_MOD_ID) {
-                    objCurrentMod["enabled"] = true;
-                }
-                objCurrentMod["id"] = strModID;
-                
-                if (objCurrentMod.category != null) {
-                    for (var i = 0; i < objCurrentMod.category.length; i++) {
-                        var strCurrentCategory = objCurrentMod.category[i].replace(" ", "-").toUpperCase();
-                        if (objInstalledModCategories[strCurrentCategory] == null) {
-                            objInstalledModCategories[strCurrentCategory] = 1;
-                        } else {
-                            objInstalledModCategories[strCurrentCategory]++;
-                        }
-                    }
-                }
-                
-                objInstalledModCategories["ALL"]++;
-                objInstalledMods.push(objCurrentMod);
-            } catch (err) {
-                var strName = strModID;
-                if (objCurrentMod["display_name"] != null) {
-                    strName = objCurrentMod["display_name"];
-                }
-                alert("Error loading installed mod '" + strName + "'");
-            }
-            
-            intMods = intMods + 1;
-        }
-    }
-    
-    jsAddLogMessage("Found " + intMods + " installed mods", 2);
-    jsUpdateFiles();
+    pamm.getInstalledMods(function(mods) {
+        objInstalledMods = mods;
+        objInstalledModCategories = pamm.groupByCategories(mods);
+        
+        jsAddLogMessage("Found " + objInstalledMods.length + " installed mods", 2);
+    });
 }
 
 function LoadOptions() {
@@ -1596,97 +1261,6 @@ function WriteOptionsJSON() {
     }
     catch(e) {
         jsAddLogMessage("Failed to write options file.", 3);
-    }
-}
-
-function WriteUIModListJS() {
-    jsAddLogMessage("Writing ui_mod_list.js", 4);
-    var data = "var global_mod_list = " + jsGetUIModListGlobalDataString() + ";\n\nvar scene_mod_list = " + jsGetUIModListSceneDataString();
-    fs.writeFileSync(strPammModDirectoryPath + "/ui/mods/ui_mod_list.js", data);
-}
-
-function WriterModListJS() {
-    jsAddLogMessage("Writing mods_list.json", 4);
-    var data = jsGetInstalledModListDataString();
-    fs.writeFileSync(strPammModDirectoryPath + "/ui/mods/mods_list.json", data);
-}
-
-function WriteModsJSON() {
-    jsAddLogMessage("Writing mods.json", 4)
-    var data = jsGetModsJSONDataString();
-    fs.writeFileSync(strModsDirectoryPath + "/mods.json", data);
-}
-
-function WriteModinfoJSON(strModID) {
-    var modinfopath = strModsDirectoryPath + "/" + strModID + "/modinfo.json";
-    
-    if(!fs.existsSync(modinfopath))
-        return;
-    
-    jsAddLogMessage("Writing modsinfo.json for mod '" + strModID + "'", 4)
-    
-    var data = jsGetInstalledModDataString(strModID);
-    fs.writeFileSync(modinfopath, data);
-}
-
-// Downloads and installs a mod
-function InstallMod(strURL, strModID) {
-    var strModFileName = strURL.substring(strURL.lastIndexOf("/") + 1);
-    
-    if(strModFileName.indexOf("?") !== -1) {
-        strModFileName = strModFileName.substring(0, strModFileName.indexOf("?"));
-    }
-
-    RemoveFileFromCache(strModFileName);
-    
-    if(!params.devmode) {
-        jsDownload(MANAGE_URL + "?download=" + strModID);
-    }
-    
-    jsAddLogMessage("Downloading mod '" + strModID + "'", 3)
-    jsDownload(strURL, {
-        tofile: strPAMMCacheDirectoryPath + "/" + strModFileName
-        ,success: function() {
-            UninstallMod(strModID);
-            ExtractMod(strModFileName, strModID);
-        }
-    });
-}
-
-// Extracts a Mod Zip file to the mods folder
-function ExtractMod(strFileName, strModID) {
-    var modfile = strPAMMCacheDirectoryPath + "/" + strFileName;
-    
-    if(fs.existsSync(modfile)) {
-        jsAddLogMessage("Installing mod '" + strModID + "'", 3)
-        
-        unzipSync(strModID, modfile, strModsDirectoryPath);
-        
-        jsRefresh(false, false);
-        jsSetModEnabledStatus(strModID, true);
-    }
-    
-    if(strModInstalling !== "") {
-        strModInstalling = "";
-    }
-}
-
-// Removes a specified file from the cache, if it exists
-function RemoveFileFromCache(strFileName) {
-    var modfile = strPAMMCacheDirectoryPath + "/" + strFileName;
-    if(fs.existsSync(modfile)) {
-        jsAddLogMessage("Clearing cached file '" + strFileName + "'", 4)
-        fs.unlinkSync(modfile);
-    }
-}
-
-// Uninstalls a mod
-function UninstallMod(strModID) {
-    var modpath = strModsDirectoryPath + "/" + strModID;
-    if(fs.existsSync(modpath)) {
-        jsAddLogMessage("Uninstalling mod '" + strModID + "'", 2)
-        rmdirRecurseSync(modpath);
-        jsRemoveInstalledMod(strModID)
     }
 }
 
@@ -1882,6 +1456,11 @@ $(function() {
     $('.ui_tabs').on('click', 'a', function() {
         var panel = $(this).data('target');
         jsDisplayPanel(panel);
+    });
+    
+    $('#installed').on('click', 'div.mod_entry', function() {
+        var modid = $(this).data('mod');
+        jsModEnabledToggle(modid);
     });
     
     var setting_installLocation_timeout;
