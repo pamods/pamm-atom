@@ -355,8 +355,13 @@ var findInstalledMods = function() {
     
     // load stock mods
     if(objOptions && objOptions.pa_path) {
-        var papath = path.dirname(objOptions.pa_path);
-        var stockmodspath = path.join(papath, 'media/stockmods/', context);
+        var stockmodspath = '';
+        if(process.platform !== 'darwin') {
+            stockmodspath = path.join(objOptions.pa_path, '../media/stockmods/', context);
+        }
+        else {
+            stockmodspath = path.join(objOptions.pa_path, '../../Resources/stockmods/', context);
+        }
         if(fs.existsSync(stockmodspath)) {
             var moddirs = fs.readdirSync(stockmodspath);
             for (var i = 0; i < moddirs.length; ++i) {
@@ -394,6 +399,9 @@ var findInstalledMods = function() {
                     }
                 }
             }
+        }
+        else {
+            jsAddLogMessage("Stock mods folder not found: " + stockmodspath, 1);
         }
     }
     

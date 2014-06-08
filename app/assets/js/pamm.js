@@ -1443,11 +1443,20 @@ function findPAVersion() {
         return "";
     
     // read version number
-    var versionpath = path.join(path.dirname(papath),'version.txt');
-    if(fs.existsSync(versionpath))
+    var versionpath = '';
+    if(process.platform !== 'darwin') {
+        versionpath = path.join(papath,'../version.txt');
+    }
+    else {
+        versionpath = path.join(papath,'../../../../version');
+    }
+    if(fs.existsSync(versionpath)) {
         return fs.readFileSync(versionpath, { encoding: 'utf8' });
-    
-    return "";
+    }
+    else {
+        jsAddLogMessage("PA version not found: " + versionpath, 1);
+        return "";
+    }
 }
 
 $(function() {
