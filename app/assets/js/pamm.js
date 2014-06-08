@@ -1501,7 +1501,10 @@ $(function() {
     $('#current_pamm_version').text(strPAMMversion);
     jsRefresh(true, true);
     
-    checkVersionPA();
+    if(objOptions.pa_path && path.basename(path.dirname(objOptions.pa_path)) !== "PTE") {
+        // we cant check PTE stream
+        checkVersionPA();
+    }
     
     if(params.install) {
         var intervalId = setInterval(function() {
