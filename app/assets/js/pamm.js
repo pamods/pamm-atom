@@ -1509,9 +1509,23 @@ $(function() {
     $('#current_pamm_version').text(strPAMMversion);
     jsRefresh(true, true);
     
-    if(objOptions.pa_path && path.basename(path.dirname(objOptions.pa_path)) !== "PTE") {
-        // we cant check PTE stream
-        checkVersionPA();
+    if(objOptions.pa_path) {
+        var stream = 'stable';
+        if(process.platform !== 'darwin') {
+            if(path.basename(path.dirname(objOptions.pa_path)) === 'PTE') {
+                stream = 'PTE';
+            }
+        }
+        else {
+            if(path.basename(path.join(objOptions.pa_path, '../../../..')) === 'PTE') {
+                stream = 'PTE';
+            }
+        }
+        
+        if(stream !== 'PTE') {
+            // we cant check PTE stream
+            checkVersionPA();
+        }
     }
     
     if(params.install) {
