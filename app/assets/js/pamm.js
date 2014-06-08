@@ -449,8 +449,10 @@ function jsGenerateModEntryHTML(objMod, boolIsInstalled) {
             }
         }
         
-        /* Uninstall Link */
-        strHTML_uninstall_link = "<div class='mod_entry_link mod_entry_uninstall_link' onclick='window.event.cancelBubble = true'>[ <a href='#' onClick='jsPreUninstallMod(\"" + id + "\")'>" + jsGetLocaleText('uninstall', objOptions["locale"]) + "</a> ]</div>";
+        if(!objMod.stockmod) {
+            /* Uninstall Link */
+            strHTML_uninstall_link = "<div class='mod_entry_link mod_entry_uninstall_link' onclick='window.event.cancelBubble = true'>[ <a href='#' onClick='jsPreUninstallMod(\"" + id + "\")'>" + jsGetLocaleText('uninstall', objOptions["locale"]) + "</a> ]</div>";
+        }
     }
     
     /* Available Mods List Only */

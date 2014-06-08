@@ -313,10 +313,10 @@ var findInstalledMods = function() {
     }
     
     // load user mods
-    var moddirs = fs.readdirSync(strModsDirectoryPath);
+    var moddirs = fs.readdirSync(paths.mods);
     for (var i = 0; i < moddirs.length; ++i) {
         var id = moddirs[i];
-        var moddir = strModsDirectoryPath + '/' + id;
+        var moddir = paths.mods + '/' + id;
         if (fs.statSync(moddir).isDirectory()) {
             jsAddLogMessage("Found installed mod: " + id, 3)
             
@@ -347,6 +347,51 @@ var findInstalledMods = function() {
             }
         }
     }
+    
+    // load stock mods
+    if(objOptions && objOptions.pa_path) {
+        var papath = path.dirname(objOptions.pa_path);
+        var stockmodspath = path.join(papath, 'media/stockmods/client');
+        if(fs.existsSync(stockmodspath)) {
+            var moddirs = fs.readdirSync(stockmodspath);
+            for (var i = 0; i < moddirs.length; ++i) {
+                var id = moddirs[i];
+                var moddir = stockmodspath + '/' + id;
+                if (fs.statSync(moddir).isDirectory()) {
+                    if(mods[id]) {
+                        jsAddLogMessage("Skipped stock mod: " + id, 3);
+                        continue;
+                    }
+                    else {
+                        jsAddLogMessage("Found stock mod: " + id, 3);
+                    }
+                    
+                    var modinfopath = moddir + '/modinfo.json';
+                    var strmodinfo = fs.readFileSync(modinfopath, {encoding: 'utf8'});
+                    
+                    var mod = {};
+                    try {
+                        mod = JSON.parse(strmodinfo);
+                        
+                        mod.id = id;
+                        
+                        if (!mod.priority)
+                            mod.priority = 100;
+                        
+                        mod.enabled = (_.indexOf(mounted, mod.identifier) !== -1);
+                        
+                        mod.stockmod = true;
+                        
+                        mods[id] = mod;
+                    } catch (err) {
+                        var name = mod.display_name ? mod.display_name : id;
+                        //alert("Error loading installed mod '" + name + "'");
+                    }
+                }
+            }
+        }
+    }
+    
     installed = mods;
     
     _updateFiles();
