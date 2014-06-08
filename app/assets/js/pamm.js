@@ -41,7 +41,6 @@ var PAMM_DEFAULT_LOCALE = "en";
 
 var strLocalPath;
 var strModsDirectoryPath;
-var strPammModDirectoryPath;
 var strPAMMCacheDirectoryPath;
 
 var strPAMMversion = params.info.version;
@@ -1211,7 +1210,6 @@ function checkVersionPA() {
 function Initialise() {
     strLocalPath = pamm.getPaths().local;
     strModsDirectoryPath = pamm.getPaths().mods;
-    strPammModDirectoryPath = pamm.getPaths().pamm;
     strPAMMCacheDirectoryPath = pamm.getPaths().cache;
 }
 
@@ -1494,6 +1492,7 @@ $(function() {
     });
     $window.trigger('resize');
     
+    pamm.init(params.context);
     Initialise();
     LoadOptions();
     

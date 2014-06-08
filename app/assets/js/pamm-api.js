@@ -13,10 +13,15 @@ if(process.platform === 'win32') {
     PAMM_MOD_IDENTIFIER = "com.pa.raevn.rpamm";
 }
 
+var context = "client";
 var installed = {};
 var available = {};
 
 exports.getAvailableMods = function (callback) {
+    if(context === "server") {
+        callback([]);
+        return;
+    }
     jsDownload(ONLINE_MODS_LIST_URL, {
         success: function(data) {
             try {
@@ -351,7 +356,7 @@ var findInstalledMods = function() {
     // load stock mods
     if(objOptions && objOptions.pa_path) {
         var papath = path.dirname(objOptions.pa_path);
-        var stockmodspath = path.join(papath, 'media/stockmods/client');
+        var stockmodspath = path.join(papath, 'media/stockmods/', context);
         if(fs.existsSync(stockmodspath)) {
             var moddirs = fs.readdirSync(stockmodspath);
             for (var i = 0; i < moddirs.length; ++i) {
@@ -421,6 +426,9 @@ var _updateFiles = function() {
         ,{ encoding: 'utf8' }
     );
     
+    if(!paths.pamm)
+        return;
+    
     // mods/pamm/uimodlist
     jsAddLogMessage("Writing ui_mod_list.js", 4);
     var globalmodlist = [];
@@ -457,7 +465,7 @@ var _updateFiles = function() {
     });
     var uimodlist = "var global_mod_list = " + JSON.stringify(globalmodlist, null, 4) + ";\n\nvar scene_mod_list = " + JSON.stringify(scenemodlist, null, 4) + ";";
     fs.writeFileSync(
-        path.join(paths.mods, PAMM_MOD_ID, 'ui/mods/ui_mod_list.js')
+        path.join(paths.pamm, 'ui/mods/ui_mod_list.js')
         ,uimodlist
         ,{ encoding: 'utf8' }
     );
@@ -465,13 +473,14 @@ var _updateFiles = function() {
     // mods/pamm/modlist
     jsAddLogMessage("Writing mods_list.json", 4);
     fs.writeFileSync(
-        path.join(paths.mods, PAMM_MOD_ID, 'ui/mods/mods_list.json')
+        path.join(paths.pamm, 'ui/mods/mods_list.json')
         ,JSON.stringify(installed, null, 4)
         ,{ encoding: 'utf8' }
     );
 };
 
-var init = function() {
+exports.init = function(_context) {
+    context = _context;
     var localpath;
     if(process.platform === 'win32') {
         localpath = process.env.LOCALAPPDATA
@@ -492,6 +501,11 @@ var init = function() {
     var strPammModDirectoryPath = strModsDirectoryPath + "/" + PAMM_MOD_ID;
     var strPAMMCacheDirectoryPath = strLocalPath + "/pamm_cache"
     
+    if(context === "server") {
+        strModsDirectoryPath = strLocalPath + "/server_mods"
+        strPammModDirectoryPath = "";
+    }
+    
     paths.local = strLocalPath;
     paths.mods = strModsDirectoryPath;
     paths.pamm = strPammModDirectoryPath;
@@ -501,23 +515,25 @@ var init = function() {
     CreateFolderIfNotExists(localpath + "/Uber Entertainment/Planetary Annihilation");
     CreateFolderIfNotExists(strPAMMCacheDirectoryPath);
     CreateFolderIfNotExists(strModsDirectoryPath);
-    CreateFolderIfNotExists(strPammModDirectoryPath);
-    CreateFolderIfNotExists(strPammModDirectoryPath + "/ui");
-    CreateFolderIfNotExists(strPammModDirectoryPath + "/ui/mods");
     
-    var modinfo = {
-        "context": "client",
-        "identifier": PAMM_MOD_IDENTIFIER,
-        "display_name": "PA Mod Manager",
-        "description": " ",
-        "author": "pamm-atom",
-        "version": "1.0.0",
-        "signature": "not yet implemented",
-        "priority": 0,
-        "enabled": true,
-        "id": PAMM_MOD_ID
-    };
-    fs.writeFileSync(strPammModDirectoryPath + "/modinfo.json", JSON.stringify(modinfo, null, 4));
+    if(context !== "server") {
+        CreateFolderIfNotExists(strPammModDirectoryPath);
+        CreateFolderIfNotExists(strPammModDirectoryPath + "/ui");
+        CreateFolderIfNotExists(strPammModDirectoryPath + "/ui/mods");
+        
+        var modinfo = {
+            "context": "client",
+            "identifier": PAMM_MOD_IDENTIFIER,
+            "display_name": "PA Mod Manager",
+            "description": " ",
+            "author": "pamm-atom",
+            "version": "1.0.0",
+            "signature": "not yet implemented",
+            "priority": 0,
+            "enabled": true,
+            "id": PAMM_MOD_ID
+        };
+        fs.writeFileSync(strPammModDirectoryPath + "/modinfo.json", JSON.stringify(modinfo, null, 4));
+    }
 };
 
-init();

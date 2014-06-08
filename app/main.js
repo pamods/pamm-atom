@@ -10,6 +10,7 @@ var semver = require('semver');
 
 var params = {
     info: {}
+    ,context: 'client'
     ,devmode: false
     ,install: ""
 };
@@ -60,6 +61,9 @@ app.on('ready', function() {
       }
       else if (arg === 'offline') {
         params.offline = true;
+      }
+      else if (arg === 'server') {
+        params.context = 'server';
       }
     }
     
