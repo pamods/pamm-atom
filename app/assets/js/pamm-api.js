@@ -47,10 +47,15 @@ exports.getAvailableMods = function (callback) {
                 }
                 
                 available = mods;
-                callback(_.toArray(mods));
             } catch (e) {
                 jsAddLogMessage("Error loading online mod data: " + e.message, 1);
             }
+            finally {
+                callback(_.toArray(mods));
+            }
+        }
+        ,error: function(e) {
+            callback([]);
         }
     });
 };
