@@ -1341,35 +1341,6 @@ function UpdatePAMM(info) {
     });
 }
 
-function unzipSync(modid, zipfile, targetfolder) {
-    if(!fs.existsSync(targetfolder)) {
-        throw targetfolder + ' folder does not exists.' ;
-    }
-    
-    var zipdata = fs.readFileSync(zipfile);
-    var zip = new JSZip(zipdata.toArrayBuffer());
-    
-    // zip.folders not reliable, some directories are not detected as directory (eg. instant_sandbox zip)
-     
-    for(var i in zip.files) {
-        var file = zip.files[i];
-        
-        if(file.name.indexOf(modid + '/') !== 0)
-            continue;
-        
-        var path = targetfolder + '/' + file.name;
-        
-        if(path.indexOf('/', path.length - 1) !== -1) {
-            if (fs.existsSync(path))
-                continue;
-            fs.mkdirSync(path);
-        }
-        else {
-            fs.writeFileSync(path, new Buffer(file.asUint8Array()));
-        }
-    }
-}
-
 function rmdirRecurseSync(dir) {
     var list = fs.readdirSync(dir);
     for(var i = 0; i < list.length; ++i) {

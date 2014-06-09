@@ -19,7 +19,30 @@ var available = {};
 
 exports.getAvailableMods = function (callback) {
     if(context === "server") {
-        callback([]);
+        var mods = {};
+        var objModData = {
+            // "info.nanodesu.murderparty": {
+                // "context" : "server",
+                // "identifier" : "info.nanodesu.murderparty",
+                // "display_name" : "Murder Party",
+                // "description" : "Kill your targets",
+                // "author" : "Cola_Colin",
+                // "version" : "0.1",
+                // "url" : "https://github.com/pamods/servermod-murderparty/archive/master.zip",
+                // "forum" : "https://forums.uberent.com/threads/60312/"
+            // }
+        };
+        
+        for (var id in objModData) {
+            var mod = objModData[id];
+            mod.id = id; // internal use only
+            mod.likes = -2;
+            mods[id] = mod;
+        }
+        
+        available = mods;
+        callback(_.toArray(mods));
+        
         return;
     }
     jsDownload(ONLINE_MODS_LIST_URL, {
@@ -178,7 +201,7 @@ exports.install = function (id, callback) {
         }
         
         var _extract = function() {
-            unzipSync(id, cachefile, paths.mods);
+            _uncompress(id, cachefile, paths.mods);
             installed[id] = mod;
             _install(ids, callback);
         };
@@ -203,6 +226,68 @@ exports.install = function (id, callback) {
         }
     };
     _install(ids, callback);
+};
+
+var _uncompress = function(modid, zipfile, targetfolder) {
+    if(!fs.existsSync(targetfolder)) {
+        throw targetfolder + ' folder does not exists.' ;
+    }
+    
+    var zipdata = fs.readFileSync(zipfile);
+    var zip = new JSZip(zipdata.toArrayBuffer());
+    
+    // zip.folders not reliable, some directories are not detected as directory (eg. instant_sandbox zip)
+    
+    // digging modinfo files
+    modinfofiles = _.filter(zip.files, function(file) {
+        var filepath = file.name;
+        return path.basename(filepath) === 'modinfo.json'
+    });
+    
+    if(modinfofiles.length === 0) {
+        throw "No modinfo.json found in this achive"
+    }
+    
+    var basepath;
+    _.forEach(modinfofiles, function(modinfofile) {
+        var modinfo = JSON.parse(modinfofile.asText());
+        if(modid === modinfo.id || modid === modinfo.identifier) {
+            basepath = path.dirname(modinfofile.name);
+            if(basepath === '.')
+                basepath = '';
+            return false;
+        }
+    });
+    
+    if (basepath === undefined) {
+        throw "Mod '" + modid + "' not found in this achive";
+    }
+    
+    var files = zip.files;
+    if (basepath !== '') {
+        files = _.filter(files, function(file) {
+            return file.name.indexOf(basepath + '/') === 0;
+        });
+    }
+    
+    targetfolder = path.join(targetfolder, modid);
+    if (!fs.existsSync(targetfolder))
+        fs.mkdirSync(targetfolder);
+    
+    for(var i in files) {
+        var file = files[i];
+        
+        var extractpath = path.join(targetfolder, file.name.substring(basepath.length));
+        
+        if(file.name.indexOf('/', file.name.length - 1) !== -1) {
+            if (fs.existsSync(extractpath))
+                continue;
+            fs.mkdirSync(extractpath);
+        }
+        else {
+            fs.writeFileSync(extractpath, new Buffer(file.asUint8Array()));
+        }
+    }
 };
 
 exports.uninstall = function(id, callback) {
