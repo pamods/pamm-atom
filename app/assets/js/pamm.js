@@ -270,8 +270,7 @@ function jsClearInstalledModData() {
 }
 
 function jsModEnabledToggle(strModID) {
-    console.log(this);
-    var $checkbox = $('#mod' + strModID);
+    var $checkbox = $('#mod' + strModID.replace(/\./g, '\\.'));
 	var enabled = $checkbox.prop("checked") ? false : true;
 	
 	try {
@@ -284,7 +283,8 @@ function jsModEnabledToggle(strModID) {
 	
 	for(var i = 0; i < ids.length; ++i) {
 		var id = ids[i];
-		
+		id = id.replace(/\./g, '\\.');
+        
 		var $checkbox = $('#mod' + id);
 		var $image = $('#modimg' + id);
 		
@@ -308,7 +308,8 @@ function jsSetAllModStatus(enabled) {
     
 	for(var i = 0; i < ids.length; ++i) {
 		var id = ids[i];
-		
+		id = id.replace(/\./g, '\\.');
+        
 		var $checkbox = $('#mod' + id);
 		var $image = $('#modimg' + id);
 		
@@ -923,10 +924,6 @@ function jsSetModsListIcon(boolInstalled, boolSupressWrite) {
 }
 
 /* Refresh & Update Functions */
-function jsUpdateFiles() {
-
-}
-
 function jsRefresh(boolShowLoading, boolDownloadData) {
     //TODO: Localisation
     if (boolShowLoading == true) {
