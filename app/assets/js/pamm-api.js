@@ -159,16 +159,19 @@ exports.install = function (id, callback) {
         jsAddLogMessage("Installing mod '" + id + "'", 3)
         
         var mod = available[id];
+        var update = installed[id];
+        
         if(!mod) {
-            var mod = installed[id];
+            var mod = update;
         }
         
         var basename = id + "_v" + mod.version;
-        var destination = path.join(paths.mods, id);
         var cachefile = path.join(paths.cache, basename + ".zip");
         
-        if(fs.existsSync(destination)) {
-            var modinfopath = path.join(destination, "modinfo.json");
+        var installpath = update ? update.installpath : path.join(paths.mods, id);
+        
+        if(fs.existsSync(installpath)) {
+            var modinfopath = path.join(installpath, "modinfo.json");
             if(fs.existsSync(modinfopath)) {
                 var modinfo = fs.readFileSync(modinfopath, { encoding: 'utf8' });
                 modinfo = JSON.parse(modinfo);
@@ -184,13 +187,19 @@ exports.install = function (id, callback) {
                 }
             }
             
-            rmdirRecurseSync(destination);
+            rmdirRecurseSync(installpath);
         }
         
         var _extract = function() {
-            var modinfo = _uncompress(id, cachefile, paths.mods);
+            var modinfo = _uncompress(id, cachefile, installpath);
+            
+            if(context === 'server' || !modinfo.id)
+                modinfo.id = modinfo.identifier;
+            if (!modinfo.priority)
+                modinfo.priority = 100;
             modinfo.enabled = true;
-            modinfo.id = id;
+            modinfo.installpath = installpath;
+            
             installed[id] = modinfo;
             _install(ids, callback);
         };
@@ -218,10 +227,6 @@ exports.install = function (id, callback) {
 };
 
 var _uncompress = function(modid, zipfile, targetfolder) {
-    if(!fs.existsSync(targetfolder)) {
-        throw targetfolder + ' folder does not exists.' ;
-    }
-    
     var zipdata = fs.readFileSync(zipfile);
     var zip = new JSZip(zipdata.toArrayBuffer());
     
@@ -260,7 +265,6 @@ var _uncompress = function(modid, zipfile, targetfolder) {
         });
     }
     
-    targetfolder = path.join(targetfolder, modid);
     if (!fs.existsSync(targetfolder))
         fs.mkdirSync(targetfolder);
     
@@ -284,11 +288,11 @@ var _uncompress = function(modid, zipfile, targetfolder) {
 
 exports.uninstall = function(id, callback) {
     var mod = installed[id];
-    var modpath = path.join(paths.mods, id);
-    if(fs.existsSync(modpath)) {
+    var installpath = mod.installpath;
+    if(fs.existsSync(installpath)) {
         jsAddLogMessage("Uninstalling mod '" + id + "'", 2);
         _disablemod(id);
-        rmdirRecurseSync(modpath);
+        rmdirRecurseSync(installpath);
         delete installed[id];
         
         _updateFiles();
@@ -415,14 +419,17 @@ var findInstalledMods = function() {
                     fs.writeFileSync(modinfopath, JSON.stringify(mod, null, 4), { encoding: 'utf8' });
                 }
                 
-                mod.id = id;
+                if(context === 'server' || !mod.id)
+                    mod.id = mod.identifier;
                 
                 if (!mod.priority)
                     mod.priority = 100;
                 
                 mod.enabled = (_.indexOf(mounted, mod.identifier) !== -1);
                 
-                mods[id] = mod;
+                mod.installpath = moddir;
+                
+                mods[mod.id] = mod;
             } catch (err) {
                 var name = mod.display_name ? mod.display_name : id;
                 //alert("Error loading installed mod '" + name + "'");
