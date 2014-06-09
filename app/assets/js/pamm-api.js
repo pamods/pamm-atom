@@ -4,7 +4,10 @@ var _ = require('lodash');
 
 var paths = {};
 
-var ONLINE_MODS_LIST_URL = "http://pamods.github.io/modlist.json";
+var ONLINE_MODS_LIST_URL = {
+    client: "http://pamods.github.io/modlist.json"
+    ,server: "http://pamods.github.io/servermods.json"
+}
 
 var PAMM_MOD_ID = "PAMM";
 var PAMM_MOD_IDENTIFIER = "com.pa.deathbydenim.dpamm";
@@ -18,50 +21,29 @@ var installed = {};
 var available = {};
 
 exports.getAvailableMods = function (callback) {
-    if(context === "server") {
-        var mods = {};
-        var objModData = {
-            // "info.nanodesu.murderparty": {
-                // "context" : "server",
-                // "identifier" : "info.nanodesu.murderparty",
-                // "display_name" : "Murder Party",
-                // "description" : "Kill your targets",
-                // "author" : "Cola_Colin",
-                // "version" : "0.1",
-                // "url" : "https://github.com/pamods/servermod-murderparty/archive/master.zip",
-                // "forum" : "https://forums.uberent.com/threads/60312/"
-            // }
-        };
-        
-        for (var id in objModData) {
-            var mod = objModData[id];
-            mod.id = id; // internal use only
-            mod.likes = -2;
-            mods[id] = mod;
-        }
-        
-        available = mods;
-        callback(_.toArray(mods));
-        
-        return;
-    }
-    jsDownload(ONLINE_MODS_LIST_URL, {
+    jsDownload(ONLINE_MODS_LIST_URL[context], {
         success: function(data) {
             try {
                 var mods = {};
                 
-                var objModData = JSON.parse(data);
-                for (var id in objModData) {
-                    var mod = objModData[id];
+                var modlist = JSON.parse(data);
+                for (var id in modlist) {
+                    var mod = modlist[id];
                     
-                    mod.id = id;
+                    if(context === 'client') {
+                        mod.id = id;
+                    }
+                    else {
+                        mod.id = mod.identifier; // for internal use only
+                    }
+                    
                     mod.likes = -2;
                     
                     //if (jsGetInstalledMod(id) != null && jsGetInstalledMod(id)["date"] < objModData[id]["date"]) {
                         //jsAddLogMessage("Update available for installed mod '" + jsGetInstalledMod(id)["display_name"] + "': " + objModData[id]["version"] + " (" + objModData[id]["date"] + ")", 3);
                     //}
                     
-                    mods[id] = mod;
+                    mods[mod.id] = mod;
                 }
                 
                 available = mods;
