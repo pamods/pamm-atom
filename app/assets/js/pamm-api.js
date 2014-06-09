@@ -188,8 +188,10 @@ exports.install = function (id, callback) {
         }
         
         var _extract = function() {
-            _uncompress(id, cachefile, paths.mods);
-            installed[id] = mod;
+            var modinfo = _uncompress(id, cachefile, paths.mods);
+            modinfo.enabled = true;
+            modinfo.id = id;
+            installed[id] = modinfo;
             _install(ids, callback);
         };
         
@@ -236,8 +238,9 @@ var _uncompress = function(modid, zipfile, targetfolder) {
     }
     
     var basepath;
+    var modinfo;
     _.forEach(modinfofiles, function(modinfofile) {
-        var modinfo = JSON.parse(modinfofile.asText());
+        modinfo = JSON.parse(modinfofile.asText());
         if(modid === modinfo.id || modid === modinfo.identifier) {
             basepath = path.dirname(modinfofile.name);
             if(basepath === '.')
@@ -275,6 +278,8 @@ var _uncompress = function(modid, zipfile, targetfolder) {
             fs.writeFileSync(extractpath, new Buffer(file.asUint8Array()));
         }
     }
+    
+    return modinfo;
 };
 
 exports.uninstall = function(id, callback) {
