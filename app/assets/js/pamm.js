@@ -1225,7 +1225,7 @@ function RestartPAMM() {
     var path = require('path');
     var argv = require('remote').process.argv;
     
-    var child = child_process.spawn(argv[0], argv.splice(1), { detached: true });
+    var child = child_process.spawn(argv[0], argv.splice(1), { detached: true, stdio: 'inherit' });
     child.unref();
     ClosePAMM();
 }
