@@ -401,16 +401,14 @@ var findInstalledMods = function() {
     // load user mods
     var moddirs = fs.readdirSync(paths.mods);
     for (var i = 0; i < moddirs.length; ++i) {
-        var id = moddirs[i];
-        var moddir = paths.mods + '/' + id;
+        var dirname = moddirs[i];
+        var moddir = paths.mods + '/' + dirname;
         if (fs.statSync(moddir).isDirectory()) {
-            jsAddLogMessage("Found installed mod: " + id, 3)
-            
-            var modinfopath = moddir + '/modinfo.json';
-            var strmodinfo = fs.readFileSync(modinfopath, {encoding: 'utf8'});
-            
-            var mod = {};
             try {
+                var modinfopath = moddir + '/modinfo.json';
+                var strmodinfo = fs.readFileSync(modinfopath, {encoding: 'utf8'});
+                
+                var mod = {};
                 mod = JSON.parse(strmodinfo);
                 
                 if(mod.enabled === false) {
@@ -430,9 +428,11 @@ var findInstalledMods = function() {
                 mod.installpath = moddir;
                 
                 mods[mod.id] = mod;
+                
+                var logid = mod.id === dirname ? mod.id : mod.id + " (/" + dirname + ")";
+                jsAddLogMessage("Found installed mod: " + logid, 3)
             } catch (err) {
-                var name = mod.display_name ? mod.display_name : id;
-                //alert("Error loading installed mod '" + name + "'");
+                jsAddLogMessage("Error loading installed mod from '/" + dirname + "'", 4)
             }
         }
     }
