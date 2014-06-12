@@ -1,8 +1,7 @@
 var fs = require('fs');
 var path = require('path');
 var _ = require('lodash');
-
-var paths = {};
+var pa = require('./pa.js');
 
 var ONLINE_MODS_LIST_URL = {
     client: "http://pamods.github.io/modlist.json"
@@ -17,8 +16,34 @@ if(process.platform === 'win32') {
 }
 
 var context = "client";
+var stream = pa.last ? pa.last.stream : 'stable';
+
 var installed = {};
 var available = {};
+
+var paths = {
+    cache: pa.cachepath
+    ,mods: pa.modspath.client
+    ,pamm: path.join(pa.modspath.client, PAMM_MOD_ID)
+};
+
+exports.setContext = function(newcontext) {
+    context = newcontext;
+    paths.mods = pa.modspath[context];
+};
+
+exports.getContext = function() {
+    return context;
+};
+
+exports.setStream = function(newstream) {
+    stream = newstream;
+    //TODO play with symlink for mods folders?
+};
+
+exports.getStream = function() {
+    return stream;
+};
 
 exports.getAvailableMods = function (callback) {
     jsDownload(ONLINE_MODS_LIST_URL[context], {
@@ -438,14 +463,8 @@ var findInstalledMods = function() {
     }
     
     // load stock mods
-    if(objOptions && objOptions.pa_path) {
-        var stockmodspath = '';
-        if(process.platform !== 'darwin') {
-            stockmodspath = path.join(objOptions.pa_path, '../media/stockmods/', context);
-        }
-        else {
-            stockmodspath = path.join(objOptions.pa_path, '../../Resources/stockmods/', context);
-        }
+    if(pa.streams[stream]) {
+        var stockmodspath = path.join(pa.streams[stream].stockmods, context);
         if(fs.existsSync(stockmodspath)) {
             var moddirs = fs.readdirSync(stockmodspath);
             for (var i = 0; i < moddirs.length; ++i) {
@@ -518,7 +537,7 @@ var _updateFiles = function() {
         ,{ encoding: 'utf8' }
     );
     
-    if(!paths.pamm)
+    if(context === 'server')
         return;
     
     // mods/pamm/uimodlist
@@ -571,61 +590,25 @@ var _updateFiles = function() {
     );
 };
 
-exports.init = function(_context) {
-    context = _context;
-    var localpath;
-    if(process.platform === 'win32') {
-        localpath = process.env.LOCALAPPDATA
-        localpath = localpath.replace(/\\/g,"/");
-    }
-    else if(process.platform === 'linux') {
-        localpath = process.env.HOME + "/.local"
-    }
-    else if(process.platform === 'darwin') {
-        localpath = process.env.HOME + "/Library/Application Support"
-    }
-    else {
-        throw "Unsupported platform: " + process.platform;
-    }
+var init = function() {
+    var strPammModDirectoryPath = paths.pamm;
+    CreateFolderIfNotExists(strPammModDirectoryPath);
+    CreateFolderIfNotExists(strPammModDirectoryPath + "/ui");
+    CreateFolderIfNotExists(strPammModDirectoryPath + "/ui/mods");
     
-    var strLocalPath = localpath + "/Uber Entertainment/Planetary Annihilation"
-    var strModsDirectoryPath = strLocalPath + "/mods"
-    var strPammModDirectoryPath = strModsDirectoryPath + "/" + PAMM_MOD_ID;
-    var strPAMMCacheDirectoryPath = strLocalPath + "/pamm_cache"
-    
-    if(context === "server") {
-        strModsDirectoryPath = strLocalPath + "/server_mods"
-        strPammModDirectoryPath = "";
-    }
-    
-    paths.local = strLocalPath;
-    paths.mods = strModsDirectoryPath;
-    paths.pamm = strPammModDirectoryPath;
-    paths.cache = strPAMMCacheDirectoryPath;
-    
-    CreateFolderIfNotExists(localpath + "/Uber Entertainment");
-    CreateFolderIfNotExists(localpath + "/Uber Entertainment/Planetary Annihilation");
-    CreateFolderIfNotExists(strPAMMCacheDirectoryPath);
-    CreateFolderIfNotExists(strModsDirectoryPath);
-    
-    if(context !== "server") {
-        CreateFolderIfNotExists(strPammModDirectoryPath);
-        CreateFolderIfNotExists(strPammModDirectoryPath + "/ui");
-        CreateFolderIfNotExists(strPammModDirectoryPath + "/ui/mods");
-        
-        var modinfo = {
-            "context": "client",
-            "identifier": PAMM_MOD_IDENTIFIER,
-            "display_name": "PA Mod Manager",
-            "description": " ",
-            "author": "pamm-atom",
-            "version": "1.0.0",
-            "signature": "not yet implemented",
-            "priority": 0,
-            "enabled": true,
-            "id": PAMM_MOD_ID
-        };
-        fs.writeFileSync(strPammModDirectoryPath + "/modinfo.json", JSON.stringify(modinfo, null, 4));
-    }
+    var modinfo = {
+        "context": "client",
+        "identifier": PAMM_MOD_IDENTIFIER,
+        "display_name": "PA Mod Manager",
+        "description": " ",
+        "author": "pamm-atom",
+        "version": "1.0.0",
+        "signature": "not yet implemented",
+        "priority": 0,
+        "enabled": true,
+        "id": PAMM_MOD_ID
+    };
+    fs.writeFileSync(path.join(strPammModDirectoryPath, "modinfo.json"), JSON.stringify(modinfo, null, 4));
 };
+init();
 

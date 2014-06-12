@@ -623,3 +623,16 @@ a:hover {
 .ui_tab_installed_needing_update_count {
 	color: #cc8800;
 }
+
+
+#context {
+	position: absolute;
+	bottom: -160px;
+	left: 350px;
+}
+#context > span {
+    margin-right: 40px;
+}
+#context input:disabled + span {
+    color: #999;
+}

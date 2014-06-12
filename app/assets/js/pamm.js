@@ -5,7 +5,7 @@ var shell = require('shell');
 
 var jsDownload = require('./assets/js/download.js').download;
 var pamm = require('./assets/js/pamm-api.js');
-
+var pa = require('./assets/js/pa.js');
 //(function() {
 
 var url = require('url');
@@ -39,12 +39,7 @@ var PA_VERSION_URL = "https://uberent.com/launcher/clientversion?titleid=4";
 var MOD_GENERIC_ICON_URL = "assets/img/generic.png";
 var PAMM_DEFAULT_LOCALE = "en";
 
-var strLocalPath;
-var strModsDirectoryPath;
-var strPAMMCacheDirectoryPath;
-
 var strPAMMversion = params.info.version;
-var strPABuild = "";
 
 /* Localisation Functions */
 function jsGetLocaleText(strKey, strLocale) {
@@ -127,39 +122,9 @@ function jsLoadOptionsData(strOptionsDataString) {
         alert("An error occurred loading options file");
     }
     
-    var papath = objOptions["pa_path"];
-    if (!papath || !CheckPAPresent(papath)) {
-        papath = findPA();
-        if(papath && !CheckPAPresent(papath)) {
-            papath = "";
-        }
-        objOptions["pa_path"] = papath;
-    }
+    document.getElementById("setting_installLocation").value = pa.last ? pa.last.bin : "";
     
-    var forcetab;
-    if(!papath) {
-        var remote = require('remote');
-        var dialog = remote.require('dialog');
-        dialog.showMessageBox(remote.getCurrentWindow(), {
-            title : "Planetary Annihilation Not Found"
-            ,message : "Could not find Planetary Annihilation. Please start Planetary Annihilation manually at least once before restarting PAMM."
-            ,buttons : ["Ok"]
-        });
-        forcetab = "settings";
-    }
-    else {
-        strPABuild = findPAVersion();
-        $('#current_pa_build').text(strPABuild);
-    }
-    document.getElementById("btnLaunch").disabled = (papath?false:true);
-    
-    document.getElementById("setting_installLocation").value = objOptions["pa_path"];
-    
-    var modLocation = strModsDirectoryPath;
-    if(process.platform === 'win32') {
-        modLocation = modLocation.replace(/\//g, "\\");
-    }
-    document.getElementById("setting_modLocation").value = modLocation;
+    document.getElementById("setting_modLocation").value = pa.modspath.client;
     
     if (objOptions["debug"] != null) {
         document.getElementById("setting_debug").checked = objOptions["debug"];
@@ -202,7 +167,7 @@ function jsLoadOptionsData(strOptionsDataString) {
         objOptions["tab"] = 'news';
     }
     document.getElementById('setting_defaultTab').value = objOptions["tab"];
-    jsDisplayPanel(forcetab?forcetab:objOptions["tab"]);
+    jsDisplayPanel(objOptions["tab"]);
     
     if (objOptions["locale"] != null) {
         document.getElementById('setting_language').value = objOptions["locale"];
@@ -1186,11 +1151,14 @@ function jsDownloadNews() {
 }
 
 function checkVersionPA() {
+    if(!pa.streams.stable)
+        return;
+    
     jsAddLogMessage("Checking for PA updates", 2);
     jsDownload(PA_VERSION_URL, {
         success: function(build) {
-            if(strPABuild && build !== strPABuild) {
-                jsAddLogMessage("PA update: " + strPABuild + " => " + build, 2);
+            if(build !== pa.streams.stable.build) {
+                jsAddLogMessage("PA update: " + pa.streams.stable.build + " => " + build, 2);
                 setTimeout(function() { alert("PA update available: " + build + "\nUse the UberLauncher to update your installation."); }, 1);
             }
             else {
@@ -1205,9 +1173,6 @@ function checkVersionPA() {
 **/
 
 function Initialise() {
-    strLocalPath = pamm.getPaths().local;
-    strModsDirectoryPath = pamm.getPaths().mods;
-    strPAMMCacheDirectoryPath = pamm.getPaths().cache;
 }
 
 function LaunchURL(strURL) {
@@ -1241,7 +1206,7 @@ function FindInstalledMods() {
 
 function LoadOptions() {
     try {
-        var strOptions = fs.readFileSync(strPAMMCacheDirectoryPath + '/' + PAMM_OPTIONS_FILENAME, { encoding: 'utf8' });
+        var strOptions = fs.readFileSync(path.join(pa.cachepath, PAMM_OPTIONS_FILENAME), { encoding: 'utf8' });
         jsLoadOptionsData(strOptions);
     }
     catch(e) {
@@ -1254,29 +1219,20 @@ function WriteOptionsJSON() {
     try {
         jsAddLogMessage("Writing options file", 4);
         var strOptions = jsGetOptionsDataString();
-        fs.writeFileSync(strPAMMCacheDirectoryPath + '/' + PAMM_OPTIONS_FILENAME, strOptions);
+        fs.writeFileSync(path.join(pa.cachepath, PAMM_OPTIONS_FILENAME), strOptions);
     }
     catch(e) {
         jsAddLogMessage("Failed to write options file.", 3);
     }
 }
 
-function CheckPAPresent(strPath) {
-    if (!fs.existsSync(strPath))
-        return false;
-    
-    if(!fs.statSync(strPath).isFile())
-        return false;
-    
-    return true;
-}
-
 function LaunchPA() {
     var child_process = require('child_process');
     var path = require('path');
-    var papath = jsGetOption("pa_path");
-    var wd = path.dirname(papath);
-    var child = child_process.spawn(papath, null, { cwd: wd, detached: true });
+    
+    var binpath = pa.streams[pamm.getStream()].bin;
+    var wd = path.dirname(binpath);
+    var child = child_process.spawn(binpath, null, { cwd: wd, detached: true });
     child.unref();
     ClosePAMM();
 }
@@ -1288,7 +1244,7 @@ function OpenModsFolder() {
 
 function UpdatePAMM(info) {
     var updateurl = sprintf(PAMM_UPDATE_URL, params.info);
-    var zipfile = strPAMMCacheDirectoryPath + "/" + params.info.name + ".zip";
+    var zipfile = path.join(pa.cachepath, params.info.name + ".zip");
     
     jsDownload(updateurl, {
         tofile: zipfile
@@ -1354,81 +1310,10 @@ function rmdirRecurseSync(dir) {
     fs.rmdirSync(dir);
 };
 
-function findPA() {
-    var logpath = strLocalPath + '/log';
-    var logfiles = fs.readdirSync(logpath);
-    
-    if(logfiles.length === 0)
-        return "";
-    
-    // find last log file
-    var lastlogfile;
-    var laststat;
-    for(var i=0; i<logfiles.length; ++i) {
-        var logfile = logpath + '/' + logfiles[i];
-        var stat = fs.statSync(logfile);
-        if(lastlogfile) {
-            if(stat.mtime.getTime() < laststat.mtime.getTime())
-                continue;
-        }
-        lastlogfile = logfile;
-        laststat = stat;
-    }
-    
-    // read log file & split to lines
-    var logs = fs.readFileSync(lastlogfile, { encoding: 'utf8' });
-    var lines = logs.split(/\r?\n/);
-    
-    // find the right line
-    for(var i=0; i<lines.length; ++i) {
-        var line = lines[i];
-        if(line.indexOf("Coherent host dir: ") !== -1) {
-            // extract PA path
-            var spos = line.indexOf('"') + 1;
-            var epos = line.lastIndexOf('"');
-            var papath = line.substring(spos, epos);
-            if(process.platform === "win32") {
-                papath = papath.replace(/\\\\/g, "\\");
-                papath = path.dirname(path.dirname(papath)); // remove /xXX/host
-                papath = papath + "\\PA.exe";
-            }
-            else {
-                papath = path.dirname(papath); // remove /host
-                papath = papath + "/PA";
-            }
-            
-            return papath;
-        }
-    }
-    
-    return "";
-}
-
-function findPAVersion() {
-    var papath = objOptions["pa_path"];
-    
-    if(!papath)
-        return "";
-    
-    // read version number
-    var versionpath = '';
-    if(process.platform !== 'darwin') {
-        versionpath = path.join(papath,'../version.txt');
-    }
-    else {
-        versionpath = path.join(papath,'../../../../version');
-    }
-    if(fs.existsSync(versionpath)) {
-        return fs.readFileSync(versionpath, { encoding: 'utf8' });
-    }
-    else {
-        jsAddLogMessage("PA version not found: " + versionpath, 1);
-        return "";
-    }
-}
-
 $(function() {
     jsAddLogMessage("PAMM version: " + params.info.version, 2);
+    
+    pamm.setContext(params.context);
     
     $('.ui_tabs').on('click', 'a', function() {
         var panel = $(this).data('target');
@@ -1440,25 +1325,41 @@ $(function() {
         jsModEnabledToggle(modid);
     });
     
-    var setting_installLocation_timeout;
-    $('#setting_installLocation').on('input',function(e){
-        clearTimeout(setting_installLocation_timeout);
-        var $input = $(this);
-        setting_installLocation_timeout = setTimeout(function() {
-            var papath = $input.val();
-            if(CheckPAPresent(papath)) {
-                objOptions["pa_path"] = papath;
-                strPABuild = findPAVersion();
-                WriteOptionsJSON();
-            }
-            else {
-                papath = "";
-                objOptions["pa_path"] = "";
-                strPABuild = "";
-            }
-            $('#current_pa_build').text(strPABuild);
-            document.getElementById("btnLaunch").disabled = (papath?false:true);
-        }, 500);
+    if(pa.last) {
+        $('#current_pa_build').text(pa.last.build);
+        document.getElementById("btnLaunch").disabled = false;
+    }
+    else {
+        document.getElementById("btnLaunch").disabled = true;
+    }
+    
+    $("input[name='context']").each(function(i, input) {
+        var $input = $(input);
+        var value = $input.val();
+        if ( pamm.getContext() === value ) {
+            $input.prop('checked', true);
+        }
+    });
+    
+    $("input[name='context']").click(function() {
+        pamm.setContext(this.value);
+        jsRefresh(true, true);
+    });
+    
+    $("input[name='stream']").each(function(i, input) {
+        var $input = $(input);
+        var value = $input.val();
+        if(!pa.streams[value]) {
+            $input.prop('disabled', true);
+        }
+        else if ( pa.last.stream === value ) {
+            $input.prop('checked', true);
+        }
+    });
+    
+    $("input[name='stream']").click(function() {
+        pamm.setStream(this.value);
+        jsRefresh(true, true);
     });
     
     // autoresize body with window
@@ -1469,7 +1370,6 @@ $(function() {
     });
     $window.trigger('resize');
     
-    pamm.init(params.context);
     Initialise();
     LoadOptions();
     
@@ -1477,24 +1377,7 @@ $(function() {
     $('#current_pamm_version').text(strPAMMversion);
     jsRefresh(true, true);
     
-    if(objOptions.pa_path) {
-        var stream = 'stable';
-        if(process.platform !== 'darwin') {
-            if(path.basename(path.dirname(objOptions.pa_path)) === 'PTE') {
-                stream = 'PTE';
-            }
-        }
-        else {
-            if(path.basename(path.join(objOptions.pa_path, '../../../..')) === 'PTE') {
-                stream = 'PTE';
-            }
-        }
-        
-        if(stream !== 'PTE') {
-            // we cant check PTE stream
-            checkVersionPA();
-        }
-    }
+    checkVersionPA();
     
     if(params.install) {
         var intervalId = setInterval(function() {

@@ -3,12 +3,13 @@
   "author"  : "mereth",
   "version" : "0.7.1",
   "main"    : "main.js",
-  "bundledDependencies" : {
-    "semver" : ">=2.3.0"
-    ,"sprintf" : ">=1.0.0"
-    ,"jszip" : ">=2.2.2"
-    ,"lodash" : ">=2.4.1"
-  },
+  "bundledDependencies" : [
+    "semver"
+    ,"sprintf"
+    ,"jszip"
+    ,"lodash"
+    ,"mkdirp"
+  ],
   "engines" : {
     "atom-shell" : ">=0.12.5"
   }

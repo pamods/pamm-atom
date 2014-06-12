@@ -112,7 +112,7 @@
               <tr>
                 <td colspan="2">
                   <span class="setting_heading"><span class="LOC_PA_Install_Location">PA Install Location</span>:</span><br/>
-                  <input id="setting_installLocation" type="text" class="textInput"/>
+                  <input id="setting_installLocation" type="text" disabled="true" class="textInput"/>
                 </td>
               </tr>
               <tr>
@@ -152,6 +152,10 @@
         <input id="btnLaunch" type="button" value="Launch PA" class="LOC_Launch_PA" onClick="LaunchPA()"/>
         <input type="button" value="Refresh" class="LOC_Refresh" onClick="jsRefresh(true, true)"/>
         <input type="button" value="Exit" class="LOC_Exit" onClick="ClosePAMM()"/>
+      </div>
+      <div id="context">
+        <span>Context: <input type="radio" name="context" value="client" checked="checked">client<input type="radio" name="context" value="server">server</span>
+        <span>PA Stream: <input type="radio" name="stream" value="stable"><span>stable</span><input type="radio" name="stream" value="PTE"><span>PTE</span></span>
       </div>
       <div id="downloading">
         <img src="assets/img/loading.gif">
