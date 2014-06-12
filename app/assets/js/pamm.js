@@ -224,7 +224,7 @@ function jsGetOption(strOption) {
 /* Installed Mod Functions */
 function jsUpdateAll() {
     for (var i = 0; i < objInstalledMods.length; i++) {
-        if (jsGetOnlineMod(objInstalledMods[i].id) != null && objInstalledMods[i].date < jsGetOnlineMod(objInstalledMods[i].id).date) {
+        if (jsGetOnlineMod(objInstalledMods[i].id) != null && objInstalledMods[i].version !== jsGetOnlineMod(objInstalledMods[i].id).version) {
             jsPreInstallMod(jsGetOnlineMod(objInstalledMods[i].id).url, objInstalledMods[i].id, {});
         }
     }
@@ -406,7 +406,7 @@ function jsGenerateModEntryHTML(objMod, boolIsInstalled) {
         
         /* Update Available Notification */
         if (objOnlineMod != null) {
-            if (objMod.date < objOnlineMod.date) {
+            if (objMod.version !== objOnlineMod.version) {
                 strHTML_update_link = "<div class='mod_entry_link mod_entry_update_link'>[ <a href='#' onClick='jsPreInstallMod(\"" + objOnlineMod.url + "\",\"" + id + "\", {})'>" + jsGetLocaleText('update', objOptions["locale"]) + "</a> ]</div>";
                 
                 /* Update Classes */
@@ -450,7 +450,7 @@ function jsGenerateModEntryHTML(objMod, boolIsInstalled) {
         /* Install Link */
         
         if (objInstalledMod != null) {
-            if (objMod.date > objInstalledMod.date) {
+            if (objMod.version !== objInstalledMod.version) {
                 strHTML_install_link = "<div class='mod_entry_link mod_entry_update_link'>[ <a href='#' onClick='jsPreInstallMod(\"" + objMod.url + "\", \"" + id + "\", {})'>" + jsGetLocaleText('update', objOptions["locale"]) + "</a> ]</div>";
                 
                 /* Update Classes */
@@ -934,7 +934,7 @@ function jsGetModsRequiringUpdates() {
     var intModsRequiringUpdate = 0;
 
     for(var i = 0; i < objInstalledMods.length; i++) {
-        if (jsGetOnlineMod(objInstalledMods[i]["id"]) != null && objInstalledMods[i]["date"] < jsGetOnlineMod(objInstalledMods[i]["id"])["date"]) {
+        if (jsGetOnlineMod(objInstalledMods[i]["id"]) != null && objInstalledMods[i]["version"] !== jsGetOnlineMod(objInstalledMods[i]["id"])["version"]) {
             intModsRequiringUpdate++;
         }
     }
