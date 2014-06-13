@@ -1,7 +1,7 @@
 {
   "name"    : "pamm-atom",
   "author"  : "mereth",
-  "version" : "0.8.1",
+  "version" : "0.8.2",
   "main"    : "main.js",
   "bundledDependencies" : [
     "semver"
