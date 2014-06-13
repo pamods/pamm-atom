@@ -68,7 +68,7 @@ function createStreamObject(papath) {
     var platform = process.platform;
     var stream = path.basename(papath);
     
-    var versionpath = path.join(papath, platform === 'darwin' ? 'version' : 'version.txt');
+    var versionpath = path.join(papath, platform === 'darwin' ? '/PA.app/Contents/Resources' : '', 'version.txt');
     if(!fs.existsSync(versionpath))
         return;
     var version = fs.readFileSync(versionpath, { encoding: 'utf8' });
