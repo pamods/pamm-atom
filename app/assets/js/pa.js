@@ -10,6 +10,7 @@ var streams = {};
 var last;
 
 function findLastRunPath() {
+    var platform = process.platform;
     var logpath = path.join(rootpath, '/log');
     if(!fs.existsSync(logpath))
         return "";
@@ -46,10 +47,10 @@ function findLastRunPath() {
             var epos = line.lastIndexOf('"');
             var papath = line.substring(spos, epos);
             
-            if(process.platform === "win32") {
+            if(platform === "win32") {
                 papath = path.join(papath, '../..'); // remove /x64/host
             }
-            else if(process.platform === "linux") {
+            else if(platform === "linux") {
                 papath = path.join(papath, '..'); // remove /host
             }
             else {
@@ -64,24 +65,25 @@ function findLastRunPath() {
 };
 
 function createStreamObject(papath) {
+    var platform = process.platform;
     var stream = path.basename(papath);
     
-    var versionpath = path.join(papath, 'version.txt');
+    var versionpath = path.join(papath, platform === 'darwin' ? 'version' : 'version.txt');
     if(!fs.existsSync(versionpath))
         return;
     var version = fs.readFileSync(versionpath, { encoding: 'utf8' });
     
     var binpath;
     var stockmodspath;
-    if (process.platform === 'win32') {
+    if (platform === 'win32') {
         binpath = path.join(papath, 'PA.exe');
         stockmodspath = path.join(papath, '/media/stockmods');
     }
-    else if (process.platform === 'linux') {
+    else if (platform === 'linux') {
         binpath = path.join(papath, 'PA');
         stockmodspath = path.join(papath, '/media/stockmods');
     }
-    else if (process.platform === 'darwin') {
+    else if (platform === 'darwin') {
         binpath = path.join(papath, '/PA.app/Contents/MacOS/PA');
         stockmodspath = path.join(papath, '/PA.app/Contents/Resources/stockmods/');
         if(!fs.existsSync(stockmodspath)) {
