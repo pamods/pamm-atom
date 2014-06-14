@@ -545,6 +545,7 @@ var _updateFiles = function() {
     var globalmodlist = [];
     var scenemodlist = {};
     var scenes = ["armory", "building_planets", "connect_to_game", "game_over", "icon_atlas", "live_game", "live_game_econ", "live_game_hover", "load_planet", "lobby", "matchmaking", "new_game", "replay_browser", "server_browser", "settings", "social", "special_icon_atlas", "start", "system_editor", "transit"] // deprecated
+    _.each(scenes, function(scene) { scenemodlist[scene] = []; }); // temp fix for PA Stats => all scenes must be initialized by empty an array
     _.each(enabledmods, function(mod) {
         // deprecated global_mod_list at modinfo root
         if(mod.global_mod_list) {
