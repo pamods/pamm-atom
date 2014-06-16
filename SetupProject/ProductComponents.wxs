@@ -1,0 +1,989 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+    <Fragment>
+        <DirectoryRef Id="APPLICATIONFOLDER">
+            <Component Id="cmpF43E7FF582E498B013E5D103DE8E27E1" Guid="*">
+                <File Id="fil4168BC3EFBEC18AE4335D2870596E1DB" KeyPath="yes" Source="$(var.PammDir)\chromiumcontent.dll" />
+            </Component>
+            <Component Id="cmpD29EB095034480F45518B80E18ED80CC" Guid="*">
+                <File Id="fil1154F34DA34A67B44C8D081B269B96D5" KeyPath="yes" Source="$(var.PammDir)\content_shell.pak" />
+            </Component>
+            <Component Id="cmp4001ECA855CB2C89EF26E43D87647B75" Guid="*">
+                <File Id="filC746FC3E681E2B8D98D5C1785D42CAD0" KeyPath="yes" Source="$(var.PammDir)\d3dcompiler_43.dll" />
+            </Component>
+            <Component Id="cmpB8736D8C69669958B5E14F925EDB18C6" Guid="*">
+                <File Id="filC01C2EF38D2DF59545FA7B497D5AD152" KeyPath="yes" Source="$(var.PammDir)\ffmpegsumo.dll" />
+            </Component>
+            <Component Id="cmp661571A74E0C7C9BF14C10191B5A70D4" Guid="*">
+                <File Id="fil64FB2D9D61BD6AA897298F9D2931B4B6" KeyPath="yes" Source="$(var.PammDir)\icudt.dll" />
+            </Component>
+            <Component Id="cmpED1C29F8914A4A53211F619E1872ECC1" Guid="*">
+                <File Id="fil6FEA381F205FBC4A929B8656B60465E6" KeyPath="yes" Source="$(var.PammDir)\libEGL.dll" />
+            </Component>
+            <Component Id="cmp8173820A225E77A4F1F9A1A20860A672" Guid="*">
+                <File Id="filC4FD67C1E47EB7B5DD004A098216196B" KeyPath="yes" Source="$(var.PammDir)\libGLESv2.dll" />
+            </Component>
+            <Component Id="cmpDBD516BE77094BA0CD96C40057270A98" Guid="*">
+                <File Id="fil59F733C43EC9971BF96080F57D1196E6" KeyPath="yes" Source="$(var.PammDir)\LICENSE" />
+            </Component>
+            <Component Id="cmp932020E83BCE5F49A4730BBABD027119" Guid="*">
+                <File Id="filBB8AA81B26491804CBCE8A77F9DD02E8" KeyPath="yes" Source="$(var.PammDir)\pamm.exe" />
+            </Component>
+            <Component Id="cmp02A9A26FF866B3A4C4C31EE0800CD0D8" Guid="*">
+                <File Id="fil528343BB9659C89133681822FD6817C1" KeyPath="yes" Source="$(var.PammDir)\version" />
+            </Component>
+            <Component Id="cmp1ABA21D4D68C9DC31B17624E3B281C32" Guid="*">
+                <File Id="fil4F8FADE7284E11B6E76FAF34324E4200" KeyPath="yes" Source="$(var.PammDir)\xinput1_3.dll" />
+            </Component>
+            <Directory Id="dirD9BDD7640045AB6653B1C37CCF84AB0B" Name="locales">
+                <Component Id="cmpEF0E6A1F83E92A0CF8F100A395EE6C7F" Guid="*">
+                    <File Id="filCEC5FACBF857064E1220105019164AE5" KeyPath="yes" Source="$(var.PammDir)\locales\am.pak" />
+                </Component>
+                <Component Id="cmp62C2567F43F90D0C27821FDD5A942BE7" Guid="*">
+                    <File Id="fil9292C5699BFD72385AE1B62DC964BC5D" KeyPath="yes" Source="$(var.PammDir)\locales\ar.pak" />
+                </Component>
+                <Component Id="cmpBDCA0A97624455ED6B3148E51C6CD716" Guid="*">
+                    <File Id="fil942ED5EFA2813DE0974B9D0CE4388549" KeyPath="yes" Source="$(var.PammDir)\locales\bg.pak" />
+                </Component>
+                <Component Id="cmpDBDBA2E2F9956E10098644CAAFEC895D" Guid="*">
+                    <File Id="fil0C0D38C900F41A82EBB73D5E620206F5" KeyPath="yes" Source="$(var.PammDir)\locales\bn.pak" />
+                </Component>
+                <Component Id="cmp95282681C2D8C51357F7F010B796E32F" Guid="*">
+                    <File Id="filED2D5F537D8C270BFC46BBD2CF580FED" KeyPath="yes" Source="$(var.PammDir)\locales\ca.pak" />
+                </Component>
+                <Component Id="cmpA9F2362A5BC9913C95815CE357BEA9C8" Guid="*">
+                    <File Id="fil22AE479CA55A6A7D2E870A1DB0E5DD6E" KeyPath="yes" Source="$(var.PammDir)\locales\cs.pak" />
+                </Component>
+                <Component Id="cmp788AE056FFE7A8F1C9088798C2B9D16A" Guid="*">
+                    <File Id="filF36FAED9E51DCCAF86EC381DE84CAF99" KeyPath="yes" Source="$(var.PammDir)\locales\da.pak" />
+                </Component>
+                <Component Id="cmp6E10C18A801C842F85CB4692B3BB91F1" Guid="*">
+                    <File Id="fil071A9B8C82430F49C6295B966600A59D" KeyPath="yes" Source="$(var.PammDir)\locales\de.pak" />
+                </Component>
+                <Component Id="cmp4952058F60EC417C5B913F17D31604FB" Guid="*">
+                    <File Id="filE2EA72B722DB1885632D3B3C2BB70AD6" KeyPath="yes" Source="$(var.PammDir)\locales\el.pak" />
+                </Component>
+                <Component Id="cmp8221547D5B3DB423CBBBFFAA060A9D58" Guid="*">
+                    <File Id="filCA6D014BA98322C55C2E97C1B1BE5A34" KeyPath="yes" Source="$(var.PammDir)\locales\en-GB.pak" />
+                </Component>
+                <Component Id="cmp33B6D48D9D47FB06B5962D2046DD2157" Guid="*">
+                    <File Id="filDBFF5D991A0FEAD9AB79B9E14548230D" KeyPath="yes" Source="$(var.PammDir)\locales\en-US.pak" />
+                </Component>
+                <Component Id="cmpAAAADC6A006B386700A049AC50BA7E8C" Guid="*">
+                    <File Id="filD2F99BB150208A3CE32436E2A9394547" KeyPath="yes" Source="$(var.PammDir)\locales\es-419.pak" />
+                </Component>
+                <Component Id="cmpCFE584C7FF7E6F66BFE2E3EF9206D630" Guid="*">
+                    <File Id="filD14FB00DD95A3C4AF4F3ADD477FB3E86" KeyPath="yes" Source="$(var.PammDir)\locales\es.pak" />
+                </Component>
+                <Component Id="cmpB9415FBC3E55E98412B4A1137C0CF556" Guid="*">
+                    <File Id="filA21E9A48F75815F1C4645E6E476C2CF6" KeyPath="yes" Source="$(var.PammDir)\locales\et.pak" />
+                </Component>
+                <Component Id="cmpD835FAC09FAF365EC7CFF7D358B357EC" Guid="*">
+                    <File Id="fil14AA3F9F6051B3993BFD2B25EEEA9AFC" KeyPath="yes" Source="$(var.PammDir)\locales\fa.pak" />
+                </Component>
+                <Component Id="cmpC87A130587FD562381802D29C515B1F7" Guid="*">
+                    <File Id="filA3CE11A2E2A43961958A3BB04E34B446" KeyPath="yes" Source="$(var.PammDir)\locales\fi.pak" />
+                </Component>
+                <Component Id="cmp5AF0CFD567E370B5DEF9E52F65438FEA" Guid="*">
+                    <File Id="fil1682982F29F8D987B5CFB95BF7E43659" KeyPath="yes" Source="$(var.PammDir)\locales\fil.pak" />
+                </Component>
+                <Component Id="cmp2618DA72B4EBD1CFEC9BF849B1C6A720" Guid="*">
+                    <File Id="fil0F68D2A662FFF5D73042E7E138B2C96E" KeyPath="yes" Source="$(var.PammDir)\locales\fr.pak" />
+                </Component>
+                <Component Id="cmp9A6D91745EA3CA78B704C93A44EE8A24" Guid="*">
+                    <File Id="fil1603F737FE6234988211C98292A36310" KeyPath="yes" Source="$(var.PammDir)\locales\gu.pak" />
+                </Component>
+                <Component Id="cmpC2FF4524B4F889D3755BC3F346DB7532" Guid="*">
+                    <File Id="filAFB1BCB7D9F666A79C9F6AA66CA26577" KeyPath="yes" Source="$(var.PammDir)\locales\he.pak" />
+                </Component>
+                <Component Id="cmpFF3E713765831F7A625146E5C4EE7756" Guid="*">
+                    <File Id="fil1CEBAA06D9054315BB0B74B5A7C7D4D7" KeyPath="yes" Source="$(var.PammDir)\locales\hi.pak" />
+                </Component>
+                <Component Id="cmpDFEF0DFBF83DFE56CD5D00BA3EE284CD" Guid="*">
+                    <File Id="fil61BA9CE3CA2E4C57385BCB02CBD36F82" KeyPath="yes" Source="$(var.PammDir)\locales\hr.pak" />
+                </Component>
+                <Component Id="cmp77ED9943111D332E717A324E9A7D1462" Guid="*">
+                    <File Id="filBFC165D8C2C0BABCF5261449D5EFD9C4" KeyPath="yes" Source="$(var.PammDir)\locales\hu.pak" />
+                </Component>
+                <Component Id="cmp340CDE652C8B117D1F3F85871FB93A71" Guid="*">
+                    <File Id="fil9FCFA54385F7BD97A8ED0B0539A626F5" KeyPath="yes" Source="$(var.PammDir)\locales\id.pak" />
+                </Component>
+                <Component Id="cmpA2971C1BB31E466991E9490C7EFAD08C" Guid="*">
+                    <File Id="filC8A0B0B234CC53BB8E4D03223CB92178" KeyPath="yes" Source="$(var.PammDir)\locales\it.pak" />
+                </Component>
+                <Component Id="cmp06E040C37C640B62E1B2BA1DC4A20E74" Guid="*">
+                    <File Id="fil457929410F20FE3733516DC0F3730BB2" KeyPath="yes" Source="$(var.PammDir)\locales\ja.pak" />
+                </Component>
+                <Component Id="cmpCAFC3CDB194A6BD5F0DE487648130395" Guid="*">
+                    <File Id="filEC6063FD58B7A6B19E0B0C8C43E82648" KeyPath="yes" Source="$(var.PammDir)\locales\kn.pak" />
+                </Component>
+                <Component Id="cmp29CF0F8D0DD57C192CFCC830705D1DDA" Guid="*">
+                    <File Id="filE0F3F7AA26A8474ECE3D1D2FB9ECFC3C" KeyPath="yes" Source="$(var.PammDir)\locales\ko.pak" />
+                </Component>
+                <Component Id="cmp29621CC9AE64EE7F2D72B7310AAAE6B7" Guid="*">
+                    <File Id="fil88D23D63FA0DBA2E6AE967CA4DFE7D99" KeyPath="yes" Source="$(var.PammDir)\locales\lt.pak" />
+                </Component>
+                <Component Id="cmp72689D0F152F42DE48C8A9FA8AFB4B6B" Guid="*">
+                    <File Id="filF16988A7957BA6FFDA549A549BA9D944" KeyPath="yes" Source="$(var.PammDir)\locales\lv.pak" />
+                </Component>
+                <Component Id="cmp62E5A05A6984AADB535698872B4FABAB" Guid="*">
+                    <File Id="fil597D5C068BDA609C2C5DB74E8C3079FD" KeyPath="yes" Source="$(var.PammDir)\locales\ml.pak" />
+                </Component>
+                <Component Id="cmpFAC95D800D87D9850FCD3B00AABB8810" Guid="*">
+                    <File Id="fil44CC1B72B84AD8C068AC467CD88FDE71" KeyPath="yes" Source="$(var.PammDir)\locales\mr.pak" />
+                </Component>
+                <Component Id="cmpBA35E583A6E70F01D86FE8BF18F33581" Guid="*">
+                    <File Id="fil9EFD7D687D5F8A23EC1A974124F859EF" KeyPath="yes" Source="$(var.PammDir)\locales\ms.pak" />
+                </Component>
+                <Component Id="cmpFABCBE881F3D1973115D5D273F226778" Guid="*">
+                    <File Id="fil8561DF1B6AE95663880CD9C0EB93E21C" KeyPath="yes" Source="$(var.PammDir)\locales\nb.pak" />
+                </Component>
+                <Component Id="cmp270084105CD1BB1A39A5198747219228" Guid="*">
+                    <File Id="filC2FA3B3EFB4D101E560DEE61F820EF1D" KeyPath="yes" Source="$(var.PammDir)\locales\nl.pak" />
+                </Component>
+                <Component Id="cmp495000D3B43E522C22562A49F9729994" Guid="*">
+                    <File Id="filF0D001095036F853B42E25AD92697755" KeyPath="yes" Source="$(var.PammDir)\locales\pl.pak" />
+                </Component>
+                <Component Id="cmp8EB981D7CEF1B7856C7792AE7FE5267C" Guid="*">
+                    <File Id="fil939A51F79679DCFA4F3A02F06CC915B2" KeyPath="yes" Source="$(var.PammDir)\locales\pt-BR.pak" />
+                </Component>
+                <Component Id="cmp25A9665CC7FB5058BAAFDDF4513180C5" Guid="*">
+                    <File Id="filA24AE6E2487855D8D680C146E3BF01E1" KeyPath="yes" Source="$(var.PammDir)\locales\pt-PT.pak" />
+                </Component>
+                <Component Id="cmp60CABDD4B099BA3663A1760964EA6948" Guid="*">
+                    <File Id="fil466B2680E03F601B30B21020D984EC30" KeyPath="yes" Source="$(var.PammDir)\locales\ro.pak" />
+                </Component>
+                <Component Id="cmp670B9CE70C9F6D8252BEBDB2B2C9FEE5" Guid="*">
+                    <File Id="fil94357857575709A3C52559D2DC01F786" KeyPath="yes" Source="$(var.PammDir)\locales\ru.pak" />
+                </Component>
+                <Component Id="cmp1FC7028DA642188F5F52E75864D2B04B" Guid="*">
+                    <File Id="fil88B9934941FFEB0D4F5864E9BEA7901E" KeyPath="yes" Source="$(var.PammDir)\locales\sk.pak" />
+                </Component>
+                <Component Id="cmp41FFA89D1A8972541C5C058083E06D57" Guid="*">
+                    <File Id="filFEC04C482CDFA2300BEA4699E184D9B7" KeyPath="yes" Source="$(var.PammDir)\locales\sl.pak" />
+                </Component>
+                <Component Id="cmpCF48B1D4FEB9F0E8995B47066D381BF0" Guid="*">
+                    <File Id="fil21F8E3199BCD3DD6B1194F6DDC55A16B" KeyPath="yes" Source="$(var.PammDir)\locales\sr.pak" />
+                </Component>
+                <Component Id="cmpD047BAEF2BD0D96CB6CDBF5045E339D8" Guid="*">
+                    <File Id="fil3E1F45BB928DB3D8EEE7C5BCF311BFC7" KeyPath="yes" Source="$(var.PammDir)\locales\sv.pak" />
+                </Component>
+                <Component Id="cmpE9607A9AF365010A0F229B2816EEF6A5" Guid="*">
+                    <File Id="filD8F4D6B112B770FC9CEA7B94E37573B7" KeyPath="yes" Source="$(var.PammDir)\locales\sw.pak" />
+                </Component>
+                <Component Id="cmpA36E8F20455325C47C8E5C1488C9D4F5" Guid="*">
+                    <File Id="fil94B8DD49F1E47784B20BCDC1A3A87DED" KeyPath="yes" Source="$(var.PammDir)\locales\ta.pak" />
+                </Component>
+                <Component Id="cmpEC7739B32F92AA82886DFD25D2798580" Guid="*">
+                    <File Id="fil22F0C25A58E9D29DCC19F9CBD3CB4B37" KeyPath="yes" Source="$(var.PammDir)\locales\te.pak" />
+                </Component>
+                <Component Id="cmp3B7740B523E3C15AA134C0FEE0DA01E6" Guid="*">
+                    <File Id="fil01FE65FA127A082B6587B0DD4034C7D2" KeyPath="yes" Source="$(var.PammDir)\locales\th.pak" />
+                </Component>
+                <Component Id="cmpFFC3C12C370CEF5CBDC5F5DD49FDC4A2" Guid="*">
+                    <File Id="fil10709857EFC915620690F9B5EAADABB7" KeyPath="yes" Source="$(var.PammDir)\locales\tr.pak" />
+                </Component>
+                <Component Id="cmp1E5C3FE4762504E822DEC4FCBCAAFB9B" Guid="*">
+                    <File Id="filBFB8F27F439F4FFB11886D13A8DE116B" KeyPath="yes" Source="$(var.PammDir)\locales\uk.pak" />
+                </Component>
+                <Component Id="cmpFEC6AEB485B631E1CB87842374C2B4E3" Guid="*">
+                    <File Id="fil7678A92FC3197C522CE775B0E941C9C5" KeyPath="yes" Source="$(var.PammDir)\locales\vi.pak" />
+                </Component>
+                <Component Id="cmp8937CD85D5A80300EB46AA934E5FBC18" Guid="*">
+                    <File Id="fil9550FDAAE2637F3D497B7D462C1E6660" KeyPath="yes" Source="$(var.PammDir)\locales\zh-CN.pak" />
+                </Component>
+                <Component Id="cmp26452B763005B4732D8A89EBF304D6AA" Guid="*">
+                    <File Id="fil5EE6EC9474B64A64255C24E49CD3CFD0" KeyPath="yes" Source="$(var.PammDir)\locales\zh-TW.pak" />
+                </Component>
+            </Directory>
+            <Directory Id="dirD51FBD42A867274D15CA506A46837A01" Name="resources">
+                <Directory Id="dir1CAD107F29C4B36FF1EA48C87106D49B" Name="app">
+                    <Component Id="cmpFB4EC2AD463B8273156EEB6712F0D473" Guid="*">
+                        <File Id="filD7E38688A23B82F33366FF12828BCCF6" KeyPath="yes" Source="$(var.PammDir)\resources\app\index.html" />
+                    </Component>
+                    <Component Id="cmp6023C9A4F33D5CBD2DBA369F81CCBE5D" Guid="*">
+                        <File Id="fil9F2EBA84CD8986D888BF0C22F02260D5" KeyPath="yes" Source="$(var.PammDir)\resources\app\main.js" />
+                    </Component>
+                    <Component Id="cmp81B76FFBAEAA1A4304B0C9B00AC6B8FE" Guid="*">
+                        <File Id="filC4A0108B83C06C916395B2DF4260161A" KeyPath="yes" Source="$(var.PammDir)\resources\app\package.json" />
+                    </Component>
+                    <Directory Id="dir59E6F8EAE6158CE66583391565E84CE9" Name="assets">
+                        <Directory Id="dirA7466E6C61C89CC3FB58B9C065FA7FE2" Name="css">
+                            <Component Id="cmpE06110F289494AA9F2BF401A81A0876F" Guid="*">
+                                <File Id="filFA26431103642135F5864DB37605F0B5" KeyPath="yes" Source="$(var.PammDir)\resources\app\assets\css\pamm.css" />
+                            </Component>
+                        </Directory>
+                        <Directory Id="dirC1EF488562413B217E58455510A23617" Name="img">
+                            <Component Id="cmpE1FCFCD1589D713E60D68B5F7DE7F8D0" Guid="*">
+                                <File Id="fil8AAAF07404DC858E4FFA42BD53A91B3C" KeyPath="yes" Source="$(var.PammDir)\resources\app\assets\img\about.png" />
+                            </Component>
+                            <Component Id="cmp338C4474334C0BCAED3A47364293E9F3" Guid="*">
+                                <File Id="fil9182FCE4B33733FFA4E4147030C9D411" KeyPath="yes" Source="$(var.PammDir)\resources\app\assets\img\about_select.png" />
+                            </Component>
+                            <Component Id="cmp6C8600BA5C7AE49E4A4C4CB59AE6AC9F" Guid="*">
+                                <File Id="fil25E92EE8108FC2F15AB40B05487DBE22" KeyPath="yes" Source="$(var.PammDir)\resources\app\assets\img\alert.png" />
+                            </Component>
+                            <Component Id="cmp6CDA51DCF0DC5B7913C22305D5B22D8F" Guid="*">
+                                <File Id="filB0CC02A04ED2BF0EAEE150FE0FCD888E" KeyPath="yes" Source="$(var.PammDir)\resources\app\assets\img\checkbox_checked.png" />
+                            </Component>
+                            <Component Id="cmpF0A28655A9C5F87CC72326224279D593" Guid="*">
+                                <File Id="filBB0FB4C2A38AD2A3C811D7CB53CD862B" KeyPath="yes" Source="$(var.PammDir)\resources\app\assets\img\checkbox_unchecked.png" />
+                            </Component>
+                            <Component Id="cmp7A44C88F8190D9727587F50C852138B4" Guid="*">
+                                <File Id="fil3ABF901FD8B2B05A997FD5C5B0970266" KeyPath="yes" Source="$(var.PammDir)\resources\app\assets\img\download.png" />
+                            </Component>
+                            <Component Id="cmpF79517753101D60144AA034C79F66623" Guid="*">
+                                <File Id="fil7049BA65C2A9B2A5AF0A03C89DB1C6BB" KeyPath="yes" Source="$(var.PammDir)\resources\app\assets\img\favicon.ico" />
+                            </Component>
+                            <Component Id="cmp3930034567844B3C2CE835C769FBD29E" Guid="*">
+                                <File Id="fil3CF724A25BD6A25488FD5176F2FEEA1F" KeyPath="yes" Source="$(var.PammDir)\resources\app\assets\img\filter.png" />
+                            </Component>
+                            <Component Id="cmp6054B12F4FAD943490997C133C8B63CE" Guid="*">
+                                <File Id="fil4A64FACC2EB7588BF0244EAE51350B4E" KeyPath="yes" Source="$(var.PammDir)\resources\app\assets\img\generic.png" />
+                            </Component>
+                            <Component Id="cmpC00759A884BB60E7F8FF6A2EA93CA2E1" Guid="*">
+                                <File Id="filF33520BDC5A011D56D97EA6C87105DB0" KeyPath="yes" Source="$(var.PammDir)\resources\app\assets\img\img_pa_logo_start_rest.png" />
+                            </Component>
+                            <Component Id="cmp70C77453C22BBB15155C4799636437E4" Guid="*">
+                                <File Id="fil3CB99FD02065A0FA56B35E8657EDBC13" KeyPath="yes" Source="$(var.PammDir)\resources\app\assets\img\like.png" />
+                            </Component>
+                            <Component Id="cmp59BF93E74F30C652D12315FD200A910A" Guid="*">
+                                <File Id="filD4E49B7C30CB75BA121B1EDD40D7FCA4" KeyPath="yes" Source="$(var.PammDir)\resources\app\assets\img\loading.gif" />
+                            </Component>
+                            <Component Id="cmp2049CF6B9B6D440EE26BC8871B13EC5F" Guid="*">
+                                <File Id="filAA99462C31FBE70097D61D91B1DD08F9" KeyPath="yes" Source="$(var.PammDir)\resources\app\assets\img\log.png" />
+                            </Component>
+                            <Component Id="cmp0EDF0B38724D1587D48CE26FEC195964" Guid="*">
+                                <File Id="fil81773EB00F8896387EB8256FF657B74F" KeyPath="yes" Source="$(var.PammDir)\resources\app\assets\img\log_select.png" />
+                            </Component>
+                            <Component Id="cmp5C1DBDEEBACDB52262791272D5F74835" Guid="*">
+                                <File Id="fil61C4AE6CC826D90CCD3B8DE322679665" KeyPath="yes" Source="$(var.PammDir)\resources\app\assets\img\settings.png" />
+                            </Component>
+                            <Component Id="cmpFB7944D39942419124209D1D59C4AE75" Guid="*">
+                                <File Id="fil9241CA66B0F45A9E5824C9E316095909" KeyPath="yes" Source="$(var.PammDir)\resources\app\assets\img\settings_select.png" />
+                            </Component>
+                        </Directory>
+                        <Directory Id="dir2AE455471597486AFDD4E7F3A9FC9F09" Name="js">
+                            <Component Id="cmpE7F80B98EB620D47C348BDDED96AF737" Guid="*">
+                                <File Id="fil338C9C864FCFD325EDCE4BACD263E59D" KeyPath="yes" Source="$(var.PammDir)\resources\app\assets\js\download.js" />
+                            </Component>
+                            <Component Id="cmp8ACFCCDE0840DB5F2E4B57CEE341D37D" Guid="*">
+                                <File Id="filD1306E776A601651A4C42FE9E8504433" KeyPath="yes" Source="$(var.PammDir)\resources\app\assets\js\jquery-1.10.2.min.js" />
+                            </Component>
+                            <Component Id="cmpCCF24DE7040857BF2619217ABD996445" Guid="*">
+                                <File Id="filD8CDA2C7CD3C2EFD14162C4FF30429E6" KeyPath="yes" Source="$(var.PammDir)\resources\app\assets\js\jquery-ajax-blob-arraybuffer.js" />
+                            </Component>
+                            <Component Id="cmpADDD1A15F84329DF43344580805C13E8" Guid="*">
+                                <File Id="fil261AE4850BDCDA23EC466A38F1ADF981" KeyPath="yes" Source="$(var.PammDir)\resources\app\assets\js\locale.js" />
+                            </Component>
+                            <Component Id="cmpB65B6C4F96F1E079F02B6974346433D6" Guid="*">
+                                <File Id="filA0AFBCDAC53B0622E511F28E129BAC57" KeyPath="yes" Source="$(var.PammDir)\resources\app\assets\js\pa.js" />
+                            </Component>
+                            <Component Id="cmpBE4658BB14F5CC975B9A5C2795E7C09A" Guid="*">
+                                <File Id="filB377E5105424BA1F238A34609C4C595B" KeyPath="yes" Source="$(var.PammDir)\resources\app\assets\js\pamm-api.js" />
+                            </Component>
+                            <Component Id="cmp9E793A10BF3F138124F00B48006BD9A9" Guid="*">
+                                <File Id="filB52B6663691ED46BAC80793AF7E5E6FF" KeyPath="yes" Source="$(var.PammDir)\resources\app\assets\js\pamm.js" />
+                            </Component>
+                        </Directory>
+                    </Directory>
+                    <Directory Id="dirDEC38F334D882EF95453342CFAD84283" Name="node_modules">
+                        <Directory Id="dir5310C49EC1E3A57494A2E97A864ADBEB" Name="jszip">
+                            <Component Id="cmpFA3EFF53D3260A5ABB1D9CC1A8B379F6" Guid="*">
+                                <File Id="fil98334976E9BE9568D8ABA9AB6D0E20EB" KeyPath="yes" Source="$(var.PammDir)\resources\app\node_modules\jszip\package.json" />
+                            </Component>
+                            <Directory Id="dir01C41159E842F5D03D9BDF85AFBEFACA" Name="lib">
+                                <Component Id="cmp8BA62B152EB3D89A8510C17283663502" Guid="*">
+                                    <File Id="filC26FDAB2FCF28BDBC5FD0F6D997E7391" KeyPath="yes" Source="$(var.PammDir)\resources\app\node_modules\jszip\lib\base64.js" />
+                                </Component>
+                                <Component Id="cmp33D2449306E3D07FD5468784D40C216A" Guid="*">
+                                    <File Id="filD5872A1176DD8B4846C222077EB09B7B" KeyPath="yes" Source="$(var.PammDir)\resources\app\node_modules\jszip\lib\compressedObject.js" />
+                                </Component>
+                                <Component Id="cmpF2BB28306F40EDFEA71A80C53CDFFCAD" Guid="*">
+                                    <File Id="fil8906A55AAB876D067204F73157D70C63" KeyPath="yes" Source="$(var.PammDir)\resources\app\node_modules\jszip\lib\compressions.js" />
+                                </Component>
+                                <Component Id="cmpA3A3EB27E419F395A28EBC3446656AB8" Guid="*">
+                                    <File Id="fil0BC219AD33FF9F6980055C51C9C72D63" KeyPath="yes" Source="$(var.PammDir)\resources\app\node_modules\jszip\lib\dataReader.js" />
+                                </Component>
+                                <Component Id="cmp3AED2B212038B45AD28E3FBDA2917410" Guid="*">
+                                    <File Id="fil6B60FDF5D335E136456D8ED148A51297" KeyPath="yes" Source="$(var.PammDir)\resources\app\node_modules\jszip\lib\defaults.js" />
+                                </Component>
+                                <Component Id="cmp11B59034685C03D4F1C15A5E03B30EF4" Guid="*">
+                                    <File Id="filCDC1847C61B9D98C47B0CA77EA08E02D" KeyPath="yes" Source="$(var.PammDir)\resources\app\node_modules\jszip\lib\flate.js" />
+                                </Component>
+                                <Component Id="cmp2DAFA155A8EA509E9D850C705AA9C534" Guid="*">
+                                    <File Id="filAD3467CEE36E0412877E184C17120269" KeyPath="yes" Source="$(var.PammDir)\resources\app\node_modules\jszip\lib\index.js" />
+                                </Component>
+                                <Component Id="cmp0AE07807B8D63717E545FB02EA8599F8" Guid="*">
+                                    <File Id="fil24AF1A654C9DE6AF8302E312A8117F95" KeyPath="yes" Source="$(var.PammDir)\resources\app\node_modules\jszip\lib\license_header.js" />
+                                </Component>
+                                <Component Id="cmp553A08A62DBD337F150CA098C7706382" Guid="*">
+                                    <File Id="fil48E29C8F3D57583DE8408A7AC5A39AA7" KeyPath="yes" Source="$(var.PammDir)\resources\app\node_modules\jszip\lib\load.js" />
+                                </Component>
+                                <Component Id="cmp76BE8BCD2C58E744CE2AB0094FE16466" Guid="*">
+                                    <File Id="filEC699138578A644DD99CC486B5233B20" KeyPath="yes" Source="$(var.PammDir)\resources\app\node_modules\jszip\lib\nodeBuffer.js" />
+                                </Component>
+                                <Component Id="cmpFF357396CF90B91B3D5425491EA8991F" Guid="*">
+                                    <File Id="fil1A3A57B7BCB881B701D4DF21A6E47687" KeyPath="yes" Source="$(var.PammDir)\resources\app\node_modules\jszip\lib\nodeBufferReader.js" />
+                                </Component>
+                                <Component Id="cmpF97A840DFE088720D7A28BD81BA11A6D" Guid="*">
+                                    <File Id="fil8D4A3D7D7055BC3EE5295B9E34E78A15" KeyPath="yes" Source="$(var.PammDir)\resources\app\node_modules\jszip\lib\object.js" />
+                                </Component>
+                                <Component Id="cmpC794E580F960DCC685D5E3398A4ECF3D" Guid="*">
+                                    <File Id="filC09253CCB33C39CFA8DC001C2B70D43E" KeyPath="yes" Source="$(var.PammDir)\resources\app\node_modules\jszip\lib\signature.js" />
+                                </Component>
+                                <Component Id="cmp00771E155F9A7952202B9BCB8133C591" Guid="*">
+                                    <File Id="filA771CC61BD169D8FA14E54B590160117" KeyPath="yes" Source="$(var.PammDir)\resources\app\node_modules\jszip\lib\stringReader.js" />
+                                </Component>
+                                <Component Id="cmpE83BDEFB88665AF9B75680931B133E80" Guid="*">
+                                    <File Id="filE666408773F2249BA26E5BBCD7066252" KeyPath="yes" Source="$(var.PammDir)\resources\app\node_modules\jszip\lib\support.js" />
+                                </Component>
+                                <Component Id="cmp784B434AB75E7FDDD550511BFB1151B1" Guid="*">
+                                    <File Id="fil56591DB9E920D92E4C0423759B979D07" KeyPath="yes" Source="$(var.PammDir)\resources\app\node_modules\jszip\lib\uint8ArrayReader.js" />
+                                </Component>
+                                <Component Id="cmp224DB63294381A117FFA43CC7599DC5B" Guid="*">
+                                    <File Id="fil2CDB8E8AC866016B549C4E70B5460309" KeyPath="yes" Source="$(var.PammDir)\resources\app\node_modules\jszip\lib\utils.js" />
+                                </Component>
+                                <Component Id="cmp21E3259808C2A3DD5AE1418B8001C699" Guid="*">
+                                    <File Id="filF56DFEA700999917AC1A80F3086F1065" KeyPath="yes" Source="$(var.PammDir)\resources\app\node_modules\jszip\lib\zipEntries.js" />
+                                </Component>
+                                <Component Id="cmpA2B04B27698CBAAD04CABB2653E01639" Guid="*">
+                                    <File Id="fil30F56C3777942956A288354F2A786528" KeyPath="yes" Source="$(var.PammDir)\resources\app\node_modules\jszip\lib\zipEntry.js" />
+                                </Component>
+                            </Directory>
+                            <Directory Id="dir0FC0FC90F97CA32FFAC4181D11C71615" Name="node_modules">
+                                <Directory Id="dir4E224CBC27EED7996BE358F32ECA4DA3" Name="pako">
+                                    <Component Id="cmp18498585BA0D90BE7598295593975BE4" Guid="*">
+                                        <File Id="filD0E9A66D899117BE940959DEB850DADE" KeyPath="yes" Source="$(var.PammDir)\resources\app\node_modules\jszip\node_modules\pako\index.js" />
+                                    </Component>
+                                    <Component Id="cmp516950C3324D80600808FF3FB0AB8394" Guid="*">
+                                        <File Id="fil5576B4A0AC54554442CECD6B3898E8D1" KeyPath="yes" Source="$(var.PammDir)\resources\app\node_modules\jszip\node_modules\pako\package.json" />
+                                    </Component>
+                                    <Directory Id="dirA98F50D06C083294760C023FA784EF73" Name="lib">
+                                        <Component Id="cmpBA39F7A6B13194D342C0DE50A54C7B27" Guid="*">
+                                            <File Id="fil1C2BEB5BAB02489BE1AAC474D99563CD" KeyPath="yes" Source="$(var.PammDir)\resources\app\node_modules\jszip\node_modules\pako\lib\deflate.js" />
+                                        </Component>
+                                        <Component Id="cmp261F8799D297583BE8D1E6A8C9E3E7E7" Guid="*">
+                                            <File Id="fil413CAB34E20B0DF594A561D44840F0DF" KeyPath="yes" Source="$(var.PammDir)\resources\app\node_modules\jszip\node_modules\pako\lib\inflate.js" />
+                                        </Component>
+                                        <Directory Id="dir0D6086E17988298E858D6B3C8D8F5088" Name="utils">
+                                            <Component Id="cmpC0D3FC197F74CB71E103358F4E4FFFA4" Guid="*">
+                                                <File Id="fil68C7FA38BE50F03ED200C7B72FA56EB4" KeyPath="yes" Source="$(var.PammDir)\resources\app\node_modules\jszip\node_modules\pako\lib\utils\common.js" />
+                                            </Component>
+                                            <Component Id="cmp9670C5FD753FFAB15E077725030F387C" Guid="*">
+                                                <File Id="fil1227B21555AF7E9599A25050C047845D" KeyPath="yes" Source="$(var.PammDir)\resources\app\node_modules\jszip\node_modules\pako\lib\utils\strings.js" />
+                                            </Component>
+                                        </Directory>
+                                        <Directory Id="dirD98F5E0A76FF4E0BD0FE1A2703D3E339" Name="zlib">
+                                            <Component Id="cmp548E8066D0B4C936A1FEF430E6B4740C" Guid="*">
+                                                <File Id="fil2B0A86E7E1B953074CBCFB0843456356" KeyPath="yes" Source="$(var.PammDir)\resources\app\node_modules\jszip\node_modules\pako\lib\zlib\adler32.js" />
+                                            </Component>
+                                            <Component Id="cmpFD71D0442AF836E01DBD76955480F545" Guid="*">
+                                                <File Id="fil3F7BCBB8D24306C1354655D65020BFBC" KeyPath="yes" Source="$(var.PammDir)\resources\app\node_modules\jszip\node_modules\pako\lib\zlib\constants.js" />
+                                            </Component>
+                                            <Component Id="cmp58A9F3340BBDDA68E0407EF080CAE274" Guid="*">
+                                                <File Id="fil320664E8C44A00A91B31C11A7E9A4514" KeyPath="yes" Source="$(var.PammDir)\resources\app\node_modules\jszip\node_modules\pako\lib\zlib\crc32.js" />
+                                            </Component>
+                                            <Component Id="cmp0C23EC64C5FAFCF9D7AC346519FAF97C" Guid="*">
+                                                <File Id="fil3C601A7646AB4B0ECC2D50E26B90D6BB" KeyPath="yes" Source="$(var.PammDir)\resources\app\node_modules\jszip\node_modules\pako\lib\zlib\deflate.js" />
+                                            </Component>
+                                            <Component Id="cmp55F536042460F05D5609FE37ED5E8240" Guid="*">
+                                                <File Id="filD5D9E6FB3782047917BAF099FA637727" KeyPath="yes" Source="$(var.PammDir)\resources\app\node_modules\jszip\node_modules\pako\lib\zlib\gzheader.js" />
+                                            </Component>
+                                            <Component Id="cmp4CBBBADAD1178F5D1C82250513AE6825" Guid="*">
+                                                <File Id="fil1C9438ECF7DA8F3D58B566BB153E312F" KeyPath="yes" Source="$(var.PammDir)\resources\app\node_modules\jszip\node_modules\pako\lib\zlib\inffast.js" />
+                                            </Component>
+                                            <Component Id="cmp73ED37A855215029B1B5364637B4B86B" Guid="*">
+                                                <File Id="filFA34A30063E340B5AC3BE69941FBDAE9" KeyPath="yes" Source="$(var.PammDir)\resources\app\node_modules\jszip\node_modules\pako\lib\zlib\inflate.js" />
+                                            </Component>
+                                            <Component Id="cmpB060C8AF72FE6448314471F316F52444" Guid="*">
+                                                <File Id="fil6928C5336BC89B3C612CBA9446E6DBFE" KeyPath="yes" Source="$(var.PammDir)\resources\app\node_modules\jszip\node_modules\pako\lib\zlib\inftrees.js" />
+                                            </Component>
+                                            <Component Id="cmp6481F4685537DDC46863DFE6204D3ECE" Guid="*">
+                                                <File Id="fil9C8D9F2E47A7A2EE9A19213B574CCE49" KeyPath="yes" Source="$(var.PammDir)\resources\app\node_modules\jszip\node_modules\pako\lib\zlib\messages.js" />
+                                            </Component>
+                                            <Component Id="cmp8CEBBFB9D46877952B0DB50F3E3AE166" Guid="*">
+                                                <File Id="filB10BEA72B0E4BC1EBDAE5C20927FCDE6" KeyPath="yes" Source="$(var.PammDir)\resources\app\node_modules\jszip\node_modules\pako\lib\zlib\trees.js" />
+                                            </Component>
+                                            <Component Id="cmp003F4266227B0DFDEBA2FF91EAA284AE" Guid="*">
+                                                <File Id="filEB2BF3ED3FEFD5BBA84C4A53EF28C264" KeyPath="yes" Source="$(var.PammDir)\resources\app\node_modules\jszip\node_modules\pako\lib\zlib\zstream.js" />
+                                            </Component>
+                                        </Directory>
+                                    </Directory>
+                                </Directory>
+                            </Directory>
+                        </Directory>
+                        <Directory Id="dir138D0CD16DD48E48E48F7BACED36B7EB" Name="lodash">
+                            <Component Id="cmpA069E6E37E1B9D576A1A7E238A111BDB" Guid="*">
+                                <File Id="fil67B699B87EA6D9EAA03A50D5870FBBD7" KeyPath="yes" Source="$(var.PammDir)\resources\app\node_modules\lodash\package.json" />
+                            </Component>
+                            <Directory Id="dirE63D1E5118A04BB9A232F156B789F599" Name="dist">
+                                <Component Id="cmp6A687592733DD62F44A3D866567112DC" Guid="*">
+                                    <File Id="filF83299DFD103596E9FD42E3A03D2F298" KeyPath="yes" Source="$(var.PammDir)\resources\app\node_modules\lodash\dist\lodash.js" />
+                                </Component>
+                            </Directory>
+                        </Directory>
+                        <Directory Id="dirE4A19B01FCB0D2EFD3D688935E56EC00" Name="mkdirp">
+                            <Component Id="cmpDB8B7750974961F0414745D52228A398" Guid="*">
+                                <File Id="fil7CD44E35B5CB310D12889F2E74F9098C" KeyPath="yes" Source="$(var.PammDir)\resources\app\node_modules\mkdirp\index.js" />
+                            </Component>
+                            <Component Id="cmpAC7CB58039FC06C26B571C0017F4B45A" Guid="*">
+                                <File Id="fil35E6FE3C684BB59156E17B5C726FF0B6" KeyPath="yes" Source="$(var.PammDir)\resources\app\node_modules\mkdirp\package.json" />
+                            </Component>
+                        </Directory>
+                        <Directory Id="dir7311DDB9C18F8BAB6BC232259B54F416" Name="semver">
+                            <Component Id="cmpB99AB9C291C945FEF5F3C2E16AB01922" Guid="*">
+                                <File Id="fil23749E477546DD8A35D76A18FED31D50" KeyPath="yes" Source="$(var.PammDir)\resources\app\node_modules\semver\package.json" />
+                            </Component>
+                            <Component Id="cmpEEFAA9B31C730F62F4A7EC899324AB79" Guid="*">
+                                <File Id="fil4B3AC9902D12577903ABC6AB89971AA2" KeyPath="yes" Source="$(var.PammDir)\resources\app\node_modules\semver\semver.js" />
+                            </Component>
+                        </Directory>
+                        <Directory Id="dir1874958519A78FAB6951E304C04DCD50" Name="sprintf">
+                            <Component Id="cmpC2FD32850AC172760007179A48744E61" Guid="*">
+                                <File Id="fil28F3E2914B784E8C4A1CA05EC1F06B27" KeyPath="yes" Source="$(var.PammDir)\resources\app\node_modules\sprintf\package.json" />
+                            </Component>
+                            <Directory Id="dir339126329202304EE3B3F2A7A8923281" Name="src">
+                                <Component Id="cmpD1A236FB12569787F06324F5E786915E" Guid="*">
+                                    <File Id="filF3F9B80D7E7AC76829245BBCA1848267" KeyPath="yes" Source="$(var.PammDir)\resources\app\node_modules\sprintf\src\sprintf.js" />
+                                </Component>
+                            </Directory>
+                        </Directory>
+                    </Directory>
+                </Directory>
+                <Directory Id="dir0747B826703C46A5C61FC6A0BE0E11D5" Name="atom">
+                    <Directory Id="dirDF224E4222F579586CE52DE1188485D2" Name="browser">
+                        <Directory Id="dirCCEEB22B064393B4ED193A735D235566" Name="api">
+                            <Directory Id="dirAFC8047E8FA5A78A20844F4B183BAECF" Name="lib">
+                                <Component Id="cmp8FEE021BBBAA716A7D0A9D1420AAA087" Guid="*">
+                                    <File Id="filE401C85AA45DF10A5007ECC6458DD761" KeyPath="yes" Source="$(var.PammDir)\resources\atom\browser\api\lib\app.js" />
+                                </Component>
+                                <Component Id="cmpC54813E537BAC0BAFEFD7795FCF746E6" Guid="*">
+                                    <File Id="fil9A6629EE2F5012605D3B438C0AFC902E" KeyPath="yes" Source="$(var.PammDir)\resources\atom\browser\api\lib\atom-delegate.js" />
+                                </Component>
+                                <Component Id="cmp7891C344AAC23EF10A8EFD23BE9D5926" Guid="*">
+                                    <File Id="fil868386DCA69BF6E83E589AE64D02F517" KeyPath="yes" Source="$(var.PammDir)\resources\atom\browser\api\lib\auto-updater.js" />
+                                </Component>
+                                <Component Id="cmp938C46567AF13508FC7433E46DF23DF8" Guid="*">
+                                    <File Id="fil8473F5802665B8DF5AFC3AA251D366A9" KeyPath="yes" Source="$(var.PammDir)\resources\atom\browser\api\lib\browser-window.js" />
+                                </Component>
+                                <Component Id="cmp39A70A2427DF519BDE674022EDE94B14" Guid="*">
+                                    <File Id="fil14423E56CE88E03B9A6870DDA7B7BC19" KeyPath="yes" Source="$(var.PammDir)\resources\atom\browser\api\lib\dialog.js" />
+                                </Component>
+                                <Component Id="cmpB9EA17597C9703BCCADFB44632EC71D4" Guid="*">
+                                    <File Id="fil77348FB1E53DC040557F2E79F262ED98" KeyPath="yes" Source="$(var.PammDir)\resources\atom\browser\api\lib\ipc.js" />
+                                </Component>
+                                <Component Id="cmp9C61A2750B8DAEC5EB49376A18A25B7B" Guid="*">
+                                    <File Id="filC829088D8EC867C826086A3448614566" KeyPath="yes" Source="$(var.PammDir)\resources\atom\browser\api\lib\menu-item.js" />
+                                </Component>
+                                <Component Id="cmpFF2F0EC4F523C5E9464A9D60917B0BA1" Guid="*">
+                                    <File Id="fil7BA8D52B114C3CEE52E4A685061C8D09" KeyPath="yes" Source="$(var.PammDir)\resources\atom\browser\api\lib\menu.js" />
+                                </Component>
+                                <Component Id="cmp1A188576E31AD4006F5834C98611AB28" Guid="*">
+                                    <File Id="fil1FE61409D757F02462E80561DB9BD45D" KeyPath="yes" Source="$(var.PammDir)\resources\atom\browser\api\lib\power-monitor.js" />
+                                </Component>
+                                <Component Id="cmp4511DBEAB07C3028F0AD4E604919BBF2" Guid="*">
+                                    <File Id="filE7EB20CBF49D9DECCFF97D02DE29E18C" KeyPath="yes" Source="$(var.PammDir)\resources\atom\browser\api\lib\protocol.js" />
+                                </Component>
+                                <Component Id="cmp9253D6E2E3313CD78E1703F0EEE0A570" Guid="*">
+                                    <File Id="fil808745A5A57FFD13C49497EEFBFA1ACF" KeyPath="yes" Source="$(var.PammDir)\resources\atom\browser\api\lib\tray.js" />
+                                </Component>
+                                <Component Id="cmp397641BBDE9AC03D32B87E8A30B91E54" Guid="*">
+                                    <File Id="fil9812747A8523CE6F29CC74EF54D0ED11" KeyPath="yes" Source="$(var.PammDir)\resources\atom\browser\api\lib\web-contents.js" />
+                                </Component>
+                            </Directory>
+                        </Directory>
+                        <Directory Id="dir0A36737AAF98A9184EAD428FE5485821" Name="lib">
+                            <Component Id="cmpB2FB8B07B0E7AF948ABF7BD47A1D1F67" Guid="*">
+                                <File Id="filA80318FA2734C889B46C375B8F77EAD1" KeyPath="yes" Source="$(var.PammDir)\resources\atom\browser\lib\init.js" />
+                            </Component>
+                            <Component Id="cmp2E4BDF236064ECF7D5F6DD3C0E40E5F9" Guid="*">
+                                <File Id="filA175298CFE32FE367DBEA326B223CF7C" KeyPath="yes" Source="$(var.PammDir)\resources\atom\browser\lib\objects-registry.js" />
+                            </Component>
+                            <Component Id="cmpBA00FEFD065FD5C0246DC97C6FFE8517" Guid="*">
+                                <File Id="fil8416710795F9A5B990B191C41D284973" KeyPath="yes" Source="$(var.PammDir)\resources\atom\browser\lib\rpc-server.js" />
+                            </Component>
+                        </Directory>
+                    </Directory>
+                    <Directory Id="dir59E38A86C5E996D3D654E0AA7783E41B" Name="common">
+                        <Directory Id="dirAA76C47DD15368DCDF45D4F9AB8F0D37" Name="api">
+                            <Directory Id="dirA62EF439AEF6D29C69B23B2A1E33F87B" Name="lib">
+                                <Component Id="cmpB6D7E2A04723F92015CDAACFF9CA9FA3" Guid="*">
+                                    <File Id="filE6C0259850F1119D1997877600516964" KeyPath="yes" Source="$(var.PammDir)\resources\atom\common\api\lib\callbacks-registry.js" />
+                                </Component>
+                                <Component Id="cmpE2FD25CD5F72764AA095F1C7AA4C80CB" Guid="*">
+                                    <File Id="fil2A5B1D652F234E7C11C75B8FCA0C1E59" KeyPath="yes" Source="$(var.PammDir)\resources\atom\common\api\lib\clipboard.js" />
+                                </Component>
+                                <Component Id="cmp9A5C802725D1211B48D6A5DCC4C687EB" Guid="*">
+                                    <File Id="filF5D9A1A8DA6ACEB50493A875D17FEE3C" KeyPath="yes" Source="$(var.PammDir)\resources\atom\common\api\lib\crash-reporter.js" />
+                                </Component>
+                                <Component Id="cmp73F89E9063D38F117810A0FA13A3A39F" Guid="*">
+                                    <File Id="filCD7A0A15A44FF5353016B65D6CB4C98E" KeyPath="yes" Source="$(var.PammDir)\resources\atom\common\api\lib\id-weak-map.js" />
+                                </Component>
+                                <Component Id="cmp23A9CC5C8E702DF6FA5CE01B6DB033A4" Guid="*">
+                                    <File Id="filE8716DC0F05DDD136C25CC14B84AA911" KeyPath="yes" Source="$(var.PammDir)\resources\atom\common\api\lib\screen.js" />
+                                </Component>
+                                <Component Id="cmpA535B9A440B091E8B429405117E215A0" Guid="*">
+                                    <File Id="fil7A7D829BAE8B7833EBA2023E7F79A6F8" KeyPath="yes" Source="$(var.PammDir)\resources\atom\common\api\lib\shell.js" />
+                                </Component>
+                            </Directory>
+                        </Directory>
+                        <Directory Id="dir5D0392EFEBE505A37FE47167F28B1368" Name="lib">
+                            <Component Id="cmpC944AFEC78449EB5F76159713711DD45" Guid="*">
+                                <File Id="fil3030CA9F05475222210F97FF9D0BB28A" KeyPath="yes" Source="$(var.PammDir)\resources\atom\common\lib\init.js" />
+                            </Component>
+                        </Directory>
+                    </Directory>
+                    <Directory Id="dir919C6568E5DBBCB2A1631C8D42B8A085" Name="renderer">
+                        <Directory Id="dir8F28293C522C0070BD08B75D60A94180" Name="api">
+                            <Directory Id="dir00AFFB444ED40E5D7203FA36C4BB81A1" Name="lib">
+                                <Component Id="cmp2CE995194A2F8CCB54F853D39047FDC6" Guid="*">
+                                    <File Id="filAAD9B9E49B1E27540EEA0AA43D73416D" KeyPath="yes" Source="$(var.PammDir)\resources\atom\renderer\api\lib\ipc.js" />
+                                </Component>
+                                <Component Id="cmpEE1090E535A7393716D5EB3879463075" Guid="*">
+                                    <File Id="fil8BDED97B9CB33FACE2A3FCD1B4A7D459" KeyPath="yes" Source="$(var.PammDir)\resources\atom\renderer\api\lib\remote.js" />
+                                </Component>
+                            </Directory>
+                        </Directory>
+                        <Directory Id="dir820BC5165DB94892660208491C4A567B" Name="lib">
+                            <Component Id="cmpAE59C2FD5F4F8616DC0D6BAF72574EDA" Guid="*">
+                                <File Id="fil110EA23F4678740558CAF93AA67757D8" KeyPath="yes" Source="$(var.PammDir)\resources\atom\renderer\lib\init.js" />
+                            </Component>
+                            <Component Id="cmp35D5B957CF385D785A55197BA80C5DD6" Guid="*">
+                                <File Id="filB8F62D9DA95F38FCE613E55F4E2400C5" KeyPath="yes" Source="$(var.PammDir)\resources\atom\renderer\lib\inspector.js" />
+                            </Component>
+                            <Component Id="cmpB02370B9FD8CE04F5B347C30B4BAC306" Guid="*">
+                                <File Id="fil2CCD9F60630609BD591F0E00DC68B8F5" KeyPath="yes" Source="$(var.PammDir)\resources\atom\renderer\lib\override.js" />
+                            </Component>
+                        </Directory>
+                    </Directory>
+                </Directory>
+                <Directory Id="dirC6A88A1720B83313BCED9EE3218AA760" Name="default_app">
+                    <Component Id="cmp4719EB739A74E669BA5A458DA6C9EA06" Guid="*">
+                        <File Id="fil99A06CAADBB44EA3A12EADADC12BCCEF" KeyPath="yes" Source="$(var.PammDir)\resources\default_app\default_app.js" />
+                    </Component>
+                    <Component Id="cmp8B1E8E44FD56A18FB634268885462666" Guid="*">
+                        <File Id="filD57D7E95106D0251CFC5D1151206CF62" KeyPath="yes" Source="$(var.PammDir)\resources\default_app\index.html" />
+                    </Component>
+                    <Component Id="cmp4175FFCBD71999169B20D52A90655CE4" Guid="*">
+                        <File Id="filF5440A98E4A40F6A61CDE01A7B1593FD" KeyPath="yes" Source="$(var.PammDir)\resources\default_app\main.js" />
+                    </Component>
+                    <Component Id="cmp7A1D3B3C1EA3F7083148ECA93EF22942" Guid="*">
+                        <File Id="filDCAD1C44C73097231220040E26E38976" KeyPath="yes" Source="$(var.PammDir)\resources\default_app\package.json" />
+                    </Component>
+                    <Directory Id="dir799E96F984BB0448342BC2FF977E6167" Name="node_modules">
+                        <Directory Id="dirD3D90C1663E48766019B95D5E61F5548" Name="optimist">
+                            <Component Id="cmpE2C4F5654CEC41DC98AD8BC29D7AA79A" Guid="*">
+                                <File Id="filACB33DFC2BC8D907CFDD191A9792435A" KeyPath="yes" Source="$(var.PammDir)\resources\default_app\node_modules\optimist\.travis.yml" />
+                            </Component>
+                            <Component Id="cmp47514B9891F46AB44BD4108DC9E9CF82" Guid="*">
+                                <File Id="filB1F18A96000084E6336D57750CAEF973" KeyPath="yes" Source="$(var.PammDir)\resources\default_app\node_modules\optimist\index.js" />
+                            </Component>
+                            <Component Id="cmpC43A695E5EA43E3C963132F1CF761360" Guid="*">
+                                <File Id="filEFCEBD094DD2C1C86409D1F7DA32FA80" KeyPath="yes" Source="$(var.PammDir)\resources\default_app\node_modules\optimist\LICENSE" />
+                            </Component>
+                            <Component Id="cmpAED2E95899F790F1F5BAE8E2AF7428AF" Guid="*">
+                                <File Id="fil6544ECC9289C5CDB2F0771BA21B08A18" KeyPath="yes" Source="$(var.PammDir)\resources\default_app\node_modules\optimist\package.json" />
+                            </Component>
+                            <Component Id="cmpFDDF98327E5F7C99E2E606A86AB50D22" Guid="*">
+                                <File Id="filB8C0F5A675354D267B8D232449AA5155" KeyPath="yes" Source="$(var.PammDir)\resources\default_app\node_modules\optimist\readme.markdown" />
+                            </Component>
+                            <Directory Id="dir54FFF51B689730404FDE2C5DEBEB491A" Name="example">
+                                <Component Id="cmpEEEB7CE6072B59A831D750A4C73241D0" Guid="*">
+                                    <File Id="fil96EF2CEEEE2539A323AF4411F73DFB08" KeyPath="yes" Source="$(var.PammDir)\resources\default_app\node_modules\optimist\example\bool.js" />
+                                </Component>
+                                <Component Id="cmp25F56623B762603EEFED46C265477E8D" Guid="*">
+                                    <File Id="fil606377B6C503A9CAB5E294A10ACAFF39" KeyPath="yes" Source="$(var.PammDir)\resources\default_app\node_modules\optimist\example\boolean_double.js" />
+                                </Component>
+                                <Component Id="cmpC38710C3D48418ECC37DBA54844B753B" Guid="*">
+                                    <File Id="fil24D74398C3F457B680E104E746FD295E" KeyPath="yes" Source="$(var.PammDir)\resources\default_app\node_modules\optimist\example\boolean_single.js" />
+                                </Component>
+                                <Component Id="cmp579B33538DD431D1420204C49A7ECCE2" Guid="*">
+                                    <File Id="fil8180C05723E6CD80FB10A2DCE11A9B51" KeyPath="yes" Source="$(var.PammDir)\resources\default_app\node_modules\optimist\example\default_hash.js" />
+                                </Component>
+                                <Component Id="cmp974FFB3918D95CE7583A02DD61FB87F7" Guid="*">
+                                    <File Id="fil92C2E155737E04815F479A5A9A3FEF88" KeyPath="yes" Source="$(var.PammDir)\resources\default_app\node_modules\optimist\example\default_singles.js" />
+                                </Component>
+                                <Component Id="cmp0A0285AE4D29179EE6159CB0C8B11331" Guid="*">
+                                    <File Id="fil101CEB4F9B5B3BAF78300D5FA8A9AA7C" KeyPath="yes" Source="$(var.PammDir)\resources\default_app\node_modules\optimist\example\divide.js" />
+                                </Component>
+                                <Component Id="cmp3E052AE6C17B506F22787C4B8127F05D" Guid="*">
+                                    <File Id="filD613D7EA54E239391645A96548B12E00" KeyPath="yes" Source="$(var.PammDir)\resources\default_app\node_modules\optimist\example\line_count.js" />
+                                </Component>
+                                <Component Id="cmpFCD788FABA95DF4CD056E502ECF0B898" Guid="*">
+                                    <File Id="fil41ACE48406C450C265125750CE305D94" KeyPath="yes" Source="$(var.PammDir)\resources\default_app\node_modules\optimist\example\line_count_options.js" />
+                                </Component>
+                                <Component Id="cmp9452CD43403708A420C6F2963B4498CC" Guid="*">
+                                    <File Id="fil7A88EFF8BC651F1ED38EAE18DD956F67" KeyPath="yes" Source="$(var.PammDir)\resources\default_app\node_modules\optimist\example\line_count_wrap.js" />
+                                </Component>
+                                <Component Id="cmpCA7206DD8A579E8903F4D033FA389999" Guid="*">
+                                    <File Id="fil53084E8F80777F8F228732DA4A891ED6" KeyPath="yes" Source="$(var.PammDir)\resources\default_app\node_modules\optimist\example\nonopt.js" />
+                                </Component>
+                                <Component Id="cmpAF737C1234F0733CC865A8B606AAE575" Guid="*">
+                                    <File Id="fil2BAAB9441BA670ED9B9CA577CACBAA9F" KeyPath="yes" Source="$(var.PammDir)\resources\default_app\node_modules\optimist\example\reflect.js" />
+                                </Component>
+                                <Component Id="cmpCAD58070D68F07DBD20BD437D18BB1C4" Guid="*">
+                                    <File Id="fil22C927DE75E959A61582EC806896A067" KeyPath="yes" Source="$(var.PammDir)\resources\default_app\node_modules\optimist\example\short.js" />
+                                </Component>
+                                <Component Id="cmp900DC5F2D343844A6C2F81DA9D6BB9BA" Guid="*">
+                                    <File Id="fil6C47FD7AB5D8727774DB849E2202612B" KeyPath="yes" Source="$(var.PammDir)\resources\default_app\node_modules\optimist\example\string.js" />
+                                </Component>
+                                <Component Id="cmp89B6053BCED6471A37684F5DB24C58E4" Guid="*">
+                                    <File Id="fil198F087E854F7046041E1A01432864EC" KeyPath="yes" Source="$(var.PammDir)\resources\default_app\node_modules\optimist\example\usage-options.js" />
+                                </Component>
+                                <Component Id="cmp799DB2C187D01F6205B21598D2527982" Guid="*">
+                                    <File Id="fil266636585BF7347753C24BCF16D5FF54" KeyPath="yes" Source="$(var.PammDir)\resources\default_app\node_modules\optimist\example\xup.js" />
+                                </Component>
+                            </Directory>
+                            <Directory Id="dir74CCC849D9A2E3580443FD39C5C891D2" Name="node_modules">
+                                <Directory Id="dirBFE610D4BDB0AF61110C2F6E1B088252" Name="minimist">
+                                    <Component Id="cmpFD6DEE258E897FA5B92B2EC412271D48" Guid="*">
+                                        <File Id="filAAA296F20F805A2CF2B75B94965F7160" KeyPath="yes" Source="$(var.PammDir)\resources\default_app\node_modules\optimist\node_modules\minimist\.travis.yml" />
+                                    </Component>
+                                    <Component Id="cmp9AFCF88113C1E99D6693B1793CB6256F" Guid="*">
+                                        <File Id="filC4BD1FC085B1B50F3421F6D9C417C4CE" KeyPath="yes" Source="$(var.PammDir)\resources\default_app\node_modules\optimist\node_modules\minimist\index.js" />
+                                    </Component>
+                                    <Component Id="cmp60A4D9EF6CF151D3C7CBF5B3E328228F" Guid="*">
+                                        <File Id="fil8926B7B4845D6600805FE6310A866D51" KeyPath="yes" Source="$(var.PammDir)\resources\default_app\node_modules\optimist\node_modules\minimist\LICENSE" />
+                                    </Component>
+                                    <Component Id="cmpA35FF1A2567A86498BE6988DA39BE80E" Guid="*">
+                                        <File Id="fil574E2E54757868F20DED4B7F83057F84" KeyPath="yes" Source="$(var.PammDir)\resources\default_app\node_modules\optimist\node_modules\minimist\package.json" />
+                                    </Component>
+                                    <Component Id="cmp1740BC1DC1BD1139055139B8B7642F64" Guid="*">
+                                        <File Id="fil3783E4032894A129DBCE69A0A064BFAF" KeyPath="yes" Source="$(var.PammDir)\resources\default_app\node_modules\optimist\node_modules\minimist\readme.markdown" />
+                                    </Component>
+                                    <Directory Id="dir448C8F32A5D687DF11A3BE528BB421CF" Name="example">
+                                        <Component Id="cmp0E5E683A864AA2B780588120430F7C11" Guid="*">
+                                            <File Id="filFBF3597609B9A1107943AF955651830E" KeyPath="yes" Source="$(var.PammDir)\resources\default_app\node_modules\optimist\node_modules\minimist\example\parse.js" />
+                                        </Component>
+                                    </Directory>
+                                    <Directory Id="dirA989E1ACADF8103392F840543B826249" Name="test">
+                                        <Component Id="cmp70B8C9FD3F2EED21E2656ADCAA2C2DBC" Guid="*">
+                                            <File Id="fil7045C3D7F11ADBC642C65996F56B6247" KeyPath="yes" Source="$(var.PammDir)\resources\default_app\node_modules\optimist\node_modules\minimist\test\bool.js" />
+                                        </Component>
+                                        <Component Id="cmp51CFC7B038FA9250E207941D1175BD4C" Guid="*">
+                                            <File Id="fil965B8F977BE15755CC8626E3A4E33EBD" KeyPath="yes" Source="$(var.PammDir)\resources\default_app\node_modules\optimist\node_modules\minimist\test\dash.js" />
+                                        </Component>
+                                        <Component Id="cmp77170BE88FF27702F1D60534FC5EAA9F" Guid="*">
+                                            <File Id="fil731A69FDBDA6FD6EB2DCF969BF26CEC4" KeyPath="yes" Source="$(var.PammDir)\resources\default_app\node_modules\optimist\node_modules\minimist\test\default_bool.js" />
+                                        </Component>
+                                        <Component Id="cmp955DC9B193A3C32827C2B19EBDB882BE" Guid="*">
+                                            <File Id="fil7898EAC90F8201C763D5DCA12E1C8546" KeyPath="yes" Source="$(var.PammDir)\resources\default_app\node_modules\optimist\node_modules\minimist\test\dotted.js" />
+                                        </Component>
+                                        <Component Id="cmp2A8DB5FE3F1C7F4C24EAC7FC47493E40" Guid="*">
+                                            <File Id="filD41268475D7847ED10265541F7ADF696" KeyPath="yes" Source="$(var.PammDir)\resources\default_app\node_modules\optimist\node_modules\minimist\test\long.js" />
+                                        </Component>
+                                        <Component Id="cmp4CB4DB8AA672C4B6C15428C3139F38D4" Guid="*">
+                                            <File Id="fil70274362CEB9667F8D8BBFC99D3ED5AF" KeyPath="yes" Source="$(var.PammDir)\resources\default_app\node_modules\optimist\node_modules\minimist\test\num.js" />
+                                        </Component>
+                                        <Component Id="cmp8606591906AECF417017B40FF3FB9438" Guid="*">
+                                            <File Id="fil4C617DF280B493A13CA29B06C627DF2A" KeyPath="yes" Source="$(var.PammDir)\resources\default_app\node_modules\optimist\node_modules\minimist\test\parse.js" />
+                                        </Component>
+                                        <Component Id="cmpDF5BD89F6D6AD84F7FEE0E8E9D797110" Guid="*">
+                                            <File Id="filCD65DED42475480C566E021223B5197C" KeyPath="yes" Source="$(var.PammDir)\resources\default_app\node_modules\optimist\node_modules\minimist\test\parse_modified.js" />
+                                        </Component>
+                                        <Component Id="cmp3CCF27788BAACC94B8461E6E5E972884" Guid="*">
+                                            <File Id="fil7B86AFE18AA6D62956E29B6E5F11888B" KeyPath="yes" Source="$(var.PammDir)\resources\default_app\node_modules\optimist\node_modules\minimist\test\short.js" />
+                                        </Component>
+                                        <Component Id="cmp4FBC0120A265AE49E153ED0524C25AB6" Guid="*">
+                                            <File Id="filF420D9151A7AA685F9FA014175A2A43F" KeyPath="yes" Source="$(var.PammDir)\resources\default_app\node_modules\optimist\node_modules\minimist\test\whitespace.js" />
+                                        </Component>
+                                    </Directory>
+                                </Directory>
+                                <Directory Id="dirD651DCDAF464350161D0BA6D6E3761B0" Name="wordwrap">
+                                    <Component Id="cmpE8FE82078C88130283D14B49B0849BA1" Guid="*">
+                                        <File Id="fil3534F7C210687DE447B11D155B3C3CAA" KeyPath="yes" Source="$(var.PammDir)\resources\default_app\node_modules\optimist\node_modules\wordwrap\.npmignore" />
+                                    </Component>
+                                    <Component Id="cmp8AAC77B02CE1FC8C87C6061F95CF7AF4" Guid="*">
+                                        <File Id="fil9C3E533A62A0DE42972DF2F91D847368" KeyPath="yes" Source="$(var.PammDir)\resources\default_app\node_modules\optimist\node_modules\wordwrap\index.js" />
+                                    </Component>
+                                    <Component Id="cmpC6B751071BA01DE7EB4529933EE3B634" Guid="*">
+                                        <File Id="fil9AE1369549AEFE84F49054DDE9EC03B0" KeyPath="yes" Source="$(var.PammDir)\resources\default_app\node_modules\optimist\node_modules\wordwrap\package.json" />
+                                    </Component>
+                                    <Component Id="cmpC9144C9739952CB384A9A172E6747DD0" Guid="*">
+                                        <File Id="filFC27E26291AC84757744D8701DEB7CE4" KeyPath="yes" Source="$(var.PammDir)\resources\default_app\node_modules\optimist\node_modules\wordwrap\README.markdown" />
+                                    </Component>
+                                    <Directory Id="dir386CA9BD013C11F010BE4E08172F9427" Name="example">
+                                        <Component Id="cmp9289F86F90E383A73AE7FC931C7C8070" Guid="*">
+                                            <File Id="filD068411473706428CBE9CB49A2D9B8B9" KeyPath="yes" Source="$(var.PammDir)\resources\default_app\node_modules\optimist\node_modules\wordwrap\example\center.js" />
+                                        </Component>
+                                        <Component Id="cmpDA30A0C2A423A2278DBEF856007FA829" Guid="*">
+                                            <File Id="filFA02B58D43AACF8572511C67020B8B68" KeyPath="yes" Source="$(var.PammDir)\resources\default_app\node_modules\optimist\node_modules\wordwrap\example\meat.js" />
+                                        </Component>
+                                    </Directory>
+                                    <Directory Id="dirD4E9DD7355B3AA802B3C086B1A0B9C03" Name="test">
+                                        <Component Id="cmpE9D94B60D875025A68EC396CF20536A8" Guid="*">
+                                            <File Id="fil24C59C072CE490163705DC7C9FED5A95" KeyPath="yes" Source="$(var.PammDir)\resources\default_app\node_modules\optimist\node_modules\wordwrap\test\break.js" />
+                                        </Component>
+                                        <Component Id="cmp031C7FFD7EBF0978C30180CE6D2A386F" Guid="*">
+                                            <File Id="fil3DB942EA6A132125A9D651E2080586FA" KeyPath="yes" Source="$(var.PammDir)\resources\default_app\node_modules\optimist\node_modules\wordwrap\test\idleness.txt" />
+                                        </Component>
+                                        <Component Id="cmp5C24FF27D563C11B27334C8A256D592E" Guid="*">
+                                            <File Id="fil3DC85DA0E5E2B530F09D2E8CEFCB0A85" KeyPath="yes" Source="$(var.PammDir)\resources\default_app\node_modules\optimist\node_modules\wordwrap\test\wrap.js" />
+                                        </Component>
+                                    </Directory>
+                                </Directory>
+                            </Directory>
+                            <Directory Id="dirFA4E9BA4135EC3AC790B61B1EB24F8A3" Name="test">
+                                <Component Id="cmpB160E2FF2D811996F859D7C16C8D9137" Guid="*">
+                                    <File Id="filD5657FD5711159A6B48256587CAAD2AF" KeyPath="yes" Source="$(var.PammDir)\resources\default_app\node_modules\optimist\test\dash.js" />
+                                </Component>
+                                <Component Id="cmp1BA3118ABC9B57C3EEDFBA03BB27BB85" Guid="*">
+                                    <File Id="fil78FE06FBC2A332399505B5BE53025812" KeyPath="yes" Source="$(var.PammDir)\resources\default_app\node_modules\optimist\test\parse.js" />
+                                </Component>
+                                <Component Id="cmp9DFC5FE79466BF2FCAFF38BE5D78332E" Guid="*">
+                                    <File Id="fil694292C15C5EE8DE7F9EEA7B9A8364C1" KeyPath="yes" Source="$(var.PammDir)\resources\default_app\node_modules\optimist\test\parse_modified.js" />
+                                </Component>
+                                <Component Id="cmp38050B41E1339A097A37A776EBF22F05" Guid="*">
+                                    <File Id="fil3387B5D5D8809F24CBC1CDB2632B6861" KeyPath="yes" Source="$(var.PammDir)\resources\default_app\node_modules\optimist\test\short.js" />
+                                </Component>
+                                <Component Id="cmpA555490357F6CCE5A2F56173673B1970" Guid="*">
+                                    <File Id="fil30613772D992AD2B294FDBCCF07A5936" KeyPath="yes" Source="$(var.PammDir)\resources\default_app\node_modules\optimist\test\usage.js" />
+                                </Component>
+                                <Component Id="cmpB6D86756420FADD049D1E7F2E41EC4F5" Guid="*">
+                                    <File Id="filA3402E8BAE1C959CD38CED9BA69A6A08" KeyPath="yes" Source="$(var.PammDir)\resources\default_app\node_modules\optimist\test\whitespace.js" />
+                                </Component>
+                                <Component Id="cmp6C89720D20AEB2B9C61A2A466C195115" Guid="*">
+                                    <File Id="filFB0262076C997DD049A41DE3949309F2" KeyPath="yes" Source="$(var.PammDir)\resources\default_app\node_modules\optimist\test\_.js" />
+                                </Component>
+                                <Directory Id="dirF5D54737362E000073391C29FC855AD9" Name="_">
+                                    <Component Id="cmp4BE94687D11FE766D750D71C08E6BBC9" Guid="*">
+                                        <File Id="fil3919EDD43CD853467854467863C00AC2" KeyPath="yes" Source="$(var.PammDir)\resources\default_app\node_modules\optimist\test\_\argv.js" />
+                                    </Component>
+                                    <Component Id="cmp2860EC17BBC47737039B6B8E8EC0C604" Guid="*">
+                                        <File Id="fil29726F0660E2AFB7E4EAE8326F34390E" KeyPath="yes" Source="$(var.PammDir)\resources\default_app\node_modules\optimist\test\_\bin.js" />
+                                    </Component>
+                                </Directory>
+                            </Directory>
+                        </Directory>
+                    </Directory>
+                </Directory>
+            </Directory>
+        </DirectoryRef>
+    </Fragment>
+    <Fragment>
+        <ComponentGroup Id="ProductComponents">
+            <ComponentRef Id="cmpF43E7FF582E498B013E5D103DE8E27E1" />
+            <ComponentRef Id="cmpD29EB095034480F45518B80E18ED80CC" />
+            <ComponentRef Id="cmp4001ECA855CB2C89EF26E43D87647B75" />
+            <ComponentRef Id="cmpB8736D8C69669958B5E14F925EDB18C6" />
+            <ComponentRef Id="cmp661571A74E0C7C9BF14C10191B5A70D4" />
+            <ComponentRef Id="cmpED1C29F8914A4A53211F619E1872ECC1" />
+            <ComponentRef Id="cmp8173820A225E77A4F1F9A1A20860A672" />
+            <ComponentRef Id="cmpDBD516BE77094BA0CD96C40057270A98" />
+            <ComponentRef Id="cmp932020E83BCE5F49A4730BBABD027119" />
+            <ComponentRef Id="cmp02A9A26FF866B3A4C4C31EE0800CD0D8" />
+            <ComponentRef Id="cmp1ABA21D4D68C9DC31B17624E3B281C32" />
+            <ComponentRef Id="cmpEF0E6A1F83E92A0CF8F100A395EE6C7F" />
+            <ComponentRef Id="cmp62C2567F43F90D0C27821FDD5A942BE7" />
+            <ComponentRef Id="cmpBDCA0A97624455ED6B3148E51C6CD716" />
+            <ComponentRef Id="cmpDBDBA2E2F9956E10098644CAAFEC895D" />
+            <ComponentRef Id="cmp95282681C2D8C51357F7F010B796E32F" />
+            <ComponentRef Id="cmpA9F2362A5BC9913C95815CE357BEA9C8" />
+            <ComponentRef Id="cmp788AE056FFE7A8F1C9088798C2B9D16A" />
+            <ComponentRef Id="cmp6E10C18A801C842F85CB4692B3BB91F1" />
+            <ComponentRef Id="cmp4952058F60EC417C5B913F17D31604FB" />
+            <ComponentRef Id="cmp8221547D5B3DB423CBBBFFAA060A9D58" />
+            <ComponentRef Id="cmp33B6D48D9D47FB06B5962D2046DD2157" />
+            <ComponentRef Id="cmpAAAADC6A006B386700A049AC50BA7E8C" />
+            <ComponentRef Id="cmpCFE584C7FF7E6F66BFE2E3EF9206D630" />
+            <ComponentRef Id="cmpB9415FBC3E55E98412B4A1137C0CF556" />
+            <ComponentRef Id="cmpD835FAC09FAF365EC7CFF7D358B357EC" />
+            <ComponentRef Id="cmpC87A130587FD562381802D29C515B1F7" />
+            <ComponentRef Id="cmp5AF0CFD567E370B5DEF9E52F65438FEA" />
+            <ComponentRef Id="cmp2618DA72B4EBD1CFEC9BF849B1C6A720" />
+            <ComponentRef Id="cmp9A6D91745EA3CA78B704C93A44EE8A24" />
+            <ComponentRef Id="cmpC2FF4524B4F889D3755BC3F346DB7532" />
+            <ComponentRef Id="cmpFF3E713765831F7A625146E5C4EE7756" />
+            <ComponentRef Id="cmpDFEF0DFBF83DFE56CD5D00BA3EE284CD" />
+            <ComponentRef Id="cmp77ED9943111D332E717A324E9A7D1462" />
+            <ComponentRef Id="cmp340CDE652C8B117D1F3F85871FB93A71" />
+            <ComponentRef Id="cmpA2971C1BB31E466991E9490C7EFAD08C" />
+            <ComponentRef Id="cmp06E040C37C640B62E1B2BA1DC4A20E74" />
+            <ComponentRef Id="cmpCAFC3CDB194A6BD5F0DE487648130395" />
+            <ComponentRef Id="cmp29CF0F8D0DD57C192CFCC830705D1DDA" />
+            <ComponentRef Id="cmp29621CC9AE64EE7F2D72B7310AAAE6B7" />
+            <ComponentRef Id="cmp72689D0F152F42DE48C8A9FA8AFB4B6B" />
+            <ComponentRef Id="cmp62E5A05A6984AADB535698872B4FABAB" />
+            <ComponentRef Id="cmpFAC95D800D87D9850FCD3B00AABB8810" />
+            <ComponentRef Id="cmpBA35E583A6E70F01D86FE8BF18F33581" />
+            <ComponentRef Id="cmpFABCBE881F3D1973115D5D273F226778" />
+            <ComponentRef Id="cmp270084105CD1BB1A39A5198747219228" />
+            <ComponentRef Id="cmp495000D3B43E522C22562A49F9729994" />
+            <ComponentRef Id="cmp8EB981D7CEF1B7856C7792AE7FE5267C" />
+            <ComponentRef Id="cmp25A9665CC7FB5058BAAFDDF4513180C5" />
+            <ComponentRef Id="cmp60CABDD4B099BA3663A1760964EA6948" />
+            <ComponentRef Id="cmp670B9CE70C9F6D8252BEBDB2B2C9FEE5" />
+            <ComponentRef Id="cmp1FC7028DA642188F5F52E75864D2B04B" />
+            <ComponentRef Id="cmp41FFA89D1A8972541C5C058083E06D57" />
+            <ComponentRef Id="cmpCF48B1D4FEB9F0E8995B47066D381BF0" />
+            <ComponentRef Id="cmpD047BAEF2BD0D96CB6CDBF5045E339D8" />
+            <ComponentRef Id="cmpE9607A9AF365010A0F229B2816EEF6A5" />
+            <ComponentRef Id="cmpA36E8F20455325C47C8E5C1488C9D4F5" />
+            <ComponentRef Id="cmpEC7739B32F92AA82886DFD25D2798580" />
+            <ComponentRef Id="cmp3B7740B523E3C15AA134C0FEE0DA01E6" />
+            <ComponentRef Id="cmpFFC3C12C370CEF5CBDC5F5DD49FDC4A2" />
+            <ComponentRef Id="cmp1E5C3FE4762504E822DEC4FCBCAAFB9B" />
+            <ComponentRef Id="cmpFEC6AEB485B631E1CB87842374C2B4E3" />
+            <ComponentRef Id="cmp8937CD85D5A80300EB46AA934E5FBC18" />
+            <ComponentRef Id="cmp26452B763005B4732D8A89EBF304D6AA" />
+            <ComponentRef Id="cmpFB4EC2AD463B8273156EEB6712F0D473" />
+            <ComponentRef Id="cmp6023C9A4F33D5CBD2DBA369F81CCBE5D" />
+            <ComponentRef Id="cmp81B76FFBAEAA1A4304B0C9B00AC6B8FE" />
+            <ComponentRef Id="cmpE06110F289494AA9F2BF401A81A0876F" />
+            <ComponentRef Id="cmpE1FCFCD1589D713E60D68B5F7DE7F8D0" />
+            <ComponentRef Id="cmp338C4474334C0BCAED3A47364293E9F3" />
+            <ComponentRef Id="cmp6C8600BA5C7AE49E4A4C4CB59AE6AC9F" />
+            <ComponentRef Id="cmp6CDA51DCF0DC5B7913C22305D5B22D8F" />
+            <ComponentRef Id="cmpF0A28655A9C5F87CC72326224279D593" />
+            <ComponentRef Id="cmp7A44C88F8190D9727587F50C852138B4" />
+            <ComponentRef Id="cmpF79517753101D60144AA034C79F66623" />
+            <ComponentRef Id="cmp3930034567844B3C2CE835C769FBD29E" />
+            <ComponentRef Id="cmp6054B12F4FAD943490997C133C8B63CE" />
+            <ComponentRef Id="cmpC00759A884BB60E7F8FF6A2EA93CA2E1" />
+            <ComponentRef Id="cmp70C77453C22BBB15155C4799636437E4" />
+            <ComponentRef Id="cmp59BF93E74F30C652D12315FD200A910A" />
+            <ComponentRef Id="cmp2049CF6B9B6D440EE26BC8871B13EC5F" />
+            <ComponentRef Id="cmp0EDF0B38724D1587D48CE26FEC195964" />
+            <ComponentRef Id="cmp5C1DBDEEBACDB52262791272D5F74835" />
+            <ComponentRef Id="cmpFB7944D39942419124209D1D59C4AE75" />
+            <ComponentRef Id="cmpE7F80B98EB620D47C348BDDED96AF737" />
+            <ComponentRef Id="cmp8ACFCCDE0840DB5F2E4B57CEE341D37D" />
+            <ComponentRef Id="cmpCCF24DE7040857BF2619217ABD996445" />
+            <ComponentRef Id="cmpADDD1A15F84329DF43344580805C13E8" />
+            <ComponentRef Id="cmpB65B6C4F96F1E079F02B6974346433D6" />
+            <ComponentRef Id="cmpBE4658BB14F5CC975B9A5C2795E7C09A" />
+            <ComponentRef Id="cmp9E793A10BF3F138124F00B48006BD9A9" />
+            <ComponentRef Id="cmpFA3EFF53D3260A5ABB1D9CC1A8B379F6" />
+            <ComponentRef Id="cmp8BA62B152EB3D89A8510C17283663502" />
+            <ComponentRef Id="cmp33D2449306E3D07FD5468784D40C216A" />
+            <ComponentRef Id="cmpF2BB28306F40EDFEA71A80C53CDFFCAD" />
+            <ComponentRef Id="cmpA3A3EB27E419F395A28EBC3446656AB8" />
+            <ComponentRef Id="cmp3AED2B212038B45AD28E3FBDA2917410" />
+            <ComponentRef Id="cmp11B59034685C03D4F1C15A5E03B30EF4" />
+            <ComponentRef Id="cmp2DAFA155A8EA509E9D850C705AA9C534" />
+            <ComponentRef Id="cmp0AE07807B8D63717E545FB02EA8599F8" />
+            <ComponentRef Id="cmp553A08A62DBD337F150CA098C7706382" />
+            <ComponentRef Id="cmp76BE8BCD2C58E744CE2AB0094FE16466" />
+            <ComponentRef Id="cmpFF357396CF90B91B3D5425491EA8991F" />
+            <ComponentRef Id="cmpF97A840DFE088720D7A28BD81BA11A6D" />
+            <ComponentRef Id="cmpC794E580F960DCC685D5E3398A4ECF3D" />
+            <ComponentRef Id="cmp00771E155F9A7952202B9BCB8133C591" />
+            <ComponentRef Id="cmpE83BDEFB88665AF9B75680931B133E80" />
+            <ComponentRef Id="cmp784B434AB75E7FDDD550511BFB1151B1" />
+            <ComponentRef Id="cmp224DB63294381A117FFA43CC7599DC5B" />
+            <ComponentRef Id="cmp21E3259808C2A3DD5AE1418B8001C699" />
+            <ComponentRef Id="cmpA2B04B27698CBAAD04CABB2653E01639" />
+            <ComponentRef Id="cmp18498585BA0D90BE7598295593975BE4" />
+            <ComponentRef Id="cmp516950C3324D80600808FF3FB0AB8394" />
+            <ComponentRef Id="cmpBA39F7A6B13194D342C0DE50A54C7B27" />
+            <ComponentRef Id="cmp261F8799D297583BE8D1E6A8C9E3E7E7" />
+            <ComponentRef Id="cmpC0D3FC197F74CB71E103358F4E4FFFA4" />
+            <ComponentRef Id="cmp9670C5FD753FFAB15E077725030F387C" />
+            <ComponentRef Id="cmp548E8066D0B4C936A1FEF430E6B4740C" />
+            <ComponentRef Id="cmpFD71D0442AF836E01DBD76955480F545" />
+            <ComponentRef Id="cmp58A9F3340BBDDA68E0407EF080CAE274" />
+            <ComponentRef Id="cmp0C23EC64C5FAFCF9D7AC346519FAF97C" />
+            <ComponentRef Id="cmp55F536042460F05D5609FE37ED5E8240" />
+            <ComponentRef Id="cmp4CBBBADAD1178F5D1C82250513AE6825" />
+            <ComponentRef Id="cmp73ED37A855215029B1B5364637B4B86B" />
+            <ComponentRef Id="cmpB060C8AF72FE6448314471F316F52444" />
+            <ComponentRef Id="cmp6481F4685537DDC46863DFE6204D3ECE" />
+            <ComponentRef Id="cmp8CEBBFB9D46877952B0DB50F3E3AE166" />
+            <ComponentRef Id="cmp003F4266227B0DFDEBA2FF91EAA284AE" />
+            <ComponentRef Id="cmpA069E6E37E1B9D576A1A7E238A111BDB" />
+            <ComponentRef Id="cmp6A687592733DD62F44A3D866567112DC" />
+            <ComponentRef Id="cmpDB8B7750974961F0414745D52228A398" />
+            <ComponentRef Id="cmpAC7CB58039FC06C26B571C0017F4B45A" />
+            <ComponentRef Id="cmpB99AB9C291C945FEF5F3C2E16AB01922" />
+            <ComponentRef Id="cmpEEFAA9B31C730F62F4A7EC899324AB79" />
+            <ComponentRef Id="cmpC2FD32850AC172760007179A48744E61" />
+            <ComponentRef Id="cmpD1A236FB12569787F06324F5E786915E" />
+            <ComponentRef Id="cmp8FEE021BBBAA716A7D0A9D1420AAA087" />
+            <ComponentRef Id="cmpC54813E537BAC0BAFEFD7795FCF746E6" />
+            <ComponentRef Id="cmp7891C344AAC23EF10A8EFD23BE9D5926" />
+            <ComponentRef Id="cmp938C46567AF13508FC7433E46DF23DF8" />
+            <ComponentRef Id="cmp39A70A2427DF519BDE674022EDE94B14" />
+            <ComponentRef Id="cmpB9EA17597C9703BCCADFB44632EC71D4" />
+            <ComponentRef Id="cmp9C61A2750B8DAEC5EB49376A18A25B7B" />
+            <ComponentRef Id="cmpFF2F0EC4F523C5E9464A9D60917B0BA1" />
+            <ComponentRef Id="cmp1A188576E31AD4006F5834C98611AB28" />
+            <ComponentRef Id="cmp4511DBEAB07C3028F0AD4E604919BBF2" />
+            <ComponentRef Id="cmp9253D6E2E3313CD78E1703F0EEE0A570" />
+            <ComponentRef Id="cmp397641BBDE9AC03D32B87E8A30B91E54" />
+            <ComponentRef Id="cmpB2FB8B07B0E7AF948ABF7BD47A1D1F67" />
+            <ComponentRef Id="cmp2E4BDF236064ECF7D5F6DD3C0E40E5F9" />
+            <ComponentRef Id="cmpBA00FEFD065FD5C0246DC97C6FFE8517" />
+            <ComponentRef Id="cmpB6D7E2A04723F92015CDAACFF9CA9FA3" />
+            <ComponentRef Id="cmpE2FD25CD5F72764AA095F1C7AA4C80CB" />
+            <ComponentRef Id="cmp9A5C802725D1211B48D6A5DCC4C687EB" />
+            <ComponentRef Id="cmp73F89E9063D38F117810A0FA13A3A39F" />
+            <ComponentRef Id="cmp23A9CC5C8E702DF6FA5CE01B6DB033A4" />
+            <ComponentRef Id="cmpA535B9A440B091E8B429405117E215A0" />
+            <ComponentRef Id="cmpC944AFEC78449EB5F76159713711DD45" />
+            <ComponentRef Id="cmp2CE995194A2F8CCB54F853D39047FDC6" />
+            <ComponentRef Id="cmpEE1090E535A7393716D5EB3879463075" />
+            <ComponentRef Id="cmpAE59C2FD5F4F8616DC0D6BAF72574EDA" />
+            <ComponentRef Id="cmp35D5B957CF385D785A55197BA80C5DD6" />
+            <ComponentRef Id="cmpB02370B9FD8CE04F5B347C30B4BAC306" />
+            <ComponentRef Id="cmp4719EB739A74E669BA5A458DA6C9EA06" />
+            <ComponentRef Id="cmp8B1E8E44FD56A18FB634268885462666" />
+            <ComponentRef Id="cmp4175FFCBD71999169B20D52A90655CE4" />
+            <ComponentRef Id="cmp7A1D3B3C1EA3F7083148ECA93EF22942" />
+            <ComponentRef Id="cmpE2C4F5654CEC41DC98AD8BC29D7AA79A" />
+            <ComponentRef Id="cmp47514B9891F46AB44BD4108DC9E9CF82" />
+            <ComponentRef Id="cmpC43A695E5EA43E3C963132F1CF761360" />
+            <ComponentRef Id="cmpAED2E95899F790F1F5BAE8E2AF7428AF" />
+            <ComponentRef Id="cmpFDDF98327E5F7C99E2E606A86AB50D22" />
+            <ComponentRef Id="cmpEEEB7CE6072B59A831D750A4C73241D0" />
+            <ComponentRef Id="cmp25F56623B762603EEFED46C265477E8D" />
+            <ComponentRef Id="cmpC38710C3D48418ECC37DBA54844B753B" />
+            <ComponentRef Id="cmp579B33538DD431D1420204C49A7ECCE2" />
+            <ComponentRef Id="cmp974FFB3918D95CE7583A02DD61FB87F7" />
+            <ComponentRef Id="cmp0A0285AE4D29179EE6159CB0C8B11331" />
+            <ComponentRef Id="cmp3E052AE6C17B506F22787C4B8127F05D" />
+            <ComponentRef Id="cmpFCD788FABA95DF4CD056E502ECF0B898" />
+            <ComponentRef Id="cmp9452CD43403708A420C6F2963B4498CC" />
+            <ComponentRef Id="cmpCA7206DD8A579E8903F4D033FA389999" />
+            <ComponentRef Id="cmpAF737C1234F0733CC865A8B606AAE575" />
+            <ComponentRef Id="cmpCAD58070D68F07DBD20BD437D18BB1C4" />
+            <ComponentRef Id="cmp900DC5F2D343844A6C2F81DA9D6BB9BA" />
+            <ComponentRef Id="cmp89B6053BCED6471A37684F5DB24C58E4" />
+            <ComponentRef Id="cmp799DB2C187D01F6205B21598D2527982" />
+            <ComponentRef Id="cmpFD6DEE258E897FA5B92B2EC412271D48" />
+            <ComponentRef Id="cmp9AFCF88113C1E99D6693B1793CB6256F" />
+            <ComponentRef Id="cmp60A4D9EF6CF151D3C7CBF5B3E328228F" />
+            <ComponentRef Id="cmpA35FF1A2567A86498BE6988DA39BE80E" />
+            <ComponentRef Id="cmp1740BC1DC1BD1139055139B8B7642F64" />
+            <ComponentRef Id="cmp0E5E683A864AA2B780588120430F7C11" />
+            <ComponentRef Id="cmp70B8C9FD3F2EED21E2656ADCAA2C2DBC" />
+            <ComponentRef Id="cmp51CFC7B038FA9250E207941D1175BD4C" />
+            <ComponentRef Id="cmp77170BE88FF27702F1D60534FC5EAA9F" />
+            <ComponentRef Id="cmp955DC9B193A3C32827C2B19EBDB882BE" />
+            <ComponentRef Id="cmp2A8DB5FE3F1C7F4C24EAC7FC47493E40" />
+            <ComponentRef Id="cmp4CB4DB8AA672C4B6C15428C3139F38D4" />
+            <ComponentRef Id="cmp8606591906AECF417017B40FF3FB9438" />
+            <ComponentRef Id="cmpDF5BD89F6D6AD84F7FEE0E8E9D797110" />
+            <ComponentRef Id="cmp3CCF27788BAACC94B8461E6E5E972884" />
+            <ComponentRef Id="cmp4FBC0120A265AE49E153ED0524C25AB6" />
+            <ComponentRef Id="cmpE8FE82078C88130283D14B49B0849BA1" />
+            <ComponentRef Id="cmp8AAC77B02CE1FC8C87C6061F95CF7AF4" />
+            <ComponentRef Id="cmpC6B751071BA01DE7EB4529933EE3B634" />
+            <ComponentRef Id="cmpC9144C9739952CB384A9A172E6747DD0" />
+            <ComponentRef Id="cmp9289F86F90E383A73AE7FC931C7C8070" />
+            <ComponentRef Id="cmpDA30A0C2A423A2278DBEF856007FA829" />
+            <ComponentRef Id="cmpE9D94B60D875025A68EC396CF20536A8" />
+            <ComponentRef Id="cmp031C7FFD7EBF0978C30180CE6D2A386F" />
+            <ComponentRef Id="cmp5C24FF27D563C11B27334C8A256D592E" />
+            <ComponentRef Id="cmpB160E2FF2D811996F859D7C16C8D9137" />
+            <ComponentRef Id="cmp1BA3118ABC9B57C3EEDFBA03BB27BB85" />
+            <ComponentRef Id="cmp9DFC5FE79466BF2FCAFF38BE5D78332E" />
+            <ComponentRef Id="cmp38050B41E1339A097A37A776EBF22F05" />
+            <ComponentRef Id="cmpA555490357F6CCE5A2F56173673B1970" />
+            <ComponentRef Id="cmpB6D86756420FADD049D1E7F2E41EC4F5" />
+            <ComponentRef Id="cmp6C89720D20AEB2B9C61A2A466C195115" />
+            <ComponentRef Id="cmp4BE94687D11FE766D750D71C08E6BBC9" />
+            <ComponentRef Id="cmp2860EC17BBC47737039B6B8E8EC0C604" />
+        </ComponentGroup>
+    </Fragment>
+</Wix>
