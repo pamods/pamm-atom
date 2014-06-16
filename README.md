@@ -10,7 +10,7 @@ This is a port of the Windows version which already use a html engine.
 ## Installation
 
 Download this project and uncompress it : 
-https://github.com/mereth/pamm-atom/archive/stable.zip
+https://github.com/pamods/pamm-atom/archive/stable.zip
 
 Download the atom-shell release for your platform and uncompress it : 
 https://github.com/atom/atom-shell/releases
