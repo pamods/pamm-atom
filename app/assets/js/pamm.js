@@ -830,13 +830,16 @@ function jsPreInstallMod(strURL, strModID, objModsPreInstalled) {
         }
     }
     
-    pamm.install(strModID, function(e, id) {
-        if(!e) {
-            if(!params.devmode) {
-                jsDownload(MANAGE_URL + "?download=" + strModID);
-            }
-            jsRefresh(false, false);
+    pamm.install(strModID, function(error) {
+        if(error) {
+            alert(error);
+            return
         }
+        
+        if(!params.devmode) {
+            jsDownload(MANAGE_URL + "?download=" + strModID);
+        }
+        jsRefresh(false, false);
     });
 }
 

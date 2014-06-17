@@ -172,11 +172,17 @@ exports.install = function (id, callback) {
     var ids = getRequires(id);
     ids.push(id);
     
+    var _finish = function(error, id) {
+        _updateFiles();
+        if(error)
+            error = "Failed to install '" + id + "'. " + error
+        if(callback)
+            callback(error);
+    }
+    
     var _install = function(ids, callback) {
         if(ids.length === 0) {
-            _updateFiles();
-            if(callback)
-                callback();
+            _finish();
             return;
         }
         
@@ -216,17 +222,22 @@ exports.install = function (id, callback) {
         }
         
         var _extract = function() {
-            var modinfo = _uncompress(id, cachefile, installpath);
-            
-            if(context === 'server' || !modinfo.id)
-                modinfo.id = modinfo.identifier;
-            if (!modinfo.priority)
-                modinfo.priority = 100;
-            modinfo.enabled = true;
-            modinfo.installpath = installpath;
-            
-            installed[id] = modinfo;
-            _install(ids, callback);
+            try {
+                var modinfo = _uncompress(id, cachefile, installpath);
+                
+                if(context === 'server' || !modinfo.id)
+                    modinfo.id = modinfo.identifier;
+                if (!modinfo.priority)
+                    modinfo.priority = 100;
+                modinfo.enabled = true;
+                modinfo.installpath = installpath;
+                
+                installed[id] = modinfo;
+                _install(ids, callback);
+            }
+            catch(e) {
+                _finish("An unexpected error occured during the mod archive extraction: " + e, id);
+            }
         };
         
         if(!fs.existsSync(cachefile)) {
@@ -237,9 +248,7 @@ exports.install = function (id, callback) {
                     _extract();
                 }
                 ,error: function(e) {
-                    _updateFiles();
-                    if(callback)
-                        callback(e, id);
+                    _finish("An unexpected error occured during the download: " + e, id);
                 }
             });
         }
