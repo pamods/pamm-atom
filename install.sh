@@ -5,7 +5,7 @@ WORKINGDIR=`dirname "$0"`
 case $OSTYPE in
 linux*)
     PLATFORM="linux"
-    PAMMDIR="$HOME/.local/Uber Entertainment/Planetary Annihilation/pamm"
+    PAMMDIR="$HOME/.local/pamm"
     APPDIR="$PAMMDIR/resources/app"
     ;;
 darwin*)
@@ -64,11 +64,26 @@ fi
 case $OSTYPE in
 linux*)
     mv "$PAMMDIR/atom" "$PAMMDIR/pamm"
-	echo "PAMM has been successfully installed."
-	echo "  => $PAMMDIR/pamm"
+
+    # try to create desktop shortcut & protocol handler
+	cat >$HOME/.local/share/applications/pamm.desktop <<EOL
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=PAMM
+Comment=PA Mod Manager
+Exec=$PAMMDIR/pamm "%u"
+Icon=$PAMMDIR/resources/app/assets/img/pamm.png
+MimeType=x-scheme-handler/pamm;
+EOL
+    update-desktop-database ~/.local/share/applications
+
+    echo "PAMM has been successfully installed."
+    echo "  => $PAMMDIR"
+	$PAMMDIR/pamm
     ;;
 darwin*)
-    mv "$PAMMDIR/Atom.app/Contents/MacOS/Atom" "$PAMMDIR/Atom.app/Contents/MacOS/PAMM"
+    #mv "$PAMMDIR/Atom.app/Contents/MacOS/Atom" "$PAMMDIR/Atom.app/Contents/MacOS/PAMM"
     mv "$PAMMDIR/Atom.app" "$PAMMDIR/PAMM.app"
     open "$PAMMDIR/PAMM.app"
     echo "PAMM has been successfully installed."
