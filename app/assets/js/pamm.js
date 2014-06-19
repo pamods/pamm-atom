@@ -28,6 +28,7 @@ var intLogLevel = 0;
 var intLogNumber = 0;
 var intLikeCountRemaining = 0;
 
+var UNINSTALL_LEGACY_PAMM = 0;
 var ONLINE_MODS_DOWNLOAD_COUNT_URL = "http://pa.raevn.com/modcount_json.php";
 var MANAGE_URL = "http://pa.raevn.com/manage.php";
 var MOD_IS_NEW_PERIOD_DAYS = 7;
@@ -1053,7 +1054,8 @@ function initSettings() {
         installed_category: "ALL",
         installed_view: "",
         installed_icon: false,
-        show_installed_filters: false
+        show_installed_filters: false,
+        nolegacypamm: false
     };
     
     if(fs.existsSync(filepath)) {
@@ -1190,6 +1192,41 @@ function rmdirRecurseSync(dir) {
     fs.rmdirSync(dir);
 };
 
+function uninstallLegacyPAMM() {
+    if(process.platform !== 'win32')
+        return;
+    
+    if(!UNINSTALL_LEGACY_PAMM || settings.nolegacypamm())
+        return;
+    
+    var windows = require('windows');
+    
+    var regkey = windows.registry('HKEY_LOCAL_MACHINE/SOFTWARE/Wow6432Node/Microsoft/Windows/CurrentVersion/Uninstall/PA Mod Manager').UninstallString;
+    var uninstallstring;
+    if(regkey) {
+        uninstallstring = regkey.value;
+    }
+    else {
+        regkey = windows.registry('HKEY_LOCAL_MACHINE/SOFTWARE/Microsoft/Windows/CurrentVersion/Uninstall/PA Mod Manager').UninstallString;
+        if(regkey) {
+            uninstallstring = regkey.value;
+        }
+    }
+    
+    if(!uninstallstring) {
+        settings.nolegacypamm(true);
+        return;
+    }
+    
+    jsAddLogMessage("Uninstalling Legacy PAMM: " + uninstallstring, 2);
+    
+    alert("An older version of PAMM is still installed on your computer.\n\nWe are going to proceeds to its uninstallation !");
+    
+    var child_process = require('child_process');
+    var child = child_process.spawn('cmd.exe', ['/C', uninstallstring], null, { detached: true });
+    child.unref();
+};
+
 $(function() {
     jsAddLogMessage("PAMM version: " + params.info.version, 2);
     
@@ -1261,6 +1298,8 @@ $(function() {
     };
     
     ko.applyBindings(model);
+    
+    uninstallLegacyPAMM();
     
     jsApplyLocaleText();
     jsDisplayPanel(settings.tab());
