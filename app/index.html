@@ -56,7 +56,7 @@
               <tr>
                 <td><span class="setting_heading"><span class="LOC_Language">Language</span>:</span></td>
                 <td>
-                  <select id="setting_language" onChange="jsSetLanguage()">
+                  <select id="setting_language" data-bind="value: settings.locale">
                     <option value="en">ENGLISH</option>
                     <option value="fr">FRANÇAIS</option>
                     <option value="nl">NEDERLANDS</option>
@@ -67,58 +67,53 @@
               <tr>
                 <td><span class="setting_heading"><span class="LOC_Default_Tab">Default Tab</span>:</span></td>
                 <td>
-                  <select id="setting_defaultTab" onChange="jsSetDefaultTab()">
+                  <select id="setting_defaultTab" data-bind="value: settings.tab">
                     <option value="news" class="LOC_NEWS">NEWS</option>
                     <option value="installed" class="LOC_INSTALLED_MODS">INSTALLED MODS</option>
                     <option value="download" class="LOC_AVAILABLE_MODS">AVAILABLE MODS</option>
                   </select>
                 </td>
               </tr>
-              
-              <tr style="display:none">
-                <td><span class="setting_heading"><span class="LOC_Verbose_Log">Verbose Log</span>:</span></td>
-                <td><input id="setting_verbose" type="checkbox" onClick="jsToggleVerboseMode()"/></td>
-              </tr>
               <tr>
                 <td><span class="setting_heading"><span class="LOC_Debug_Mode">Debug Mode</span>:</span></td>
-                <td><input id="setting_debug" type="checkbox" onClick="jsToggleDebugMode()"/></td>
+                <td><input id="setting_debug" type="checkbox" data-bind="checked: settings.debug"/></td>
               </tr>
               <tr>
                 <td><span class="setting_heading"><span class="LOC_Mod_Likes">Load Mod Likes</span>:</span></td>
-                <td><input id="setting_likes" type="checkbox" onClick="jsToggleModLikes()"/> (<span class="LOC_Requires_Refresh">Requires Refresh</span>)</td>
+                <td><input id="setting_likes" type="checkbox" data-bind="checked: settings.modlikes"/> (<span class="LOC_Requires_Refresh">Requires Refresh</span>)</td>
               </tr>
               <tr>
                 <td><span class="setting_heading"><span class="LOC_Installed_Mods_List_View">Installed Mods List View</span>:</span></td>
                 <td>
-                  <select id="setting_installed_view" onChange="jsSetModsListView(true)">
+                  <select id="setting_installed_view" data-bind="value: settings.installed_view">
                     <option value="summary" class="LOC_SUMMARY_VIEW">SUMMARY VIEW</option>
                     <option value="detailed" class="LOC_DETAILED_VIEW">DETAILED VIEW</option>
                   </select>
                   <br/>
-                  <input id="setting_installed_icon" type="checkbox" onClick="jsSetModsListIcon(true)"/><span class="LOC_Show_Icon">Show Icon</span>
+                  <input id="setting_installed_icon" type="checkbox" data-bind="checked: settings.installed_icon"/><span class="LOC_Show_Icon">Show Icon</span>
                 </td>
               </tr>
               <tr>
                 <td><span class="setting_heading"><span class="LOC_Available_Mods_List_View">Available Mods List View</span>:</span></td>
                 <td>
-                  <select id="setting_available_view" onChange="jsSetModsListView(false)">
+                  <select id="setting_available_view" data-bind="value: settings.available_view">
                     <option value="summary" class="LOC_SUMMARY_VIEW">SUMMARY VIEW</option>
                     <option value="detailed" class="LOC_DETAILED_VIEW">DETAILED VIEW</option>
                   </select>
                   <br/>
-                  <input id="setting_available_icon" type="checkbox" onClick="jsSetModsListIcon(false)"/><span class="LOC_Show_Icon">Show Icon</span>
+                  <input id="setting_available_icon" type="checkbox" data-bind="checked: settings.available_icon"/><span class="LOC_Show_Icon">Show Icon</span>
                 </td>
               </tr>
               <tr>
                 <td colspan="2">
                   <span class="setting_heading"><span class="LOC_PA_Install_Location">PA Install Location</span>:</span><br/>
-                  <input id="setting_installLocation" type="text" disabled="true" class="textInput"/>
+                  <input id="setting_installLocation" type="text" disabled="true" class="textInput" data-bind="value: pa.last ? pa.last.bin : ''"/>
                 </td>
               </tr>
               <tr>
                 <td colspan="2">
                   <span class="setting_heading"><span class="LOC_PA_Mod_Location">PA Mods Location</span>:</span><br/>
-                  <input id="setting_modLocation" type="text" disabled="true" class="textInput"/>
+                  <input id="setting_modLocation" type="text" disabled="true" class="textInput" data-bind="value: pa.modspath.client"/>
                 </td>
               </tr>
             </table>
@@ -163,6 +158,8 @@
     </div>
     <script>window.$ = window.jQuery = require('./assets/js/jquery-1.10.2.min.js');</script>
     <script src="assets/js/jquery-ajax-blob-arraybuffer.js"></script>
+    <script src="assets/js/knockout-3.1.0.min.js"></script>
+    <script src="assets/js/knockout.mapping-2.4.1.min.js"></script>
     <script src="assets/js/pamm.js"></script>
   </body>
 </html>

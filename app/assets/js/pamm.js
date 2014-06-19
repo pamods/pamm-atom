@@ -2,6 +2,7 @@ var semver = require('semver');
 var sprintf = require('sprintf').sprintf;
 var JSZip = require('jszip');
 var shell = require('shell');
+var _ = require('lodash');
 
 var jsDownload = require('./assets/js/download.js').download;
 var pamm = require('./assets/js/pamm-api.js');
@@ -13,17 +14,16 @@ var fs = require('fs');
 var path = require('path');
 
 var params = require('remote').getGlobal('params');
+var settings;
 
 var objInstalledMods = [];
 var objOnlineMods = [];
-var objOptions = {};
 var objOnlineModCategories = {};
 var objInstalledModCategories = {};
 
 var boolOnline = params.offline ? false : true;
 var intMessageID = 0;
 var intDownloading = 0;
-var strModInstalling = "";
 var intLogLevel = 0;
 var intLogNumber = 0;
 var intLikeCountRemaining = 0;
@@ -37,18 +37,14 @@ var PAMM_UPDATE_URL = "https://github.com/%(author)s/%(name)s/archive/stable.zip
 var PAMM_OPTIONS_FILENAME = "pamm.json";
 var PA_VERSION_URL = "https://uberent.com/launcher/clientversion?titleid=4";
 var MOD_GENERIC_ICON_URL = "assets/img/generic.png";
-var PAMM_DEFAULT_LOCALE = "en";
 
 var strPAMMversion = params.info.version;
 
 /* Localisation Functions */
-function jsGetLocaleText(strKey, strLocale) {
-    if (strlocaleText[strKey] != null) {
-        if (strlocaleText[strKey][strLocale] != null && strlocaleText[strKey][strLocale] != "") {
-            return strlocaleText[strKey][strLocale];
-        } else if (strlocaleText[strKey]["en"] != null) {
-            return strlocaleText[strKey]["en"];
-        }
+function jsGetLocaleText(strKey) {
+    var locale = settings.locale();
+    if (strlocaleText[strKey]) {
+        return strlocaleText[strKey][locale] ? strlocaleText[strKey][locale] : strlocaleText[strKey]["en"];
     }
     return null;
 }
@@ -58,9 +54,9 @@ function jsApplyLocaleText() {
         var objLocItems = $(".LOC_" + strLocaleTextItems[i]);
         if (objLocItems.length > 0) {
             if (objLocItems.prop("tagName") == "INPUT") {
-                objLocItems.attr("value", jsGetLocaleText(strLocaleTextItems[i], objOptions["locale"]));
+                objLocItems.attr("value", jsGetLocaleText(strLocaleTextItems[i]));
             } else {
-                objLocItems.text(jsGetLocaleText(strLocaleTextItems[i], objOptions["locale"]));
+                objLocItems.text(jsGetLocaleText(strLocaleTextItems[i]));
             }
         }
     }
@@ -81,7 +77,7 @@ function sort_by(field, reverse, primer) {
 }
 
 function jsSortOnlineMods() {
-    switch (objOptions["sort"]) {
+    switch (settings.sort()) {
         case "LAST_UPDATED":
             objOnlineMods.sort(sort_by('date', false, function(x) { return new Date(x); } ));
             $("#filter_area_sort_last_updated").addClass('filter_area_filter_item_selected');
@@ -111,114 +107,6 @@ function jsSortOnlineMods() {
             $("#filter_area_sort_last_random").addClass('filter_area_filter_item_selected');
             break;
     }
-}
-
-/* Option Functions */
-function jsLoadOptionsData(strOptionsDataString) {
-    objOptions = {};
-    try {
-        objOptions = JSON.parse(strOptionsDataString);
-    } catch (err) {
-        alert("An error occurred loading options file");
-    }
-    
-    document.getElementById("setting_installLocation").value = pa.last ? pa.last.bin : "";
-    
-    document.getElementById("setting_modLocation").value = pa.modspath.client;
-    
-    if (objOptions["debug"] != null) {
-        document.getElementById("setting_debug").checked = objOptions["debug"];
-    } else {
-        document.getElementById("setting_debug").checked = false;
-    }
-    jsToggleDebugMode(true);
-    
-    if (objOptions["verbose"] != null) {
-        document.getElementById("setting_verbose").checked = objOptions["verbose"];
-    } else {
-        document.getElementById("setting_verbose").checked = false;
-    }
-    jsToggleVerboseMode(true);
-    
-    if (objOptions["modlikes"] != null) {
-        document.getElementById("setting_likes").checked = objOptions["modlikes"];
-    } else {
-        document.getElementById("setting_likes").checked = false;
-    }
-    jsToggleModLikes(true);
-    
-    if (objOptions["available_filter"] == null) {
-        objOptions["available_filter"] = 'ALL';
-    }
-    
-    if (objOptions["available_category"] == null) {
-        objOptions["available_category"] = 'ALL';
-    }            
-    
-    if (objOptions["installed_category"] == null) {
-        objOptions["installed_category"] = 'ALL';
-    }            
-    
-    if (objOptions["sort"] == null) {
-        objOptions["sort"] = 'LAST_UPDATED';
-    }
-    
-    if (objOptions["tab"] == null) {
-        objOptions["tab"] = 'news';
-    }
-    document.getElementById('setting_defaultTab').value = objOptions["tab"];
-    jsDisplayPanel(objOptions["tab"]);
-    
-    if (objOptions["locale"] != null) {
-        document.getElementById('setting_language').value = objOptions["locale"];
-        if (objOptions["locale"] != PAMM_DEFAULT_LOCALE) {
-            jsSetLanguage(true);
-        }
-    }
-    
-    if (objOptions["available_view"] == null) {
-        objOptions["available_view"] = 'detailed';
-    }
-    document.getElementById('setting_available_view').value = objOptions["available_view"];
-    jsSetModsListView(false, true);
-    
-    if (objOptions["installed_view"] != null) {
-        objOptions["installed_view"] = 'summary';
-    }
-    document.getElementById('setting_installed_view').value = objOptions["installed_view"];
-    jsSetModsListView(true, true);
-    
-    if (objOptions["available_icon"] == null) {
-        objOptions["available_icon"] = true;
-    }
-    document.getElementById('setting_available_icon').checked = objOptions["available_icon"];
-    jsSetModsListIcon(false, true);
-    
-    if (objOptions["installed_icon"] == null) {
-        objOptions["installed_icon"] = false;
-    }
-    document.getElementById('setting_installed_icon').checked = objOptions["installed_icon"];
-    jsSetModsListIcon(true, true);
-    
-    if (objOptions["show_available_filters"] == null) {
-        objOptions["show_available_filters"] = false;
-    }
-    jsUpdateOptionsToggle(false)
-
-    if (objOptions["show_installed_filters"] == null) {
-        objOptions["show_installed_filters"] = false;
-    }
-    jsUpdateOptionsToggle(true)
-    
-    WriteOptionsJSON();
-}
-
-function jsGetOptionsDataString() {
-    return JSON.stringify(objOptions, null, 4);
-}
-
-function jsGetOption(strOption) {
-    return objOptions[strOption];
 }
 
 /* Installed Mod Functions */
@@ -300,20 +188,20 @@ function jsGenerateModEntryHTML(objMod, boolIsInstalled) {
             
     /* Name */
     var strHTML_display_name = "<div class='mod_entry_name'>" + objMod.display_name + "</div>";
-    if (objMod["display_name_" + objOptions["locale"]] != null ) {
-        strHTML_display_name = "<div class='mod_entry_name'>" + objMod["display_name_" + objOptions["locale"]] + "</div>";
+    if (objMod["display_name_" + settings.locale()] != null ) {
+        strHTML_display_name = "<div class='mod_entry_name'>" + objMod["display_name_" + settings.locale()] + "</div>";
     }
     
     /* Author */
-    var strHTML_author = "<div class='mod_entry_author'>" + jsGetLocaleText('by', objOptions["locale"]) + " " + objMod.author + "</div>";
+    var strHTML_author = "<div class='mod_entry_author'>" + jsGetLocaleText('by') + " " + objMod.author + "</div>";
     
     /* Version */
-    var strHTML_version = jsGetLocaleText('Version', objOptions["locale"]) + ": " + objMod.version;
+    var strHTML_version = jsGetLocaleText('Version') + ": " + objMod.version;
     
     /* Build */
     var strHTML_build = "";
     if (objMod.build != null) {
-        strHTML_build = ", " + jsGetLocaleText('build', objOptions["locale"]) + " " + objMod.build;
+        strHTML_build = ", " + jsGetLocaleText('build') + " " + objMod.build;
     }
     
     /* Date */
@@ -336,14 +224,14 @@ function jsGenerateModEntryHTML(objMod, boolIsInstalled) {
                 strHTML_requires += ", ";
             }
         }
-        strHTML_requires = "<div class='mod_entry_requires'>" + jsGetLocaleText('REQUIRES', objOptions["locale"]) + ": " + strHTML_requires + "</div>";
+        strHTML_requires = "<div class='mod_entry_requires'>" + jsGetLocaleText('REQUIRES') + ": " + strHTML_requires + "</div>";
     }
 
     
     /* Description */
     var strHTML_description = "<div class='mod_entry_description'>" + objMod.description + "</div>";
-    if (objMod["description_" + objOptions["locale"]] != null) {
-        strHTML_description = "<div class='mod_entry_description'>" + objMod["description_" + objOptions["locale"]] + "</div>";
+    if (objMod["description_" + settings.locale()] != null) {
+        strHTML_description = "<div class='mod_entry_description'>" + objMod["description_" + settings.locale()] + "</div>";
     }
     
     /* Category */
@@ -368,7 +256,7 @@ function jsGenerateModEntryHTML(objMod, boolIsInstalled) {
     /* Forum Link */
     var strHTML_forum_link = "";
     if (objMod.forum != null) {
-        strHTML_forum_link = "<div class='mod_entry_link' onclick='window.event.cancelBubble = true'>[ <a href='#' onClick='LaunchURL(\"" + objMod.forum + "\")'>" + jsGetLocaleText('forum', objOptions["locale"]) + "</a> ]</div>";
+        strHTML_forum_link = "<div class='mod_entry_link' onclick='window.event.cancelBubble = true'>[ <a href='#' onClick='LaunchURL(\"" + objMod.forum + "\")'>" + jsGetLocaleText('forum') + "</a> ]</div>";
     }
     
     /* Installed Mods List Only */
@@ -382,13 +270,13 @@ function jsGenerateModEntryHTML(objMod, boolIsInstalled) {
         var objOnlineMod = jsGetOnlineMod(id);
     
         /* Update Classes */
-        if (objOptions["installed_view"] == 'detailed') {
+        if (settings.installed_view() == 'detailed') {
             strHTML_classes = strHTML_classes.replace('mod_entry', 'mod_entry mod_entry_detailed');
         } else {
             strHTML_classes = strHTML_classes.replace('mod_entry', 'mod_entry mod_entry_summary');
         }
         
-        if (objOptions["installed_icon"] == false) {
+        if (settings.installed_icon() == false) {
             strHTML_icon = strHTML_icon.replace('mod_entry_icon', 'mod_entry_icon mod_entry_icon_disabled');
         }
         
@@ -407,7 +295,7 @@ function jsGenerateModEntryHTML(objMod, boolIsInstalled) {
         /* Update Available Notification */
         if (objOnlineMod != null) {
             if (objMod.version !== objOnlineMod.version) {
-                strHTML_update_link = "<div class='mod_entry_link mod_entry_update_link'>[ <a href='#' onClick='jsPreInstallMod(\"" + objOnlineMod.url + "\",\"" + id + "\", {})'>" + jsGetLocaleText('update', objOptions["locale"]) + "</a> ]</div>";
+                strHTML_update_link = "<div class='mod_entry_link mod_entry_update_link'>[ <a href='#' onClick='jsPreInstallMod(\"" + objOnlineMod.url + "\",\"" + id + "\", {})'>" + jsGetLocaleText('update') + "</a> ]</div>";
                 
                 /* Update Classes */
                 strHTML_classes = strHTML_classes.replace('mod_entry', 'mod_entry mod_entry_filter_update_available');
@@ -416,7 +304,7 @@ function jsGenerateModEntryHTML(objMod, boolIsInstalled) {
         
         if(!objMod.stockmod) {
             /* Uninstall Link */
-            strHTML_uninstall_link = "<div class='mod_entry_link mod_entry_uninstall_link' onclick='window.event.cancelBubble = true'>[ <a href='#' onClick='jsPreUninstallMod(\"" + id + "\")'>" + jsGetLocaleText('uninstall', objOptions["locale"]) + "</a> ]</div>";
+            strHTML_uninstall_link = "<div class='mod_entry_link mod_entry_uninstall_link' onclick='window.event.cancelBubble = true'>[ <a href='#' onClick='jsPreUninstallMod(\"" + id + "\")'>" + jsGetLocaleText('uninstall') + "</a> ]</div>";
         }
     }
     
@@ -431,19 +319,19 @@ function jsGenerateModEntryHTML(objMod, boolIsInstalled) {
         var dateUpdate = new Date(objMod.date);
         
         /* Update Classes */
-        if (objOptions["available_view"] == 'detailed') {
+        if (settings.available_view() == 'detailed') {
             strHTML_classes = strHTML_classes.replace('mod_entry', 'mod_entry mod_entry_detailed');
         } else {
             strHTML_classes = strHTML_classes.replace('mod_entry', 'mod_entry mod_entry_summary');
         }
     
-        if (objOptions["available_icon"] == false) {
+        if (settings.available_icon() == false) {
             strHTML_icon = strHTML_icon.replace('mod_entry_icon', 'mod_entry_icon mod_entry_icon_disabled');
         }
         
         /* Mod Newly Updated */
         if ((dateNow - dateUpdate)/(1000*60*60*24) < MOD_IS_NEW_PERIOD_DAYS) {
-            strHTML_new = "<span class='mod_entry_new'> ! " + jsGetLocaleText('NEW', objOptions["locale"]) + "</span>";
+            strHTML_new = "<span class='mod_entry_new'> ! " + jsGetLocaleText('NEW') + "</span>";
             strHTML_classes = strHTML_classes.replace('mod_entry', 'mod_entry mod_entry_filter_new');
         }
         
@@ -451,18 +339,18 @@ function jsGenerateModEntryHTML(objMod, boolIsInstalled) {
         
         if (objInstalledMod != null) {
             if (objMod.version !== objInstalledMod.version) {
-                strHTML_install_link = "<div class='mod_entry_link mod_entry_update_link'>[ <a href='#' onClick='jsPreInstallMod(\"" + objMod.url + "\", \"" + id + "\", {})'>" + jsGetLocaleText('update', objOptions["locale"]) + "</a> ]</div>";
+                strHTML_install_link = "<div class='mod_entry_link mod_entry_update_link'>[ <a href='#' onClick='jsPreInstallMod(\"" + objMod.url + "\", \"" + id + "\", {})'>" + jsGetLocaleText('update') + "</a> ]</div>";
                 
                 /* Update Classes */
                 strHTML_classes = strHTML_classes.replace('mod_entry', 'mod_entry mod_entry_filter_update_available');
             } else {
-                strHTML_install_link = "<div class='mod_entry_link mod_entry_reinstall_link'>[ <a href='#' onClick='jsPreInstallMod(\"" + objMod.url + "\", \"" + id + "\", {})'>" + jsGetLocaleText('reinstall', objOptions["locale"]) + "</a> ]</div>";
+                strHTML_install_link = "<div class='mod_entry_link mod_entry_reinstall_link'>[ <a href='#' onClick='jsPreInstallMod(\"" + objMod.url + "\", \"" + id + "\", {})'>" + jsGetLocaleText('reinstall') + "</a> ]</div>";
                 
                 /* Update Classes */
                 strHTML_classes = strHTML_classes.replace('mod_entry', 'mod_entry mod_entry_filter_installed');
             }
         } else {
-            strHTML_install_link = "<div class='mod_entry_link mod_entry_install_link'>[ <a href='#' onClick='jsPreInstallMod(\"" + objMod.url + "\", \"" + id + "\", {})'>" + jsGetLocaleText('install', objOptions["locale"]) + "</a> ]</div>";
+            strHTML_install_link = "<div class='mod_entry_link mod_entry_install_link'>[ <a href='#' onClick='jsPreInstallMod(\"" + objMod.url + "\", \"" + id + "\", {})'>" + jsGetLocaleText('install') + "</a> ]</div>";
             
             /* Update Classes */
             strHTML_classes = strHTML_classes.replace('mod_entry', 'mod_entry mod_entry_filter_not_installed');
@@ -472,10 +360,10 @@ function jsGenerateModEntryHTML(objMod, boolIsInstalled) {
         strHTML_downloads = "<img src='assets/img/download.png' style='position: absolute; margin-top:4px'> <div class='mod_entry_count'>" + objMod.downloads + "</div>"; //TODO: Fix Up
         
         /* Like Count */            
-        if (objOptions["modlikes"] == true) {
+        if (settings.modlikes() == true) {
             if (objMod.likes != null) {
                 if (objMod.likes == -2) {
-                    strHTML_likes = "<span id='" + id + "_like_count' class='mod_entry_likes'>" + jsGetLocaleText('Loading', objOptions["locale"]) + "...</span>" //TODO: Fix Up
+                    strHTML_likes = "<span id='" + id + "_like_count' class='mod_entry_likes'>" + jsGetLocaleText('Loading') + "...</span>" //TODO: Fix Up
                 }
                 if (objMod.likes >= 0) {
                     strHTML_likes = "<img src='assets/img/like.png' height='15' width='15' style='position: absolute; margin-top:4px; margin-left: 8px;'> <div class='mod_entry_likes'>" + objMod.likes + "</div>"; //TODO: Fix Up
@@ -502,11 +390,11 @@ function jsGenerateOnlineModsListHTML() {
 
     $("#mod_list_available").html("<div class='filter_area'>" +
         "<div class='filter_area_additional_options_toggle'>" +
-            "<a href='#' id='filter_area_available_toggle' onClick='jsToggleModListOptions(false)'>" + jsGetLocaleText('Hide_Additional_Options', objOptions["locale"]) + "</a>" + 
+            "<a href='#' id='filter_area_available_toggle' onClick='jsToggleModListOptions(false)'>" + jsGetLocaleText('Hide_Additional_Options') + "</a>" + 
         "</div>" + 
         "<table>" +
             "<tr>" +
-                "<td class='filter_area_filter_heading'>" + jsGetLocaleText('Name_Filter', objOptions["locale"]) + ":</td>" +
+                "<td class='filter_area_filter_heading'>" + jsGetLocaleText('Name_Filter') + ":</td>" +
                 "<td class='filter_area_filter_list filter_area_text_filter'>" +
                     "<input id='filter_area_available_text_filter' type='text' class='filter_area_textbox'>" + 
                 "</td>" +
@@ -514,36 +402,36 @@ function jsGenerateOnlineModsListHTML() {
         "</table>" +
         "<table class='filter_area_container'>" +
             "<tr>" +
-                "<td class='filter_area_filter_heading'>" + jsGetLocaleText('Show_Only', objOptions["locale"]) + ":</td>" +
+                "<td class='filter_area_filter_heading'>" + jsGetLocaleText('Show_Only') + ":</td>" +
                 "<td class='filter_area_filter_list filter_area_filter_list_show'>" +
-                    "<a href='#' id='filter_area_show_all' onClick='jsSetAvailableModsFilter(\"ALL\")'>" + jsGetLocaleText('ALL', objOptions["locale"]) + "</a> - " +
-                    "<a href='#' id='filter_area_show_installed' onClick='jsSetAvailableModsFilter(\"INSTALLED\")'>" + jsGetLocaleText('INSTALLED', objOptions["locale"]) + "</a> - " + 
-                    "<a href='#' id='filter_area_show_not_installed' onClick='jsSetAvailableModsFilter(\"NOT_INSTALLED\")'>" + jsGetLocaleText('NOT_INSTALLED', objOptions["locale"]) + "</a> - " + 
-                    "<a href='#' id='filter_area_show_requires_update' onClick='jsSetAvailableModsFilter(\"REQUIRES_UPDATE\")'>" + jsGetLocaleText('NEEDS_UPDATE', objOptions["locale"]) + "</a> - " + 
-                    "<a href='#' id='filter_area_show_newly_updated' onClick='jsSetAvailableModsFilter(\"NEWLY_UPDATED\")'>" + jsGetLocaleText('NEWLY_UPDATED', objOptions["locale"]) + "</a>" + 
+                    "<a href='#' id='filter_area_show_all' onClick='jsSetAvailableModsFilter(\"ALL\")'>" + jsGetLocaleText('ALL') + "</a> - " +
+                    "<a href='#' id='filter_area_show_installed' onClick='jsSetAvailableModsFilter(\"INSTALLED\")'>" + jsGetLocaleText('INSTALLED') + "</a> - " + 
+                    "<a href='#' id='filter_area_show_not_installed' onClick='jsSetAvailableModsFilter(\"NOT_INSTALLED\")'>" + jsGetLocaleText('NOT_INSTALLED') + "</a> - " + 
+                    "<a href='#' id='filter_area_show_requires_update' onClick='jsSetAvailableModsFilter(\"REQUIRES_UPDATE\")'>" + jsGetLocaleText('NEEDS_UPDATE') + "</a> - " + 
+                    "<a href='#' id='filter_area_show_newly_updated' onClick='jsSetAvailableModsFilter(\"NEWLY_UPDATED\")'>" + jsGetLocaleText('NEWLY_UPDATED') + "</a>" + 
                 "</td>" + 
             "</tr>" +
             "<tr>" + 
-                "<td class='filter_area_filter_heading'>" + jsGetLocaleText('Sort_By', objOptions["locale"]) + ":</td>" +
+                "<td class='filter_area_filter_heading'>" + jsGetLocaleText('Sort_By') + ":</td>" +
                 "<td class='filter_area_filter_list filter_area_filter_list_sort'>" + 
-                    "<a href='#' id='filter_area_sort_last_updated' onClick='jsSetAvailableModsSort(\"LAST_UPDATED\")'>" + jsGetLocaleText('LAST_UPDATED', objOptions["locale"]) + "</a> - " + 
-                    "<a href='#' id='filter_area_sort_last_title' onClick='jsSetAvailableModsSort(\"TITLE\")'>" + jsGetLocaleText('TITLE', objOptions["locale"]) + "</a> - " + 
-                    "<a href='#' id='filter_area_sort_last_author' onClick='jsSetAvailableModsSort(\"AUTHOR\")'>" + jsGetLocaleText('AUTHOR', objOptions["locale"]) + "</a> - " + 
-                    "<a href='#' id='filter_area_sort_last_build' onClick='jsSetAvailableModsSort(\"BUILD\")'>" + jsGetLocaleText('BUILD', objOptions["locale"]) + "</a> - " + 
-                    "<a href='#' id='filter_area_sort_last_downloads' onClick='jsSetAvailableModsSort(\"DOWNLOADS\")'>" + jsGetLocaleText('DOWNLOADS', objOptions["locale"]) + "</a> - " + 
-                    "<a href='#' id='filter_area_sort_last_likes' onClick='jsSetAvailableModsSort(\"LIKES\")'>" + jsGetLocaleText('LIKES', objOptions["locale"]) + "</a> - " + 
-                    "<a href='#' id='filter_area_sort_last_random' onClick='jsSetAvailableModsSort(\"RANDOM\")'>" + jsGetLocaleText('RANDOM', objOptions["locale"]) + "</a>" + 
+                    "<a href='#' id='filter_area_sort_last_updated' onClick='jsSetAvailableModsSort(\"LAST_UPDATED\")'>" + jsGetLocaleText('LAST_UPDATED') + "</a> - " + 
+                    "<a href='#' id='filter_area_sort_last_title' onClick='jsSetAvailableModsSort(\"TITLE\")'>" + jsGetLocaleText('TITLE') + "</a> - " + 
+                    "<a href='#' id='filter_area_sort_last_author' onClick='jsSetAvailableModsSort(\"AUTHOR\")'>" + jsGetLocaleText('AUTHOR') + "</a> - " + 
+                    "<a href='#' id='filter_area_sort_last_build' onClick='jsSetAvailableModsSort(\"BUILD\")'>" + jsGetLocaleText('BUILD') + "</a> - " + 
+                    "<a href='#' id='filter_area_sort_last_downloads' onClick='jsSetAvailableModsSort(\"DOWNLOADS\")'>" + jsGetLocaleText('DOWNLOADS') + "</a> - " + 
+                    "<a href='#' id='filter_area_sort_last_likes' onClick='jsSetAvailableModsSort(\"LIKES\")'>" + jsGetLocaleText('LIKES') + "</a> - " + 
+                    "<a href='#' id='filter_area_sort_last_random' onClick='jsSetAvailableModsSort(\"RANDOM\")'>" + jsGetLocaleText('RANDOM') + "</a>" + 
                 "</td>" +
             "</tr>" +
             "<tr>" + 
-                "<td class='filter_area_filter_heading'>" + jsGetLocaleText('Category', objOptions["locale"]) + ":</td>" +
+                "<td class='filter_area_filter_heading'>" + jsGetLocaleText('Category') + ":</td>" +
                 "<td class='filter_area_filter_list filter_area_filter_list_category'>" + strCategoryHTML + "</td>" +
             "</tr>" +
         "</table>" +
         "<div id='filters_on_available'>" + 
             "<img class='filter_area_img' src='assets/img/filter.png'>" +
-            "<div class='filter_area_message'> " + jsGetLocaleText('One_or_more_filters_are_currently_applied', objOptions["locale"]) + " " +
-                "<span class='filter_area_link'>[ <a href='#' onClick='document.getElementById(\"filter_area_available_text_filter\").value=\"\"; jsSetAvailableModsFilter(\"ALL\"); jsSetAvailableModsFilterCategory(\"ALL\")'>" + jsGetLocaleText('clear', objOptions["locale"]) + "</a> ]</span>" +
+            "<div class='filter_area_message'> " + jsGetLocaleText('One_or_more_filters_are_currently_applied') + " " +
+                "<span class='filter_area_link'>[ <a href='#' onClick='document.getElementById(\"filter_area_available_text_filter\").value=\"\"; jsSetAvailableModsFilter(\"ALL\"); jsSetAvailableModsFilterCategory(\"ALL\")'>" + jsGetLocaleText('clear') + "</a> ]</span>" +
             "</div>" +
         "</div>" +
     "</div>");
@@ -576,11 +464,11 @@ function jsGenerateInstalledModsListHTML() {
     
     $("#mod_list_installed").html("<div class='filter_area'>" +
         "<div class='filter_area_additional_options_toggle'>" +
-            "<a href='#' id='filter_area_installed_toggle' onClick='jsToggleModListOptions(true)'>" + jsGetLocaleText('Hide_Additional_Options', objOptions["locale"]) + "</a>" + 
+            "<a href='#' id='filter_area_installed_toggle' onClick='jsToggleModListOptions(true)'>" + jsGetLocaleText('Hide_Additional_Options') + "</a>" + 
         "</div>" + 
         "<table>" +
             "<tr>" +
-                "<td class='filter_area_filter_heading'>" + jsGetLocaleText('Name_Filter', objOptions["locale"]) + ":</td>" +
+                "<td class='filter_area_filter_heading'>" + jsGetLocaleText('Name_Filter') + ":</td>" +
                 "<td class='filter_area_filter_list filter_area_text_filter'>" + 
                     "<input id='filter_area_installed_text_filter' type='text' class='filter_area_textbox'>" + 
                 "</td>" +
@@ -588,23 +476,23 @@ function jsGenerateInstalledModsListHTML() {
         "</table>" +
         "<table class='filter_area_container'>" +
             "<tr>" + 
-                "<td class='filter_area_filter_heading'>" + jsGetLocaleText('Category', objOptions["locale"]) + ":</td>" +
+                "<td class='filter_area_filter_heading'>" + jsGetLocaleText('Category') + ":</td>" +
                 "<td class='filter_area_filter_list filter_area_filter_list_category'>" + strCategoryHTML + "</td>" +
             "</tr>" +
             "<tr>" + 
-                "<td class='filter_area_filter_heading'>" + jsGetLocaleText('Options', objOptions["locale"]) + ":</td>" +
+                "<td class='filter_area_filter_heading'>" + jsGetLocaleText('Options') + ":</td>" +
                 "<td>" + 
                     "<div class='filter_area_option_img'><img src='assets/img/checkbox_checked.png' /></div>" +
-                    "<div class='filter_area_option_text'>&nbsp;<a href='#' onClick='jsSetAllModStatus(true)'>" + jsGetLocaleText('Enable_All', objOptions["locale"]) + "</a></div>" +
+                    "<div class='filter_area_option_text'>&nbsp;<a href='#' onClick='jsSetAllModStatus(true)'>" + jsGetLocaleText('Enable_All') + "</a></div>" +
                     "<div class='filter_area_option_img'><img src='assets/img/checkbox_unchecked.png' /></div>" +
-                    "<div class='filter_area_option_text'>&nbsp;<a href='#' onClick='jsSetAllModStatus(false)'>" + jsGetLocaleText('Disable_All', objOptions["locale"]) + "</a></div>" +
+                    "<div class='filter_area_option_text'>&nbsp;<a href='#' onClick='jsSetAllModStatus(false)'>" + jsGetLocaleText('Disable_All') + "</a></div>" +
                 "</td>" +
             "</tr>" +
         "</table>" +
         "<div id='filters_on_installed'>" +
             "<img class='filter_area_img' src='assets/img/filter.png'>" +
-            "<div class='filter_area_message'> " + jsGetLocaleText('One_or_more_filters_are_currently_applied', objOptions["locale"]) + " " +
-                "<span class='filter_area_link'>[ <a href='#' onClick='document.getElementById(\"filter_area_installed_text_filter\").value=\"\"; jsSetInstalledModsFilterCategory(\"ALL\")'>" + jsGetLocaleText('clear', objOptions["locale"]) + "</a> ]</span>" +
+            "<div class='filter_area_message'> " + jsGetLocaleText('One_or_more_filters_are_currently_applied') + " " +
+                "<span class='filter_area_link'>[ <a href='#' onClick='document.getElementById(\"filter_area_installed_text_filter\").value=\"\"; jsSetInstalledModsFilterCategory(\"ALL\")'>" + jsGetLocaleText('clear') + "</a> ]</span>" +
             "</div>" +
         "</div>" +
     "</div>");
@@ -620,8 +508,8 @@ function jsGenerateInstalledModsListHTML() {
     if (jsGetModsRequiringUpdates() > 0) {
         $("#mod_list_installed").append("<div class='alert_area'>" + 
             "<img class='alert_img' src='assets/img/alert.png'>" + 
-            "<div class='alert_message'>" + jsGetModsRequiringUpdates() + " " + jsGetLocaleText('mod_s__require_updates', objOptions["locale"]) + " " + 
-                "<span class='alert_link'>[ <a href='#' onClick='jsUpdateAll()'><span class='LOC_update_all'>" + jsGetLocaleText('update_all', objOptions["locale"]) + "</span></a> ]</span>" + 
+            "<div class='alert_message'>" + jsGetModsRequiringUpdates() + " " + jsGetLocaleText('mod_s__require_updates') + " " + 
+                "<span class='alert_link'>[ <a href='#' onClick='jsUpdateAll()'><span class='LOC_update_all'>" + jsGetLocaleText('update_all') + "</span></a> ]</span>" + 
             "</div>" + 
         "</div>");
         
@@ -662,8 +550,7 @@ function jsToggleModListOptions(boolInstalled) {
         strListName = 'installed';
     }
     
-    objOptions["show_" + strListName + "_filters"] = !objOptions["show_" + strListName + "_filters"];
-    WriteOptionsJSON();
+    settings["show_" + strListName + "_filters"](!settings["show_" + strListName + "_filters"]());
     jsUpdateOptionsToggle(boolInstalled)
 }
         
@@ -673,53 +560,45 @@ function jsUpdateOptionsToggle(boolInstalled) {
         strListName = 'installed';
     }
     
-    if (objOptions["show_" + strListName + "_filters"] == true) {
-        $("#filter_area_" + strListName + "_toggle").text(jsGetLocaleText('Hide_Additional_Options', objOptions["locale"]));
+    if (settings["show_" + strListName + "_filters"]() == true) {
+        $("#filter_area_" + strListName + "_toggle").text(jsGetLocaleText('Hide_Additional_Options'));
         $("#mod_list_" + strListName).find(".filter_area_container").show();
     } else {
-        $("#filter_area_" + strListName + "_toggle").text(jsGetLocaleText('Show_Additional_Options', objOptions["locale"]));
+        $("#filter_area_" + strListName + "_toggle").text(jsGetLocaleText('Show_Additional_Options'));
         $("#mod_list_" + strListName).find(".filter_area_container").hide();
     }
 }
 
-function jsSetLanguage(boolSupressWrite) {
-    objOptions["locale"] = document.getElementById("setting_language").value;
-    jsAddLogMessage("Setting locale to " + objOptions["locale"], 3);
+function jsSetLanguage() {
+    jsAddLogMessage("Setting locale to " + settings.locale(), 3);
     $("#mod_list_available").html("");
     $("#mod_list_installed").html("");
     jsApplyLocaleText();
     jsGenerateInstalledModsListHTML();
     jsGenerateOnlineModsListHTML();
-    if (boolSupressWrite !== true) {
-        WriteOptionsJSON();
-    }
 }
 
 function jsSetAvailableModsSort(strNewSort) {
-    objOptions["sort"] = strNewSort;
-    jsAddLogMessage("Available Mods sort by " + objOptions["sort"] + " applied", 4);
-    WriteOptionsJSON();
+    settings.sort(strNewSort);
+    jsAddLogMessage("Available Mods sort by " + settings.sort() + " applied", 4);
     jsGenerateOnlineModsListHTML();
 }
 
 function jsSetAvailableModsFilter(strNewFilter) {
-    objOptions["available_filter"] = strNewFilter;
-    jsAddLogMessage("Available Mods filter " + objOptions["available_filter"] + " applied", 4);
-    WriteOptionsJSON();
+    settings.available_filter(strNewFilter);
+    jsAddLogMessage("Available Mods filter " + strNewFilter + " applied", 4);
     jsApplyOnlineModFilter();
 }
 
 function jsSetInstalledModsFilterCategory(strNewCategory) {
-    objOptions["installed_category"] = strNewCategory;
-    jsAddLogMessage("Installed Mods category filter " + objOptions["installed_category"] + " applied", 4);
-    WriteOptionsJSON();
+    settings.installed_category(strNewCategory);
+    jsAddLogMessage("Installed Mods category filter " + strNewCategory + " applied", 4);
     jsApplyInstalledModFilter();
 }
 
 function jsSetAvailableModsFilterCategory(strNewCategory) {
-    objOptions["available_category"] = strNewCategory;
-    jsAddLogMessage("Available Mod category filter " + objOptions["available_category"] + " applied", 4);
-    WriteOptionsJSON();
+    settings.available_category(strNewCategory);
+    jsAddLogMessage("Available Mod category filter " + strNewCategory + " applied", 4);
     jsApplyOnlineModFilter();
 }
 
@@ -728,7 +607,7 @@ function jsApplyOnlineModFilter() {
 
     $('#mod_list_available').find('.mod_entry').removeClass('mod_entry_filtered');
     $('#mod_list_available .filter_area_filter_list_show a').removeClass('filter_area_filter_item_selected');
-    switch (objOptions["available_filter"]) {
+    switch (settings.available_filter()) {
         case "ALL":
             $('#filter_area_show_all').addClass('filter_area_filter_item_selected');
             boolFiltersEnabled = false;
@@ -751,12 +630,12 @@ function jsApplyOnlineModFilter() {
             break;
     }
     
-    if (objOptions["available_category"] != "ALL") {
-        $('#mod_list_available').find('.mod_entry').not('.mod_entry_category_' + objOptions["available_category"]).addClass('mod_entry_filtered');
+    if (settings.available_category() != "ALL") {
+        $('#mod_list_available').find('.mod_entry').not('.mod_entry_category_' + settings.available_category()).addClass('mod_entry_filtered');
         boolFiltersEnabled = true;
     }
     $('#mod_list_available .filter_area_filter_list_category a').removeClass('filter_area_filter_item_selected');
-    $('#filter_area_available_category_' + objOptions["available_category"]).addClass('filter_area_filter_item_selected');
+    $('#filter_area_available_category_' + settings.available_category()).addClass('filter_area_filter_item_selected');
     
     if ($('#filter_area_available_text_filter').val() != '') {
         var strSearch = $('#filter_area_available_text_filter').val().toLowerCase();
@@ -780,12 +659,12 @@ function jsApplyInstalledModFilter() {
     
     $('#mod_list_installed').find('.mod_entry').removeClass('mod_entry_filtered');
             
-    if (objOptions["installed_category"] != "ALL") {
-        $('#mod_list_installed').find('.mod_entry').not('.mod_entry_category_' + objOptions["installed_category"]).addClass('mod_entry_filtered');
+    if (settings.installed_category() != "ALL") {
+        $('#mod_list_installed').find('.mod_entry').not('.mod_entry_category_' + settings.installed_category()).addClass('mod_entry_filtered');
         boolFiltersEnabled = true;
     }
     $('#mod_list_installed .filter_area_filter_list_category a').removeClass('filter_area_filter_item_selected');
-    $('#filter_area_installed_category_' + objOptions["installed_category"]).addClass('filter_area_filter_item_selected');
+    $('#filter_area_installed_category_' + settings.installed_category()).addClass('filter_area_filter_item_selected');
     
     if ($('#filter_area_installed_text_filter').val() != '') {
         var strSearch = $('#filter_area_installed_text_filter').val().toLowerCase();
@@ -853,41 +732,23 @@ function jsPreUninstallMod(strModID) {
     }
 }
 
-function jsSetModsListView(boolInstalled, boolSupressWrite) {
-    var strListName = 'available';
-    if (boolInstalled == true) {
-        strListName = 'installed';
-    }
-    
-    objOptions[strListName + "_view"] = document.getElementById("setting_" + strListName + "_view").value;
-    if (boolSupressWrite !== true) {
-        WriteOptionsJSON();
-    }
-    
-    if (objOptions[strListName + "_view"] == 'detailed') {
-        $("#mod_list_" + strListName).find(".mod_entry").addClass("mod_entry_detailed");
-        $("#mod_list_" + strListName).find(".mod_entry").removeClass("mod_entry_summary");
+function jsSetModsListView(listname, mode) {
+    var $list = $("#mod_list_" + listname);
+    if (mode === "detailed") {
+        $list.find(".mod_entry").addClass("mod_entry_detailed");
+        $list.find(".mod_entry").removeClass("mod_entry_summary");
     } else {
-        $("#mod_list_" + strListName).find(".mod_entry").removeClass("mod_entry_detailed");
-        $("#mod_list_" + strListName).find(".mod_entry").addClass("mod_entry_summary");
+        $list.find(".mod_entry").removeClass("mod_entry_detailed");
+        $list.find(".mod_entry").addClass("mod_entry_summary");
     }
 }
-        
-function jsSetModsListIcon(boolInstalled, boolSupressWrite) {
-    var strListName = 'available';
-    if (boolInstalled == true) {
-        strListName = 'installed';
-    }
-    
-    objOptions[strListName + "_icon"] = document.getElementById("setting_" + strListName + "_icon").checked;
-    if (boolSupressWrite !== true) {
-        WriteOptionsJSON();
-    }
-    
-    if (objOptions[strListName + "_icon"] == true) {
-        $("#mod_list_" + strListName).find(".mod_entry_icon").removeClass("mod_entry_icon_disabled");
+
+function jsSetModsListIcon(listname, mode) {
+    var $list = $("#mod_list_" + listname);
+    if (mode) {
+        $list.find(".mod_entry_icon").removeClass("mod_entry_icon_disabled");
     } else {
-        $("#mod_list_" + strListName).find(".mod_entry_icon").addClass("mod_entry_icon_disabled");
+        $list.find(".mod_entry_icon").addClass("mod_entry_icon_disabled");
     }
 }
 
@@ -895,20 +756,20 @@ function jsSetModsListIcon(boolInstalled, boolSupressWrite) {
 function jsRefresh(boolShowLoading, boolDownloadData) {
     //TODO: Localisation
     if (boolShowLoading == true) {
-        document.getElementById("mod_list_installed").innerHTML = "<div class=\"loading\">" + jsGetLocaleText('Loading', objOptions["locale"]) + "...</div>";
-        document.getElementById("mod_list_available").innerHTML = "<div class=\"loading\">" + jsGetLocaleText('Loading', objOptions["locale"]) + "...</div>";
-        document.getElementById('total_available_mods').innerHTML = jsGetLocaleText('Loading', objOptions["locale"]) + "...";
-        document.getElementById('total_available_mod_downloads').innerHTML = jsGetLocaleText('Loading', objOptions["locale"]) + "...";
+        document.getElementById("mod_list_installed").innerHTML = "<div class=\"loading\">" + jsGetLocaleText('Loading') + "...</div>";
+        document.getElementById("mod_list_available").innerHTML = "<div class=\"loading\">" + jsGetLocaleText('Loading') + "...</div>";
+        document.getElementById('total_available_mods').innerHTML = jsGetLocaleText('Loading') + "...";
+        document.getElementById('total_available_mod_downloads').innerHTML = jsGetLocaleText('Loading') + "...";
     }
     jsRefresh_asynch(boolDownloadData);
 }
 
 function jsRefresh_asynch(boolDownloadData) {
     if (boolOnline == false) {
-        document.getElementById("news_data").innerHTML = "<div class=\"loading\">" + jsGetLocaleText('Mod_Manager_is_offline', objOptions["locale"]) + "</div>";    
-        document.getElementById("mod_list_available").innerHTML = "<div class=\"loading\">" + jsGetLocaleText('Mod_Manager_is_offline', objOptions["locale"]) + "</div>";
-        document.getElementById('total_available_mods').innerHTML = jsGetLocaleText('Mod_Manager_is_offline', objOptions["locale"]);
-        document.getElementById('total_available_mod_downloads').innerHTML = jsGetLocaleText('Mod_Manager_is_offline', objOptions["locale"]);
+        document.getElementById("news_data").innerHTML = "<div class=\"loading\">" + jsGetLocaleText('Mod_Manager_is_offline') + "</div>";    
+        document.getElementById("mod_list_available").innerHTML = "<div class=\"loading\">" + jsGetLocaleText('Mod_Manager_is_offline') + "</div>";
+        document.getElementById('total_available_mods').innerHTML = jsGetLocaleText('Mod_Manager_is_offline');
+        document.getElementById('total_available_mod_downloads').innerHTML = jsGetLocaleText('Mod_Manager_is_offline');
     }
     
     if (boolOnline == true) {
@@ -942,38 +803,6 @@ function jsGetModsRequiringUpdates() {
         }
     }
     return intModsRequiringUpdate;
-}
-
-/* Settings Functions */
-function jsToggleModLikes(boolSupressWrite) {
-    objOptions["modlikes"] = document.getElementById("setting_likes").checked;
-    if (boolSupressWrite !== true) {
-        WriteOptionsJSON();
-    }
-}
-
-function jsToggleDebugMode(boolSupressWrite) {
-    jsSetLogLevel(document.getElementById("setting_debug").checked ? 4 : objOptions["verbose"] ? 3 : 2);
-    objOptions["debug"] = document.getElementById("setting_debug").checked;
-    if (boolSupressWrite !== true) {
-        WriteOptionsJSON();
-    }
-}
-
-function jsToggleVerboseMode(boolSupressWrite) {
-    jsSetLogLevel(document.getElementById("setting_debug").checked ? 4 : document.getElementById("setting_verbose").checked ? 3 : 2);
-    objOptions["verbose"] = document.getElementById("setting_verbose").checked;
-    if (boolSupressWrite !== true) {
-        WriteOptionsJSON();
-    }
-}
-
-function jsSetDefaultTab(boolSupressWrite) {
-    objOptions["tab"] = document.getElementById("setting_defaultTab").value;
-    jsAddLogMessage("Setting default tab to " + objOptions["tab"], 3);
-    if (boolSupressWrite !== true) {
-        WriteOptionsJSON();
-    }
 }
 
 function jsAddLogMessage(strText, intLevel) {
@@ -1049,7 +878,7 @@ function jsDownloadOnlineModDownloadCount() {
                     
                     jsGenerateOnlineModsListHTML();
                     jsGenerateInstalledModsListHTML();
-                    if (objOptions["modlikes"] == true) {
+                    if (settings.modlikes()) {
                         jsDownloadOnlineModLikeCount();
                     }
                     
@@ -1143,7 +972,7 @@ function jsDownloadNews() {
     if (boolOnline == true) {
         jsAddLogMessage("Downloading news", 2);
         var $news = $("#news_data");
-        $news.html("<div class=\"loading\">" + jsGetLocaleText('Loading', objOptions["locale"]) + "...</div>");
+        $news.html("<div class=\"loading\">" + jsGetLocaleText('Loading') + "...</div>");
         $news.load(NEWS_URL, function( response, status, xhr ) {
             if ( status == "error" ) {
                 var msg = "Sorry but there was an error: ";
@@ -1207,26 +1036,74 @@ function FindInstalledMods() {
     });
 }
 
-function LoadOptions() {
-    try {
-        var strOptions = fs.readFileSync(path.join(pa.cachepath, PAMM_OPTIONS_FILENAME), { encoding: 'utf8' });
-        jsLoadOptionsData(strOptions);
+function initSettings() {
+    var filepath = path.join(pa.cachepath, PAMM_OPTIONS_FILENAME);
+    var tmpoptions = {
+        debug: false,
+        verbose: false,
+        tab: "news",
+        locale: "en",
+        available_category: "ALL",
+        available_view: "detailed",
+        available_icon: true,
+        available_filter: "ALL",
+        show_available_filters: false,
+        sort: "LAST_UPDATED",
+        modlikes: false,
+        installed_category: "ALL",
+        installed_view: "",
+        installed_icon: false,
+        show_installed_filters: false
+    };
+    
+    if(fs.existsSync(filepath)) {
+        try {
+            var content = fs.readFileSync(filepath, { encoding: 'utf8' });
+            _.assign(tmpoptions, JSON.parse(content));
+        }
+        catch(e) {
+            jsAddLogMessage("Failed to load options file: " + e, 1);
+        }
     }
-    catch(e) {
-        jsAddLogMessage("Options file not found, using defaults", 3);
-        jsLoadOptionsData("{}");
+    else {
+        jsAddLogMessage("Using default options", 2);
     }
-}
-
-function WriteOptionsJSON() {
-    try {
-        jsAddLogMessage("Writing options file", 4);
-        var strOptions = jsGetOptionsDataString();
-        fs.writeFileSync(path.join(pa.cachepath, PAMM_OPTIONS_FILENAME), strOptions);
-    }
-    catch(e) {
-        jsAddLogMessage("Failed to write options file.", 3);
-    }
+    
+    settings = ko.mapping.fromJS(tmpoptions);
+    settings.autosave = ko.computed(function() {
+        // trigger all observable values
+        return ko.mapping.toJS(settings);
+    });
+    
+    settings.debug.subscribe(function(newValue) {
+        jsSetLogLevel(newValue ? 4 : 2);
+    });
+    settings.locale.subscribe(function(value) {
+        jsSetLanguage();
+    });
+    settings.available_view.subscribe(function(newValue) {
+        jsSetModsListView('available', newValue);
+    });
+    settings.available_icon.subscribe(function(newValue) {
+        jsSetModsListIcon('available', newValue);
+    });
+    settings.installed_view.subscribe(function(newValue) {
+        jsSetModsListView('installed', newValue);
+    });
+    settings.installed_icon.subscribe(function(newValue) {
+        jsSetModsListIcon('installed', newValue);
+    });
+    
+    settings.autosave.subscribe(function(data) {
+        try {
+            jsAddLogMessage("Writing options file", 4);
+            var strOptions = JSON.stringify(data, null, 4);
+            fs.writeFileSync(filepath, strOptions);
+        }
+        catch(e) {
+            jsAddLogMessage("Failed to write options file: " + e, 1);
+        }
+    });
 }
 
 function LaunchPA() {
@@ -1373,10 +1250,21 @@ $(function() {
     });
     $window.trigger('resize');
     
-    Initialise();
-    LoadOptions();
+    initSettings();
+    
+    //document.getElementById("setting_installLocation").value = pa.last ? pa.last.bin : "";
+    //document.getElementById("setting_modLocation").value = pa.modspath.client;
+    
+    var model = {
+        settings: settings
+        ,pa: pa
+    };
+    
+    ko.applyBindings(model);
     
     jsApplyLocaleText();
+    jsDisplayPanel(settings.tab());
+    
     $('#current_pamm_version').text(strPAMMversion);
     jsRefresh(true, true);
     
