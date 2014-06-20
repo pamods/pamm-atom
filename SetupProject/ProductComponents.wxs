@@ -256,6 +256,9 @@
                             <Component Id="cmp0EDF0B38724D1587D48CE26FEC195964" Guid="*">
                                 <File Id="fil81773EB00F8896387EB8256FF657B74F" KeyPath="yes" Source="$(var.PammDir)\resources\app\assets\img\log_select.png" />
                             </Component>
+                            <Component Id="cmp916E1B149F78C78DC7092EE172E09D7B" Guid="*">
+                                <File Id="fil2F983D9AE58FE2248FDBD751BF9C243F" KeyPath="yes" Source="$(var.PammDir)\resources\app\assets\img\pamm.png" />
+                            </Component>
                             <Component Id="cmp5C1DBDEEBACDB52262791272D5F74835" Guid="*">
                                 <File Id="fil61C4AE6CC826D90CCD3B8DE322679665" KeyPath="yes" Source="$(var.PammDir)\resources\app\assets\img\settings.png" />
                             </Component>
@@ -272,6 +275,12 @@
                             </Component>
                             <Component Id="cmpCCF24DE7040857BF2619217ABD996445" Guid="*">
                                 <File Id="filD8CDA2C7CD3C2EFD14162C4FF30429E6" KeyPath="yes" Source="$(var.PammDir)\resources\app\assets\js\jquery-ajax-blob-arraybuffer.js" />
+                            </Component>
+                            <Component Id="cmpDCBCA7ADB4F553CD35E0310066FB3142" Guid="*">
+                                <File Id="fil01A6811C2A47FD36131F6902312A6F22" KeyPath="yes" Source="$(var.PammDir)\resources\app\assets\js\knockout-3.1.0.min.js" />
+                            </Component>
+                            <Component Id="cmp3697529719E70AEB815E69EC1EAC4B0D" Guid="*">
+                                <File Id="filCD1231D0D73AF999FB33C1A2BB155DD0" KeyPath="yes" Source="$(var.PammDir)\resources\app\assets\js\knockout.mapping-2.4.1.min.js" />
                             </Component>
                             <Component Id="cmpADDD1A15F84329DF43344580805C13E8" Guid="*">
                                 <File Id="fil261AE4850BDCDA23EC466A38F1ADF981" KeyPath="yes" Source="$(var.PammDir)\resources\app\assets\js\locale.js" />
@@ -449,6 +458,96 @@
                                 </Component>
                             </Directory>
                         </Directory>
+                        <Directory Id="dirA39ADDE54862C47FC8CB5E354CD5260F" Name="windows">
+                            <Component Id="cmp703EF0CF2632E7A1BEDE23A5B27D2CE5" Guid="*">
+                                <File Id="fil9CA2921EEEBCAB81773F8BFF28B6D5D8" KeyPath="yes" Source="$(var.PammDir)\resources\app\node_modules\windows\index.js" />
+                            </Component>
+                            <Component Id="cmp9D60458C50A2CB59F018E126D3BDFA0C" Guid="*">
+                                <File Id="fil8718354452AEF535FEA528FDB4051021" KeyPath="yes" Source="$(var.PammDir)\resources\app\node_modules\windows\package.json" />
+                            </Component>
+                            <Component Id="cmp1D0F8C4B95E807A8E3710CB049932DB4" Guid="*">
+                                <File Id="fil793CE1E3FA52FE940BFDA228EA4DF5DE" KeyPath="yes" Source="$(var.PammDir)\resources\app\node_modules\windows\README.md" />
+                            </Component>
+                            <Directory Id="dir535FD6905F2D15637F889DD2EDB33FEC" Name="bin">
+                                <Component Id="cmp5516ABF0CA187F77296BB4A4DA1B48F5" Guid="*">
+                                    <File Id="filB9BF41592A32C0A6258E2FBD33B27E0E" KeyPath="yes" Source="$(var.PammDir)\resources\app\node_modules\windows\bin\cwddrive.js" />
+                                </Component>
+                                <Component Id="cmpAEBF8DA8DA2E596AA21BCD1777E3D10A" Guid="*">
+                                    <File Id="fil49B2312D2BE8F632945754E9B2237E1D" KeyPath="yes" Source="$(var.PammDir)\resources\app\node_modules\windows\bin\makerunnable.js" />
+                                </Component>
+                            </Directory>
+                            <Directory Id="dir2168C1267DBE57B3E3D03A5DE96617E1" Name="lib">
+                                <Component Id="cmpBEE68F9E43E2FD12E5A1ADC41B4E6CDD" Guid="*">
+                                    <File Id="filAA66E1C27AA0A101FDA2F135ABD75092" KeyPath="yes" Source="$(var.PammDir)\resources\app\node_modules\windows\lib\associations.js" />
+                                </Component>
+                                <Component Id="cmpCC401636C5F4AA3C50C8D87E948AFA3D" Guid="*">
+                                    <File Id="fil2A47DE0923469417641FBDC9E8E46D6F" KeyPath="yes" Source="$(var.PammDir)\resources\app\node_modules\windows\lib\Command.js" />
+                                </Component>
+                                <Component Id="cmp8E954AF25DF6823BF0397E29069A460C" Guid="*">
+                                    <File Id="fil04C4A3CAFF49A161865B3E3113742D49" KeyPath="yes" Source="$(var.PammDir)\resources\app\node_modules\windows\lib\console.js" />
+                                </Component>
+                                <Component Id="cmp7A302EFB08A110BBECDCB0FF696E3226" Guid="*">
+                                    <File Id="fil10D56AD3681BD0D0EA6360AD0EE3A1F2" KeyPath="yes" Source="$(var.PammDir)\resources\app\node_modules\windows\lib\driveAlias.js" />
+                                </Component>
+                                <Component Id="cmp647F677E20B3154165425E0283F7EC22" Guid="*">
+                                    <File Id="fil7F4D9776DAB77DA43DBDFA0F0495A0B1" KeyPath="yes" Source="$(var.PammDir)\resources\app\node_modules\windows\lib\fonts.js" />
+                                </Component>
+                                <Component Id="cmpDE5A4C945927DB4615247B9D5B81A893" Guid="*">
+                                    <File Id="filF0B452EE2E18C3F43B82A8C3CBEFD246" KeyPath="yes" Source="$(var.PammDir)\resources\app\node_modules\windows\lib\registry.js" />
+                                </Component>
+                                <Component Id="cmpA7B0153664CB338E081008378873A4CA" Guid="*">
+                                    <File Id="filDE2EFC9ECE407DF3D843580CBE3407E0" KeyPath="yes" Source="$(var.PammDir)\resources\app\node_modules\windows\lib\runnable.js" />
+                                </Component>
+                                <Component Id="cmpC29B20795162C4195484C090B8407D02" Guid="*">
+                                    <File Id="fil7CF27F8134371836F4008B14C4934044" KeyPath="yes" Source="$(var.PammDir)\resources\app\node_modules\windows\lib\shortcut.js" />
+                                </Component>
+                                <Component Id="cmpC0F1D6C6EA060AD763E90CD602884FB5" Guid="*">
+                                    <File Id="filAB9BE926F61905005D7A66D0E2F1CA3F" KeyPath="yes" Source="$(var.PammDir)\resources\app\node_modules\windows\lib\utility.js" />
+                                </Component>
+                                <Component Id="cmp2DEAEC9D5B76D354CBB18502D684AF3B" Guid="*">
+                                    <File Id="filAF9059AF58F6D168CDFEEB01940C206B" KeyPath="yes" Source="$(var.PammDir)\resources\app\node_modules\windows\lib\winsdk.js" />
+                                </Component>
+                            </Directory>
+                            <Directory Id="dir900BF2321C278C5070D97C8F189E4472" Name="wsh-bridge">
+                                <Component Id="cmp5F0B1EA18CCAF74A7052858A75550FE3" Guid="*">
+                                    <File Id="fil3AE2FD36B9DD6E27F264FCF0D236A796" KeyPath="yes" Source="$(var.PammDir)\resources\app\node_modules\windows\wsh-bridge\index.js" />
+                                </Component>
+                                <Directory Id="dir03C9E8FDAB3F5942D24A84A78564677F" Name="lib">
+                                    <Component Id="cmp3E6D71D79A943D82A5684B03E7721629" Guid="*">
+                                        <File Id="filF32B4EC03216CE1E6EC046B45BD47C8E" KeyPath="yes" Source="$(var.PammDir)\resources\app\node_modules\windows\wsh-bridge\lib\clip.js" />
+                                    </Component>
+                                    <Component Id="cmpEF524649C87EB0851E80CFA907EF67D9" Guid="*">
+                                        <File Id="filC95DEE5E01E2991AB6109F3AE9733379" KeyPath="yes" Source="$(var.PammDir)\resources\app\node_modules\windows\wsh-bridge\lib\registry.js" />
+                                    </Component>
+                                    <Component Id="cmpCBBE279D3C1D88C44784675BFCF15122" Guid="*">
+                                        <File Id="fil1AF8FA8FCBD225C5117B10EBB45004B8" KeyPath="yes" Source="$(var.PammDir)\resources\app\node_modules\windows\wsh-bridge\lib\specialfolders.js" />
+                                    </Component>
+                                    <Component Id="cmpDA118A5FF3D1BC7DBE9BA0885B9C3667" Guid="*">
+                                        <File Id="fil85F184FAB7FDE647AA9EE8537B964811" KeyPath="yes" Source="$(var.PammDir)\resources\app\node_modules\windows\wsh-bridge\lib\win32.js" />
+                                    </Component>
+                                    <Component Id="cmp01A6C16122F75DF7FAC75E12025A4518" Guid="*">
+                                        <File Id="fil966C497104E205E7F90DE554D5FD4F26" KeyPath="yes" Source="$(var.PammDir)\resources\app\node_modules\windows\wsh-bridge\lib\wsh-bridge.js" />
+                                    </Component>
+                                    <Component Id="cmpE25F2C43784E507375873F684EC36FB2" Guid="*">
+                                        <File Id="fil14BE1F30D49C9E2C20DEE2D62C20A02C" KeyPath="yes" Source="$(var.PammDir)\resources\app\node_modules\windows\wsh-bridge\lib\wsh-shims.js" />
+                                    </Component>
+                                    <Component Id="cmpEA592492D9A750F992CE6DBB4AF4E91B" Guid="*">
+                                        <File Id="fil151B0F9632D5B3B23846D0CDABDD936C" KeyPath="yes" Source="$(var.PammDir)\resources\app\node_modules\windows\wsh-bridge\lib\wshrun.js" />
+                                    </Component>
+                                    <Directory Id="dir1A53CAB5F94F5F5905B8531D167D9A03" Name="jscript">
+                                        <Component Id="cmp56EB29586DD9FAB783DE1E49951DB909" Guid="*">
+                                            <File Id="fil9FB7F596C05ED88CB035DBE5B60A27A1" KeyPath="yes" Source="$(var.PammDir)\resources\app\node_modules\windows\wsh-bridge\lib\jscript\clip.js" />
+                                        </Component>
+                                        <Component Id="cmpAD9522C85661F999AE10088FFA4C921E" Guid="*">
+                                            <File Id="filCD473AAC74A67B47651992C8E6E64070" KeyPath="yes" Source="$(var.PammDir)\resources\app\node_modules\windows\wsh-bridge\lib\jscript\specialfolders.js" />
+                                        </Component>
+                                        <Component Id="cmpA7771C591C540DFA7B5587D5A6A247C8" Guid="*">
+                                            <File Id="fil7F811B55EB66BCE9E691A3A923D356C1" KeyPath="yes" Source="$(var.PammDir)\resources\app\node_modules\windows\wsh-bridge\lib\jscript\test.js" />
+                                        </Component>
+                                    </Directory>
+                                </Directory>
+                            </Directory>
+                        </Directory>
                     </Directory>
                 </Directory>
                 <Directory Id="dir0747B826703C46A5C61FC6A0BE0E11D5" Name="atom">
@@ -542,6 +641,9 @@
                                 </Component>
                                 <Component Id="cmpEE1090E535A7393716D5EB3879463075" Guid="*">
                                     <File Id="fil8BDED97B9CB33FACE2A3FCD1B4A7D459" KeyPath="yes" Source="$(var.PammDir)\resources\atom\renderer\api\lib\remote.js" />
+                                </Component>
+                                <Component Id="cmpC7B305E8724D1F14DB5B6AF4F0EF1A3B" Guid="*">
+                                    <File Id="fil9991EA65A7A0FA67CD091402EEBE5AA1" KeyPath="yes" Source="$(var.PammDir)\resources\atom\renderer\api\lib\web-view.js" />
                                 </Component>
                             </Directory>
                         </Directory>
@@ -845,11 +947,14 @@
             <ComponentRef Id="cmp59BF93E74F30C652D12315FD200A910A" />
             <ComponentRef Id="cmp2049CF6B9B6D440EE26BC8871B13EC5F" />
             <ComponentRef Id="cmp0EDF0B38724D1587D48CE26FEC195964" />
+            <ComponentRef Id="cmp916E1B149F78C78DC7092EE172E09D7B" />
             <ComponentRef Id="cmp5C1DBDEEBACDB52262791272D5F74835" />
             <ComponentRef Id="cmpFB7944D39942419124209D1D59C4AE75" />
             <ComponentRef Id="cmpE7F80B98EB620D47C348BDDED96AF737" />
             <ComponentRef Id="cmp8ACFCCDE0840DB5F2E4B57CEE341D37D" />
             <ComponentRef Id="cmpCCF24DE7040857BF2619217ABD996445" />
+            <ComponentRef Id="cmpDCBCA7ADB4F553CD35E0310066FB3142" />
+            <ComponentRef Id="cmp3697529719E70AEB815E69EC1EAC4B0D" />
             <ComponentRef Id="cmpADDD1A15F84329DF43344580805C13E8" />
             <ComponentRef Id="cmpB65B6C4F96F1E079F02B6974346433D6" />
             <ComponentRef Id="cmpBE4658BB14F5CC975B9A5C2795E7C09A" />
@@ -899,6 +1004,32 @@
             <ComponentRef Id="cmpEEFAA9B31C730F62F4A7EC899324AB79" />
             <ComponentRef Id="cmpC2FD32850AC172760007179A48744E61" />
             <ComponentRef Id="cmpD1A236FB12569787F06324F5E786915E" />
+            <ComponentRef Id="cmp703EF0CF2632E7A1BEDE23A5B27D2CE5" />
+            <ComponentRef Id="cmp9D60458C50A2CB59F018E126D3BDFA0C" />
+            <ComponentRef Id="cmp1D0F8C4B95E807A8E3710CB049932DB4" />
+            <ComponentRef Id="cmp5516ABF0CA187F77296BB4A4DA1B48F5" />
+            <ComponentRef Id="cmpAEBF8DA8DA2E596AA21BCD1777E3D10A" />
+            <ComponentRef Id="cmpBEE68F9E43E2FD12E5A1ADC41B4E6CDD" />
+            <ComponentRef Id="cmpCC401636C5F4AA3C50C8D87E948AFA3D" />
+            <ComponentRef Id="cmp8E954AF25DF6823BF0397E29069A460C" />
+            <ComponentRef Id="cmp7A302EFB08A110BBECDCB0FF696E3226" />
+            <ComponentRef Id="cmp647F677E20B3154165425E0283F7EC22" />
+            <ComponentRef Id="cmpDE5A4C945927DB4615247B9D5B81A893" />
+            <ComponentRef Id="cmpA7B0153664CB338E081008378873A4CA" />
+            <ComponentRef Id="cmpC29B20795162C4195484C090B8407D02" />
+            <ComponentRef Id="cmpC0F1D6C6EA060AD763E90CD602884FB5" />
+            <ComponentRef Id="cmp2DEAEC9D5B76D354CBB18502D684AF3B" />
+            <ComponentRef Id="cmp5F0B1EA18CCAF74A7052858A75550FE3" />
+            <ComponentRef Id="cmp3E6D71D79A943D82A5684B03E7721629" />
+            <ComponentRef Id="cmpEF524649C87EB0851E80CFA907EF67D9" />
+            <ComponentRef Id="cmpCBBE279D3C1D88C44784675BFCF15122" />
+            <ComponentRef Id="cmpDA118A5FF3D1BC7DBE9BA0885B9C3667" />
+            <ComponentRef Id="cmp01A6C16122F75DF7FAC75E12025A4518" />
+            <ComponentRef Id="cmpE25F2C43784E507375873F684EC36FB2" />
+            <ComponentRef Id="cmpEA592492D9A750F992CE6DBB4AF4E91B" />
+            <ComponentRef Id="cmp56EB29586DD9FAB783DE1E49951DB909" />
+            <ComponentRef Id="cmpAD9522C85661F999AE10088FFA4C921E" />
+            <ComponentRef Id="cmpA7771C591C540DFA7B5587D5A6A247C8" />
             <ComponentRef Id="cmp8FEE021BBBAA716A7D0A9D1420AAA087" />
             <ComponentRef Id="cmpC54813E537BAC0BAFEFD7795FCF746E6" />
             <ComponentRef Id="cmp7891C344AAC23EF10A8EFD23BE9D5926" />
@@ -923,6 +1054,7 @@
             <ComponentRef Id="cmpC944AFEC78449EB5F76159713711DD45" />
             <ComponentRef Id="cmp2CE995194A2F8CCB54F853D39047FDC6" />
             <ComponentRef Id="cmpEE1090E535A7393716D5EB3879463075" />
+            <ComponentRef Id="cmpC7B305E8724D1F14DB5B6AF4F0EF1A3B" />
             <ComponentRef Id="cmpAE59C2FD5F4F8616DC0D6BAF72574EDA" />
             <ComponentRef Id="cmp35D5B957CF385D785A55197BA80C5DD6" />
             <ComponentRef Id="cmpB02370B9FD8CE04F5B347C30B4BAC306" />
