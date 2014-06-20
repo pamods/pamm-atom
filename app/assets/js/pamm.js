@@ -817,7 +817,7 @@ function jsRefresh_asynch(boolDownloadData) {
                 jsGenerateOnlineModsListHTML();
             }
         }
-    });
+    }, boolDownloadData);
 }
 
 function jsGetModsRequiringUpdates(context) {
@@ -886,7 +886,7 @@ function jsDownloadOnlineMods() {
             
             document.getElementById('total_available_mods').innerHTML = objOnlineMods.length;
             jsDownloadOnlineModDownloadCount();
-        });
+        }, true);
     }
 }
 
@@ -1058,7 +1058,7 @@ function RestartPAMM() {
     ClosePAMM();
 }
 
-function findInstalledMods(callback) {
+function findInstalledMods(callback, force) {
     pamm.getInstalledMods("client", function(mods) {
         objInstalledMods.client = mods;
         objInstalledModCategories.client = pamm.groupByCategories(mods);
@@ -1075,7 +1075,7 @@ function findInstalledMods(callback) {
             
             callback();
         });
-    });
+    }, force);
 }
 
 function initSettings() {

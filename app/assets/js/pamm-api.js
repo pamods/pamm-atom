@@ -37,7 +37,7 @@ exports.getStream = function() {
     return stream;
 };
 
-exports.getAvailableMods = function (callback) {
+exports.getAvailableMods = function (callback, force) {
     var mods = {};
     
     var _finish = function() {
@@ -83,14 +83,14 @@ exports.getAvailableMods = function (callback) {
         });
     };
     
-    if(!_.size(available))
+    if(force || !_.size(available))
         _loadAvailableMods('client');
     else
         _finish();
 };
 
-exports.getInstalledMods = function (context, callback) {
-    if(!_.size(installed)) {
+exports.getInstalledMods = function (context, callback, force) {
+    if(force || !_.size(installed)) {
         findInstalledMods();
     }
     callback(
