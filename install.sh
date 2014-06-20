@@ -10,8 +10,8 @@ linux*)
     ;;
 darwin*)
     PLATFORM="darwin"
-    #PAMMDIR="$HOME/Library/Application Support/Uber Entertainment/Planetary Annihilation/pamm"
-    PAMMDIR="$WORKINGDIR/tmp/pamm"
+    PAMMDIR="$HOME/Library/Application Support/Uber Entertainment/Planetary Annihilation/pamm"
+    #PAMMDIR="$WORKINGDIR/tmp/pamm"
     APPDIR="$PAMMDIR/Atom.app/Contents/Resources/app"
     ;;
 *)
@@ -66,7 +66,7 @@ linux*)
     mv "$PAMMDIR/atom" "$PAMMDIR/pamm"
 
     # try to create desktop shortcut & protocol handler
-	cat >$HOME/.local/share/applications/pamm.desktop <<EOL
+    cat >$HOME/.local/share/applications/pamm.desktop <<EOL
 [Desktop Entry]
 Version=1.0
 Type=Application
@@ -80,7 +80,7 @@ EOL
 
     echo "PAMM has been successfully installed."
     echo "  => $PAMMDIR"
-	$PAMMDIR/pamm
+    $PAMMDIR/pamm
     ;;
 darwin*)
     #mv "$PAMMDIR/Atom.app/Contents/MacOS/Atom" "$PAMMDIR/Atom.app/Contents/MacOS/PAMM"
