@@ -505,7 +505,7 @@ function jsGenerateInstalledModsListHTML(context) {
         "</div>" +
     "</div>");
     
-    $("#filter_area_" + installedcontext + "_text_filter").on("keyup", jsApplyInstalledModFilter(context));
+    $("#filter_area_" + installedcontext + "_text_filter").on("keyup", function() { jsApplyInstalledModFilter(context) });
     
     var strHTML = "";
     
