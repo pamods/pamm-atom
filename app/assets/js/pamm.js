@@ -793,10 +793,6 @@ function jsRefresh_asynch(boolDownloadData) {
         document.getElementById('total_available_mod_downloads').innerHTML = jsGetLocaleText('Mod_Manager_is_offline');
     }
     
-    if (boolOnline == true) {
-        jsDownloadPAMMversion();
-    }
-    
     jsAddLogMessage("Refreshing Data", 2);
     
     objInstalledModCategories.client["ALL"] = 0;
@@ -970,7 +966,7 @@ function jsDownloadOnlineModLikeCount() {
     }, 500);
 }
 
-function jsDownloadPAMMversion() {
+function checkPAMMversion() {
     if (boolOnline == true) {
         jsAddLogMessage("Checking for PAMM updates", 2);
         var intCurrentMessageID = ++intMessageID;
@@ -1341,6 +1337,7 @@ $(function() {
     ko.applyBindings(model);
     
     uninstallLegacyPAMM();
+    checkPAMMversion();
     
     jsApplyLocaleText();
     jsDisplayPanel(settings.tab());
