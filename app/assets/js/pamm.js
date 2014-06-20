@@ -1249,13 +1249,14 @@ function uninstallLegacyPAMM() {
     
     var windows = require('windows');
     
-    var regkey = windows.registry('HKEY_LOCAL_MACHINE/SOFTWARE/Wow6432Node/Microsoft/Windows/CurrentVersion/Uninstall/PA Mod Manager').UninstallString;
     var uninstallstring;
+    var regkey;
+    try { regkey = windows.registry('HKEY_LOCAL_MACHINE/SOFTWARE/Wow6432Node/Microsoft/Windows/CurrentVersion/Uninstall/PA Mod Manager').UninstallString } catch(e) {}
     if(regkey) {
         uninstallstring = regkey.value;
     }
     else {
-        regkey = windows.registry('HKEY_LOCAL_MACHINE/SOFTWARE/Microsoft/Windows/CurrentVersion/Uninstall/PA Mod Manager').UninstallString;
+        try { regkey = windows.registry('HKEY_LOCAL_MACHINE/SOFTWARE/Microsoft/Windows/CurrentVersion/Uninstall/PA Mod Manager').UninstallString } catch(e) {}
         if(regkey) {
             uninstallstring = regkey.value;
         }
@@ -1277,6 +1278,7 @@ function uninstallLegacyPAMM() {
 
 $(function() {
     jsAddLogMessage("PAMM version: " + params.info.version, 2);
+    checkPAMMversion();
     
     $('.ui_tabs').on('click', 'a', function() {
         var panel = $(this).data('target');
@@ -1337,7 +1339,6 @@ $(function() {
     ko.applyBindings(model);
     
     uninstallLegacyPAMM();
-    checkPAMMversion();
     
     jsApplyLocaleText();
     jsDisplayPanel(settings.tab());
