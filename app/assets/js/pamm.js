@@ -513,15 +513,16 @@ function jsGenerateInstalledModsListHTML(context) {
         strHTML += jsGenerateModEntryHTML(objInstalledMods[context][i], true);
     }
     
-    if (jsGetModsRequiringUpdates() > 0) {
+    var nbupdates = jsGetModsRequiringUpdates(context);
+    if (nbupdates > 0) {
         $("#mod_list_" + installedcontext + "").append("<div class='alert_area'>" + 
             "<img class='alert_img' src='assets/img/alert.png'>" + 
-            "<div class='alert_message'>" + jsGetModsRequiringUpdates() + " " + jsGetLocaleText('mod_s__require_updates') + " " + 
+            "<div class='alert_message'>" + nbupdates + " " + jsGetLocaleText('mod_s__require_updates') + " " + 
                 "<span class='alert_link'>[ <a href='#' onClick='jsUpdateAll(\"" + context + "\")'><span class='LOC_update_all'>" + jsGetLocaleText('update_all') + "</span></a> ]</span>" + 
             "</div>" + 
         "</div>");
         
-        $("#ui_tab_" + installedcontext + "_needing_update").html("&nbsp;(<span class='ui_tab_" + installedcontext + "_needing_update_count'>" + jsGetModsRequiringUpdates() + "</span>)");
+        $("#ui_tab_" + installedcontext + "_needing_update").html("&nbsp;(<span class='ui_tab_" + installedcontext + "_needing_update_count'>" + nbupdates + "</span>)");
     } else {
         $("#ui_tab_" + installedcontext + "_needing_update").html("");
     }
@@ -819,10 +820,10 @@ function jsRefresh_asynch(boolDownloadData) {
     });
 }
 
-function jsGetModsRequiringUpdates() {
+function jsGetModsRequiringUpdates(context) {
     var intModsRequiringUpdate = 0;
     
-    var mods = objInstalledMods.union;
+    var mods = objInstalledMods[context];
     for(var i = 0; i < mods.length; i++) {
         if (jsGetOnlineMod(mods[i]["id"]) != null && mods[i]["version"] !== jsGetOnlineMod(mods[i]["id"])["version"]) {
             intModsRequiringUpdate++;
