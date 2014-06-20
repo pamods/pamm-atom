@@ -28,7 +28,7 @@ var intLogLevel = 0;
 var intLogNumber = 0;
 var intLikeCountRemaining = 0;
 
-var UNINSTALL_LEGACY_PAMM = 0;
+var UNINSTALL_LEGACY_PAMM = 1;
 var ONLINE_MODS_DOWNLOAD_COUNT_URL = "http://pa.raevn.com/modcount_json.php";
 var MANAGE_URL = "http://pa.raevn.com/manage.php";
 var MOD_IS_NEW_PERIOD_DAYS = 7;
