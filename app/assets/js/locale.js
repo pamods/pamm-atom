@@ -251,6 +251,12 @@ var strlocaleText = {
 		"nl": "",
 		"de": ""
 	},
+	"Context_Filter": {
+		"en": "Context",
+		"fr": "",
+		"nl": "",
+		"de": ""
+	},
 	"Sort_By": {
 		"en": "Sort By",
 		"fr": "",
@@ -439,6 +445,18 @@ var strlocaleText = {
 	},
 	"Requires_Refresh": {
 		"en": "Requires Refresh",
+		"fr": "",
+		"nl": "",
+		"de": ""
+	},
+	"CLIENT_MOD": {
+		"en": "UI MODS",
+		"fr": "",
+		"nl": "",
+		"de": ""
+	},
+	"SERVER_MOD": {
+		"en": "SERVER MODS",
 		"fr": "",
 		"nl": "",
 		"de": ""

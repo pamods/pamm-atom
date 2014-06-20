@@ -12,15 +12,19 @@
       <div class="banner_image"><img src="assets/img/img_pa_logo_start_rest.png"></div>
       <div class="ui_tabs">
         <div class="ui_tab_link"><span class="ui_tab_edges">[</span> <div class="ui_tab_label"><a href="#" data-target='news'><span class="LOC_NEWS">NEWS</span></a></div> <span class="ui_tab_edges">]</span></div>
-        <div class="ui_tab_link"><span class="ui_tab_edges">[</span> <div class="ui_tab_label"><a href="#" data-target='installed'><span class="LOC_INSTALLED_MODS">INSTALLED MODS</span></a><span id="ui_tab_installed_needing_update"></span></div> <span class="ui_tab_edges">]</span></div>
+        <div class="ui_tab_link"><span class="ui_tab_edges">[</span> <div class="ui_tab_label"><a href="#" data-target='installed_client'><span class="LOC_INSTALLED_CLIENT_MODS">UI MODS</span></a><span id="ui_tab_installed_client_needing_update"></span></div> <span class="ui_tab_edges">]</span></div>
+        <div class="ui_tab_link"><span class="ui_tab_edges">[</span> <div class="ui_tab_label"><a href="#" data-target='installed_server'><span class="LOC_INSTALLED_SERVER_MODS">SERVER MODS</span></a><span id="ui_tab_installed_server_needing_update"></span></div> <span class="ui_tab_edges">]</span></div>
         <div class="ui_tab_link"><span class="ui_tab_edges">[</span> <div class="ui_tab_label"><a href="#" data-target='download'><span class="LOC_AVAILABLE_MODS">AVAILABLE MODS</span></a></div> <span class="ui_tab_edges">]</span></div>
         <div class="ui_tab_link ui_tab_link_image"><a href="#" data-target='log'><img id="log_icon" src="assets/img/log.png"></a></div>
         <div class="ui_tab_link ui_tab_link_image"><a href="#" data-target='settings'><img id="settings_icon" src="assets/img/settings.png"></a></div>
         <div class="ui_tab_link ui_tab_link_image"><a href="#" data-target='about'><img id="about_icon" src="assets/img/about.png"></a></div>
       </div>
-      
-      <div id="installed" class="tab">
-        <div id="mod_list_installed" class="tab_content">
+      <div id="installed_client" class="tab">
+        <div id="mod_list_installed_client" class="tab_content">
+        </div>
+      </div>
+      <div id="installed_server" class="tab">
+        <div id="mod_list_installed_server" class="tab_content">
         </div>
       </div>
       <div id="download" class="tab">
@@ -69,7 +73,8 @@
                 <td>
                   <select id="setting_defaultTab" data-bind="value: settings.tab">
                     <option value="news" class="LOC_NEWS">NEWS</option>
-                    <option value="installed" class="LOC_INSTALLED_MODS">INSTALLED MODS</option>
+                    <option value="installed_client" class="LOC_INSTALLED_CLIENT_MODS">INSTALLED UI MODS</option>
+                    <option value="installed_server" class="LOC_INSTALLED_SERVER_MODS">INSTALLED SERVER MODS</option>
                     <option value="download" class="LOC_AVAILABLE_MODS">AVAILABLE MODS</option>
                   </select>
                 </td>
@@ -83,14 +88,25 @@
                 <td><input id="setting_likes" type="checkbox" data-bind="checked: settings.modlikes"/> (<span class="LOC_Requires_Refresh">Requires Refresh</span>)</td>
               </tr>
               <tr>
-                <td><span class="setting_heading"><span class="LOC_Installed_Mods_List_View">Installed Mods List View</span>:</span></td>
+                <td><span class="setting_heading"><span class="LOC_Installed_Client_Mods_List_View">Installed UI Mods List View</span>:</span></td>
                 <td>
-                  <select id="setting_installed_view" data-bind="value: settings.installed_view">
+                  <select id="setting_installed_client_view" data-bind="value: settings.installed_client_view">
                     <option value="summary" class="LOC_SUMMARY_VIEW">SUMMARY VIEW</option>
                     <option value="detailed" class="LOC_DETAILED_VIEW">DETAILED VIEW</option>
                   </select>
                   <br/>
-                  <input id="setting_installed_icon" type="checkbox" data-bind="checked: settings.installed_icon"/><span class="LOC_Show_Icon">Show Icon</span>
+                  <input id="setting_installed_client_icon" type="checkbox" data-bind="checked: settings.installed_client_icon"/><span class="LOC_Show_Icon">Show Icon</span>
+                </td>
+              </tr>
+              <tr>
+                <td><span class="setting_heading"><span class="LOC_Installed_Server_Mods_List_View">Installed Server Mods List View</span>:</span></td>
+                <td>
+                  <select id="setting_installed_server_view" data-bind="value: settings.installed_server_view">
+                    <option value="summary" class="LOC_SUMMARY_VIEW">SUMMARY VIEW</option>
+                    <option value="detailed" class="LOC_DETAILED_VIEW">DETAILED VIEW</option>
+                  </select>
+                  <br/>
+                  <input id="setting_installed_server_icon" type="checkbox" data-bind="checked: settings.installed_server_icon"/><span class="LOC_Show_Icon">Show Icon</span>
                 </td>
               </tr>
               <tr>
@@ -149,7 +165,6 @@
         <input type="button" value="Exit" class="LOC_Exit" onClick="ClosePAMM()"/>
       </div>
       <div id="context">
-        <span>Context: <input type="radio" name="context" value="client" checked="checked">client<input type="radio" name="context" value="server">server</span>
         <span>PA Stream: <input type="radio" name="stream" value="stable"><span>stable</span><input type="radio" name="stream" value="PTE"><span>PTE</span></span>
       </div>
       <div id="downloading">
