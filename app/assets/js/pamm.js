@@ -1113,6 +1113,8 @@ function initSettings() {
         jsAddLogMessage("Using default options", 2);
     }
     
+    jsSetLogLevel(tmpoptions.debug ? 4 : 2);
+    
     settings = ko.mapping.fromJS(tmpoptions);
     settings.autosave = ko.computed(function() {
         // trigger all observable values
