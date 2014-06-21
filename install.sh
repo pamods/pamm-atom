@@ -22,7 +22,7 @@ esac
 
 echo "Find last Atom Shell release..."
 
-HTML=`wget -qO- https://github.com/atom/atom-shell/releases/latest`
+HTML=`curl -L https://github.com/atom/atom-shell/releases/latest`
 if [ $? -gt 0 ]; then
     echo "ERROR!"
     exit 1
@@ -41,7 +41,7 @@ echo "Downloading Atom Shell..."
 echo "  from: $ARCHIVEURL"
 echo "  to: $ARCHIVE"
 
-wget $ARCHIVEURL
+curl -L "$ARCHIVEURL" -o "$ARCHIVE"
 if [ $? -gt 0 ]; then
     echo "ERROR!"
     exit 1
