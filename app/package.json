@@ -1,7 +1,7 @@
 {
   "name"    : "pamm-atom",
   "author"  : "pamods",
-  "version" : "0.9.2",
+  "version" : "0.9.3",
   "main"    : "main.js",
   "bundledDependencies" : [
     "semver"
