@@ -20,9 +20,23 @@ darwin*)
     ;;
 esac
 
+wget --version >/dev/null 2>&1 && HTTPCLIENT="wget"
+curl --version >/dev/null 2>&1 && HTTPCLIENT="curl"
+if [ ! -v HTTPCLIENT ]; then
+	echo "wget or curl not found!"
+	exit 1
+fi
+
 echo "Find last Atom Shell release..."
 
-HTML=`wget -qO- https://github.com/atom/atom-shell/releases/latest`
+LATESTURL=https://github.com/atom/atom-shell/releases/latest
+
+if [ $HTTPCLIENT == "wget" ]; then
+	HTML=`wget -qO- $LATESTURL`
+else
+	HTML=`curl -L $LATESTURL`
+fi
+
 if [ $? -gt 0 ]; then
     echo "ERROR!"
     exit 1
@@ -41,7 +55,12 @@ echo "Downloading Atom Shell..."
 echo "  from: $ARCHIVEURL"
 echo "  to: $ARCHIVE"
 
-wget $ARCHIVEURL
+if [ $HTTPCLIENT == "wget" ]; then
+	wget "$ARCHIVEURL" -O "$ARCHIVE"
+else
+	curl -L "$ARCHIVEURL" -o "$ARCHIVE"
+fi
+
 if [ $? -gt 0 ]; then
     echo "ERROR!"
     exit 1
