@@ -28,7 +28,7 @@ var intLogLevel = 0;
 var intLogNumber = 0;
 var intLikeCountRemaining = 0;
 
-var UNINSTALL_LEGACY_PAMM = 0;
+var UNINSTALL_LEGACY_PAMM = 1;
 var ONLINE_MODS_DOWNLOAD_COUNT_URL = "http://pa.raevn.com/modcount_json.php";
 var MANAGE_URL = "http://pa.raevn.com/manage.php";
 var MOD_IS_NEW_PERIOD_DAYS = 7;
@@ -1242,40 +1242,60 @@ function rmdirRecurseSync(dir) {
     fs.rmdirSync(dir);
 };
 
-function uninstallLegacyPAMM() {
+function checkLegacyPAMM() {
     if(process.platform !== 'win32')
         return;
     
     if(!UNINSTALL_LEGACY_PAMM || settings.nolegacypamm())
         return;
     
-    var windows = require('windows');
-    
-    var uninstallstring;
-    var regkey;
-    try { regkey = windows.registry('HKEY_LOCAL_MACHINE/SOFTWARE/Wow6432Node/Microsoft/Windows/CurrentVersion/Uninstall/PA Mod Manager').UninstallString } catch(e) {}
-    if(regkey) {
-        uninstallstring = regkey.value;
-    }
-    else {
-        try { regkey = windows.registry('HKEY_LOCAL_MACHINE/SOFTWARE/Microsoft/Windows/CurrentVersion/Uninstall/PA Mod Manager').UninstallString } catch(e) {}
-        if(regkey) {
-            uninstallstring = regkey.value;
+    var _uninstallLegacyPAMM = function(uninstallpath) {
+        try {
+            jsAddLogMessage("Uninstalling Legacy PAMM: " + uninstallpath, 2);
+        
+            alert("An older version of PAMM is still installed on your computer.\n\nWe are going to proceeds to its uninstallation !");
+            
+            var child_process = require('child_process');
+            var child = child_process.spawn('cmd.exe', ['/C', uninstallpath], null, { detached: true });
+            child.unref();
+        }
+        catch(error) {
+            jsAddLogMessage("Unexpected error while uninstalling Legacy PAMM: " + error, 1);
         }
     }
     
-    if(!uninstallstring) {
-        settings.nolegacypamm(true);
-        return;
+    try {
+        var Winreg = require('winreg');
+        var regkey = new Winreg({
+            hive: Winreg.HKLM,
+            key: '\\SOFTWARE\\Wow6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\PA Mod Manager'
+        });
+        
+        regkey.get('UninstallString', function (err, item) {
+            if (err) {
+                regkey = new Winreg({
+                    hive: Winreg.HKLM,
+                    key: '\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\PA Mod Manager'
+                });
+                
+                regkey.get('UninstallString', function (err, item) {
+                    if (err) {
+                        // Legacy PAMM not found
+                        settings.nolegacypamm(true); 
+                    }
+                    else {
+                        _uninstallLegacyPAMM(item.value);
+                    }
+                });
+            }
+            else {
+                _uninstallLegacyPAMM(item.value);
+            }
+        });
     }
-    
-    jsAddLogMessage("Uninstalling Legacy PAMM: " + uninstallstring, 2);
-    
-    alert("An older version of PAMM is still installed on your computer.\n\nWe are going to proceeds to its uninstallation !");
-    
-    var child_process = require('child_process');
-    var child = child_process.spawn('cmd.exe', ['/C', uninstallstring], null, { detached: true });
-    child.unref();
+    catch(error) {
+        jsAddLogMessage("Unexpected error while checking for Legacy PAMM: " + error, 1);
+    }
 };
 
 $(function() {
@@ -1340,7 +1360,7 @@ $(function() {
     
     ko.applyBindings(model);
     
-    uninstallLegacyPAMM();
+    checkLegacyPAMM();
     
     jsApplyLocaleText();
     jsDisplayPanel(settings.tab());
