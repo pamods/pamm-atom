@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
-	<Product Id="*" Name="PAMM" Language="1033" Version="1.1.0.0" Manufacturer="The PA Community" UpgradeCode="e77d9fc7-9cc0-497f-b461-19d61a3e2e26">
+	<Product Id="*" Name="PAMM" Language="1033" Version="1.2.0.0" Manufacturer="The PA Community" UpgradeCode="e77d9fc7-9cc0-497f-b461-19d61a3e2e26">
 		<Package InstallerVersion="500" Compressed="yes" InstallPrivileges="limited"/>
 
 		<MajorUpgrade DowngradeErrorMessage="A newer version of PAMM is already installed." />
