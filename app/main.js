@@ -72,7 +72,11 @@ app.on('ready', function() {
     
     // Create the browser window.
     console.log('Instanciate BrowserWindow');
-    mainWindow = new BrowserWindow({width: 1280, height: 720});
+    mainWindow = new BrowserWindow({
+        width: 1280,
+        height: 720,
+        icon: path.join(__dirname, 'assets/img/pamm.png'),
+    });
     
     // and load the index.html of the app.
     console.log('Load main page');
