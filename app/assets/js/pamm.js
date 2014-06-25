@@ -1340,14 +1340,6 @@ $(function() {
         jsRefresh(true, true);
     });
     
-    // autoresize body with window
-    var $window = $(window);
-    var $body = $('body');
-    $window.on('resize', function() {
-        $body.height($window.height() - 180);
-    });
-    $window.trigger('resize');
-    
     initSettings();
     
     //document.getElementById("setting_installLocation").value = pa.last ? pa.last.bin : "";
