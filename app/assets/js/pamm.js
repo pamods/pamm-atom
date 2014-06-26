@@ -210,7 +210,7 @@ function jsGenerateModEntryHTML(objMod, boolIsInstalled) {
     
     /* Requires */
     var strHTML_requires = "";
-    if (objMod.requires != null) {
+    if (objMod.requires && objMod.requires.length > 0) {
         for (var j = 0; j < objMod.requires.length; j++) {
             if (jsGetInstalledMod(objMod.requires[j]) == null) {
                 strHTML_requires += "<span class='mod_requirement_missing'>" + objMod.requires[j] + "</span>";
