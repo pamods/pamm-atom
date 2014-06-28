@@ -3,7 +3,7 @@ var path = require('path');
 var _ = require('lodash');
 var pa = require('./pa.js');
 
-var ONLINE_MODS_LIST_URL = "http://localhost:8080/modlist2.json";
+var ONLINE_MODS_LIST_URL = "http://pamods.github.io/modlist2.json";
 
 var PAMM_MOD_ID = "PAMM";
 var PAMM_MOD_IDENTIFIER = "com.pa.deathbydenim.dpamm";
