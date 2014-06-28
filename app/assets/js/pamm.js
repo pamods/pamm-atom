@@ -114,8 +114,8 @@ function jsSortOnlineMods() {
 function jsUpdateAll(context) {
     var mods = objInstalledMods[context];
     for (var i = 0; i < mods.length; i++) {
-        if (jsGetOnlineMod(mods[i].id) != null && mods[i].version !== jsGetOnlineMod(mods[i].id).version) {
-            jsPreInstallMod(jsGetOnlineMod(mods[i].id).url, mods[i].id, {});
+        if (jsGetOnlineMod(mods[i].identifier) != null && mods[i].version !== jsGetOnlineMod(mods[i].identifier).version) {
+            jsPreInstallMod(jsGetOnlineMod(mods[i].identifier).url, mods[i].identifier, {});
         }
     }
 }
@@ -174,7 +174,7 @@ function jsSetAllModStatus(enabled, context) {
 }
 
 function jsGenerateModEntryHTML(objMod, boolIsInstalled) {
-    var id = objMod.id;
+    var id = objMod.identifier;
     var strHTML_classes = "mod_entry mod_entry_context_" + objMod.context;
     
     /* Icon */
@@ -210,15 +210,18 @@ function jsGenerateModEntryHTML(objMod, boolIsInstalled) {
     
     /* Requires */
     var strHTML_requires = "";
-    if (objMod.requires && objMod.requires.length > 0) {
-        for (var j = 0; j < objMod.requires.length; j++) {
-            if (jsGetInstalledMod(objMod.requires[j]) == null) {
-                strHTML_requires += "<span class='mod_requirement_missing'>" + objMod.requires[j] + "</span>";
+    if (objMod.dependencies && objMod.dependencies.length > 0) {
+        for (var j = 0; j < objMod.dependencies.length; j++) {
+            var dependencyId = objMod.dependencies[j];
+            var installedDependency = jsGetInstalledMod(dependencyId) ? true : false;
+            
+            if (!installedDependency) {
+                strHTML_requires += "<span class='mod_requirement_missing'>" + dependencyId + "</span>";
             } else {
-                strHTML_requires += "<span class='mod_requirement'>" + objMod.requires[j] + "</span>";
+                strHTML_requires += "<span class='mod_requirement'>" + dependencyId + "</span>";
             }
             
-            if (j < objMod.requires.length - 1) {
+            if (j < objMod.dependencies.length - 1) {
                 strHTML_requires += ", ";
             }
         }
@@ -536,7 +539,7 @@ function jsGenerateInstalledModsListHTML(context) {
 /* Mod Getter Functions */
 function jsGetOnlineMod(strModID) {
     for (var i = 0; i < objOnlineMods.length; i++) {
-        if (objOnlineMods[i].id == strModID) {
+        if (objOnlineMods[i].identifier == strModID) {
             return objOnlineMods[i];
         }
     }
@@ -545,7 +548,7 @@ function jsGetOnlineMod(strModID) {
 
 function jsGetInstalledMod(strModID) {
     for (var i = 0; i < objInstalledMods.union.length; i++) {
-        if (objInstalledMods.union[i].id === strModID) {
+        if (objInstalledMods.union[i].identifier === strModID) {
             return objInstalledMods.union[i];
         }
     }
@@ -821,7 +824,7 @@ function jsGetModsRequiringUpdates(context) {
     
     var mods = objInstalledMods[context];
     for(var i = 0; i < mods.length; i++) {
-        if (jsGetOnlineMod(mods[i]["id"]) != null && mods[i]["version"] !== jsGetOnlineMod(mods[i]["id"])["version"]) {
+        if (jsGetOnlineMod(mods[i]["identifier"]) != null && mods[i]["version"] !== jsGetOnlineMod(mods[i]["identifier"])["version"]) {
             intModsRequiringUpdate++;
         }
     }
@@ -895,8 +898,14 @@ function jsDownloadOnlineModDownloadCount() {
                 try {
                     var objOnlineModsDownloadCount = JSON.parse(strResult);
                     for (var i = 0; i < objOnlineMods.length; i++) {
-                        objOnlineMods[i]["downloads"] = objOnlineModsDownloadCount[objOnlineMods[i].id] ? objOnlineModsDownloadCount[objOnlineMods[i].id] : 0;
-                        intTotalDownloadCount += objOnlineMods[i]["downloads"];
+                        var mod = objOnlineMods[i];
+                        mod.downloads = objOnlineModsDownloadCount[mod.identifier] ? objOnlineModsDownloadCount[mod.identifier] : 0;
+                        if(mod.id) {
+                            // legacy modcount :)
+                            mod.downloads += objOnlineModsDownloadCount[mod.id] ? objOnlineModsDownloadCount[mod.id] : 0;
+                        }
+                        
+                        intTotalDownloadCount += mod.downloads;
                     }
                     
                     jsGenerateOnlineModsListHTML();
