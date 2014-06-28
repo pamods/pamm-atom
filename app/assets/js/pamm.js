@@ -213,12 +213,14 @@ function jsGenerateModEntryHTML(objMod, boolIsInstalled) {
     if (objMod.dependencies && objMod.dependencies.length > 0) {
         for (var j = 0; j < objMod.dependencies.length; j++) {
             var dependencyId = objMod.dependencies[j];
-            var installedDependency = jsGetInstalledMod(dependencyId) ? true : false;
+            var dependency = jsGetInstalledMod(dependencyId);
+            var installedDependency = dependency ? true : false;
             
             if (!installedDependency) {
-                strHTML_requires += "<span class='mod_requirement_missing'>" + dependencyId + "</span>";
+                dependency = jsGetOnlineMod(dependencyId);
+                strHTML_requires += "<span class='mod_requirement_missing'>" + (dependency ? dependency.display_name : dependencyId) + "</span>";
             } else {
-                strHTML_requires += "<span class='mod_requirement'>" + dependencyId + "</span>";
+                strHTML_requires += "<span class='mod_requirement'>" + dependency.display_name + "</span>";
             }
             
             if (j < objMod.dependencies.length - 1) {
@@ -727,7 +729,16 @@ function jsDisplayPanel(strPanelName) {
 function jsPreInstallMod(strURL, strModID, objModsPreInstalled) {
     var requires = pamm.getRequires(strModID);
     if(requires.length) {
-        if(!confirm("Install required dependency '" + requires.join("', '") + "'?")) {
+        var displaynames = [];
+        for(var i = 0; i < requires.length; ++i) {
+            var dependencyId = requires[i];
+            var dependency = jsGetOnlineMod(dependencyId);
+            if(!dependency)
+                dependency = jsGetInstalledMod(dependencyId);
+            displaynames.push(dependency ? dependency.display_name : dependencyId);
+        }
+        
+        if(!confirm("Install required dependency '" + displaynames.join("', '") + "'?")) {
             return;
         }
     }
