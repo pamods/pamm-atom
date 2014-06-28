@@ -727,20 +727,27 @@ function jsDisplayPanel(strPanelName) {
 }
 
 function jsPreInstallMod(strURL, strModID, objModsPreInstalled) {
-    var requires = pamm.getRequires(strModID);
-    if(requires.length) {
-        var displaynames = [];
-        for(var i = 0; i < requires.length; ++i) {
-            var dependencyId = requires[i];
-            var dependency = jsGetOnlineMod(dependencyId);
-            if(!dependency)
-                dependency = jsGetInstalledMod(dependencyId);
-            displaynames.push(dependency ? dependency.display_name : dependencyId);
+    try {
+        var requires = pamm.getRequires(strModID);
+        if(requires.length) {
+            var displaynames = [];
+            for(var i = 0; i < requires.length; ++i) {
+                var dependencyId = requires[i];
+                var dependency = jsGetOnlineMod(dependencyId);
+                if(!dependency)
+                    dependency = jsGetInstalledMod(dependencyId);
+                displaynames.push(dependency ? dependency.display_name : dependencyId);
+            }
+            
+            if(!confirm("Install required dependency '" + displaynames.join("', '") + "'?")) {
+                return;
+            }
         }
-        
-        if(!confirm("Install required dependency '" + displaynames.join("', '") + "'?")) {
-            return;
-        }
+    }
+    catch(error) {
+        jsAddLogMessage("An error occurred while gathering mod requirements: " + error, 1);
+        alert(error);
+        return;
     }
     
     pamm.install(strModID, function(error) {
