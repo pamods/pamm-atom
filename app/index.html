@@ -6,38 +6,32 @@
     <title>PA Mod Manager</title>
   </head>
   <body>
-    <div id="container">
+    <header>
       <div class="banner_heading"><span class="LOC_MOD_MANAGER">LOC_MOD_MANAGER</span></div>
       <div class="banner_image"><img src="assets/img/img_pa_logo_start_rest.png"></div>
-      <div class="ui_tabs">
-        <div class="ui_tab_link"><span class="ui_tab_edges">[</span> <div class="ui_tab_label"><a href="#" data-target='news'><span class="LOC_NEWS">NEWS</span></a></div> <span class="ui_tab_edges">]</span></div>
-        <div class="ui_tab_link"><span class="ui_tab_edges">[</span> <div class="ui_tab_label"><a href="#" data-target='installed_client'><span class="LOC_INSTALLED_CLIENT_MODS">UI MODS</span></a><span id="ui_tab_installed_client_needing_update"></span></div> <span class="ui_tab_edges">]</span></div>
-        <div class="ui_tab_link"><span class="ui_tab_edges">[</span> <div class="ui_tab_label"><a href="#" data-target='installed_server'><span class="LOC_INSTALLED_SERVER_MODS">SERVER MODS</span></a><span id="ui_tab_installed_server_needing_update"></span></div> <span class="ui_tab_edges">]</span></div>
-        <div class="ui_tab_link"><span class="ui_tab_edges">[</span> <div class="ui_tab_label"><a href="#" data-target='download'><span class="LOC_AVAILABLE_MODS">AVAILABLE MODS</span></a></div> <span class="ui_tab_edges">]</span></div>
-        <div class="ui_tab_link ui_tab_link_image"><a href="#" data-target='log'><img id="log_icon" src="assets/img/log.png"></a></div>
-        <div class="ui_tab_link ui_tab_link_image"><a href="#" data-target='settings'><img id="settings_icon" src="assets/img/settings.png"></a></div>
-        <div class="ui_tab_link ui_tab_link_image"><a href="#" data-target='about'><img id="about_icon" src="assets/img/about.png"></a></div>
-      </div>
+    </header>
+    <nav class="ui_tabs">
+      <div class="ui_tab_link"><span class="ui_tab_edges">[</span> <a href="#" data-target='news'><span class="LOC_NEWS">NEWS</span></a> <span class="ui_tab_edges">]</span></div>
+      <div class="ui_tab_link"><span class="ui_tab_edges">[</span> <a href="#" data-target='installed_client'><span class="LOC_INSTALLED_CLIENT_MODS">UI MODS</span></a><span id="ui_tab_installed_client_needing_update"></span> <span class="ui_tab_edges">]</span></div>
+      <div class="ui_tab_link"><span class="ui_tab_edges">[</span> <a href="#" data-target='installed_server'><span class="LOC_INSTALLED_SERVER_MODS">SERVER MODS</span></a><span id="ui_tab_installed_server_needing_update"></span> <span class="ui_tab_edges">]</span></div>
+      <div class="ui_tab_link"><span class="ui_tab_edges">[</span> <a href="#" data-target='available'><span class="LOC_AVAILABLE_MODS">AVAILABLE MODS</span></a> <span class="ui_tab_edges">]</span></div>
+      <div class="ui_tab_link ui_tab_link_image"><a href="#" data-target='log'><img id="log_icon" src="assets/img/log.png"></a></div>
+      <div class="ui_tab_link ui_tab_link_image"><a href="#" data-target='settings'><img id="settings_icon" src="assets/img/settings.png"></a></div>
+      <div class="ui_tab_link ui_tab_link_image"><a href="#" data-target='about'><img id="about_icon" src="assets/img/about.png"></a></div>
+    </nav>
+    <div id="container">
       <div id="installed_client" class="tab">
+		<div class='filter_area'></div>
         <div id="mod_list_installed_client" class="tab_content">
         </div>
       </div>
       <div id="installed_server" class="tab">
+		<div class='filter_area'></div>
         <div id="mod_list_installed_server" class="tab_content">
         </div>
       </div>
-      <div id="download" class="tab">
-        <div class="mod_download_options">
-          <div class="filter_options">
-            <span class="LOC_SHOW">SHOW</span>: <a href="#" id="filter_text" onmousedown="jsToggleAvailableModsFilter()"><span class="LOC_ALL">ALL</span></a>
-          </div>
-          <div class="sort_options">
-            <span class="LOC_SORT">SORT</span>: <span id="sort_text"><a href="#" onmousedown="jsToggleAvailableModsSort()"><span class="LOC_LAST_UPDATED">LAST UPDATED</span></a></span>
-          </div>
-          <div class="filter_options">
-            <span class="LOC_FILTER">FILTER</span>: <input type="text" id="show_filter" />
-          </div>
-        </div>
+      <div id="available" class="tab">
+		<div class='filter_area'></div>
         <div id="mod_list_available" class="tab_content">
         </div>
       </div>
@@ -74,7 +68,7 @@
                     <option value="news" class="LOC_NEWS">NEWS</option>
                     <option value="installed_client" class="LOC_INSTALLED_CLIENT_MODS">INSTALLED UI MODS</option>
                     <option value="installed_server" class="LOC_INSTALLED_SERVER_MODS">INSTALLED SERVER MODS</option>
-                    <option value="download" class="LOC_AVAILABLE_MODS">AVAILABLE MODS</option>
+                    <option value="available" class="LOC_AVAILABLE_MODS">AVAILABLE MODS</option>
                   </select>
                 </td>
               </tr>
@@ -165,7 +159,8 @@
           </div>
         </div>
       </div>
-      
+    </div>
+    <footer>
       <div class="buttons">
         <input id="btnLaunch" type="button" value="Launch PA" class="LOC_Launch_PA" onClick="LaunchPA()"/>
         <input type="button" value="Refresh" class="LOC_Refresh" onClick="jsRefresh(true, true)"/>
@@ -174,10 +169,10 @@
       <div id="context">
         <span>PA Stream: <input type="radio" name="stream" value="stable"><span>stable</span><input type="radio" name="stream" value="PTE"><span>PTE</span></span>
       </div>
-      <div id="downloading">
-        <img src="assets/img/loading.gif">
+      <div>
+        <img id="downloading" src="assets/img/loading.gif">
       </div>
-    </div>
+    </footer>
     <script>window.$ = window.jQuery = require('./assets/js/jquery-2.1.1.min.js');</script>
     <script src="assets/js/jquery-ajax-blob-arraybuffer.js"></script>
     <script src="assets/js/knockout-3.1.0.min.js"></script>

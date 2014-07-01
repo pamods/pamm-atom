@@ -391,7 +391,7 @@ function jsGenerateOnlineModsListHTML() {
         }
     }
 
-    $("#mod_list_available").html("<div class='filter_area'>" +
+    $("#available div.filter_area").html("" +
         "<div class='filter_area_additional_options_toggle'>" +
             "<a href='#' id='filter_area_available_toggle' onClick='jsToggleModListOptions(\"available\")'>" + jsGetLocaleText('Hide_Additional_Options') + "</a>" + 
         "</div>" + 
@@ -444,8 +444,8 @@ function jsGenerateOnlineModsListHTML() {
                 "<span class='filter_area_link'>[ <a href='#' onClick='document.getElementById(\"filter_area_available_text_filter\").value=\"\"; jsSetAvailableModsFilter(\"ALL\"); jsSetAvailableModsFilterCategory(\"ALL\")'>" + jsGetLocaleText('clear') + "</a> ]</span>" +
             "</div>" +
         "</div>" +
-    "</div>");
-                
+    "");
+    
     $('#filter_area_available_text_filter').on("keyup", jsApplyOnlineModFilter);
     
     jsSortOnlineMods();
@@ -456,7 +456,7 @@ function jsGenerateOnlineModsListHTML() {
         strHTML += jsGenerateModEntryHTML(objOnlineMods[i], false);
     }
     
-    $("#mod_list_available").append(strHTML);
+    $("#mod_list_available").html(strHTML);
     
     jsUpdateOptionsToggle("available");
     jsApplyOnlineModFilter();
@@ -475,7 +475,7 @@ function jsGenerateInstalledModsListHTML(context) {
         }
     }
     
-    $("#mod_list_" + installedcontext + "").html("<div class='filter_area'>" +
+    $("#" + installedcontext + " div.filter_area").html("" +
         "<div class='filter_area_additional_options_toggle'>" +
             "<a href='#' id='filter_area_" + installedcontext + "_toggle' onClick='jsToggleModListOptions(\"installed_" + context + "\", \""+installedcontext+"\")'>" + jsGetLocaleText('Hide_Additional_Options') + "</a>" + 
         "</div>" + 
@@ -508,7 +508,7 @@ function jsGenerateInstalledModsListHTML(context) {
                 "<span class='filter_area_link'>[ <a href='#' onClick='document.getElementById(\"filter_area_" + installedcontext + "_text_filter\").value=\"\"; jsSetInstalledModsFilterCategory(\"" + context + "\", \"ALL\")'>" + jsGetLocaleText('clear') + "</a> ]</span>" +
             "</div>" +
         "</div>" +
-    "</div>");
+    "");
     
     $("#filter_area_" + installedcontext + "_text_filter").on("keyup", function() { jsApplyInstalledModFilter(context) });
     
@@ -520,22 +520,34 @@ function jsGenerateInstalledModsListHTML(context) {
     
     var nbupdates = jsGetModsRequiringUpdates(context);
     if (nbupdates > 0) {
-        $("#mod_list_" + installedcontext + "").append("<div class='alert_area'>" + 
+        strHTML = "<div class='alert_area'>" + 
             "<img class='alert_img' src='assets/img/alert.png'>" + 
             "<div class='alert_message'>" + nbupdates + " " + jsGetLocaleText('mod_s__require_updates') + " " + 
                 "<span class='alert_link'>[ <a href='#' onClick='jsUpdateAll(\"" + context + "\")'><span class='LOC_update_all'>" + jsGetLocaleText('update_all') + "</span></a> ]</span>" + 
             "</div>" + 
-        "</div>");
+        "</div>" + strHTML;
         
         $("#ui_tab_" + installedcontext + "_needing_update").html("&nbsp;(<span class='ui_tab_" + installedcontext + "_needing_update_count'>" + nbupdates + "</span>)");
     } else {
         $("#ui_tab_" + installedcontext + "_needing_update").html("");
     }
     
-    $("#mod_list_" + installedcontext + "").append(strHTML);
+    $("#mod_list_" + installedcontext).html(strHTML);
     
     jsUpdateOptionsToggle(installedcontext);
     jsApplyInstalledModFilter(context);
+}
+
+function jsUpdateModListPadding(listname) {
+    var $modlist = $('#'+listname);
+    
+    var $filterarea = $modlist.children('div.filter_area');
+    if($filterarea.length == 0)
+        return;
+    var height = $filterarea.outerHeight() + 'px';
+    
+    var $content = $modlist.children('div.tab_content');
+    $content.css("padding-top", height);
 }
 
 /* Mod Getter Functions */
@@ -566,11 +578,12 @@ function jsToggleModListOptions(listname) {
 function jsUpdateOptionsToggle(listname) {
     if (settings["show_" + listname + "_filters"]() == true) {
         $("#filter_area_" + listname + "_toggle").text(jsGetLocaleText('Hide_Additional_Options'));
-        $("#mod_list_" + listname).find(".filter_area_container").show();
+        $("#" + listname).find(".filter_area_container").show();
     } else {
         $("#filter_area_" + listname + "_toggle").text(jsGetLocaleText('Show_Additional_Options'));
-        $("#mod_list_" + listname).find(".filter_area_container").hide();
+        $("#" + listname).find(".filter_area_container").hide();
     }
+    jsUpdateModListPadding(listname);
 }
 
 function jsSetLanguage() {
@@ -620,10 +633,13 @@ function jsApplyOnlineModFilter() {
 	if(!$('#filter_area_available_text_filter')[0])
 		return;
     
-    $('#mod_list_available').find('.mod_entry').removeClass('mod_entry_filtered');
-    $('#mod_list_available .filter_area_filter_list_show a').removeClass('filter_area_filter_item_selected');
+    var $modlist = $('#mod_list_available');
+    var $filterarea = $('#available > div.filter_area');
     
-    $('#mod_list_available').find('.mod_entry').not('.mod_entry_context_' + settings.available_context()).addClass('mod_entry_filtered');
+    $modlist.find('.mod_entry').removeClass('mod_entry_filtered');
+    $filterarea.find('.filter_area_filter_list_show a').removeClass('filter_area_filter_item_selected');
+    
+    $modlist.find('.mod_entry').not('.mod_entry_context_' + settings.available_context()).addClass('mod_entry_filtered');
     $('#filter_area_show_'+settings.available_context()).addClass('filter_area_filter_item_selected');
     
     switch (settings.available_filter()) {
@@ -632,28 +648,28 @@ function jsApplyOnlineModFilter() {
             boolFiltersEnabled = false;
             break;
         case "INSTALLED":
-            $('#mod_list_available').find('.mod_entry').not('.mod_entry_filter_installed').addClass('mod_entry_filtered');
+            $modlist.find('.mod_entry').not('.mod_entry_filter_installed').addClass('mod_entry_filtered');
             $('#filter_area_show_installed').addClass('filter_area_filter_item_selected');
             break;
         case "REQUIRES_UPDATE":
-            $('#mod_list_available').find('.mod_entry').not('.mod_entry_filter_update_available').addClass('mod_entry_filtered');
+            $modlist.find('.mod_entry').not('.mod_entry_filter_update_available').addClass('mod_entry_filtered');
             $('#filter_area_show_requires_update').addClass('filter_area_filter_item_selected');
             break;
         case "NEWLY_UPDATED":
-            $('#mod_list_available').find('.mod_entry').not('.mod_entry_filter_new').addClass('mod_entry_filtered');
+            $modlist.find('.mod_entry').not('.mod_entry_filter_new').addClass('mod_entry_filtered');
             $('#filter_area_show_newly_updated').addClass('filter_area_filter_item_selected');
             break;
         case "NOT_INSTALLED":
-            $('#mod_list_available').find('.mod_entry').not('.mod_entry_filter_not_installed').addClass('mod_entry_filtered');
+            $modlist.find('.mod_entry').not('.mod_entry_filter_not_installed').addClass('mod_entry_filtered');
             $('#filter_area_show_not_installed').addClass('filter_area_filter_item_selected');
             break;
     }
     
     if (settings.available_category() != "ALL") {
-        $('#mod_list_available').find('.mod_entry').not('.mod_entry_category_' + settings.available_category()).addClass('mod_entry_filtered');
+       $modlist.find('.mod_entry').not('.mod_entry_category_' + settings.available_category()).addClass('mod_entry_filtered');
         boolFiltersEnabled = true;
     }
-    $('#mod_list_available .filter_area_filter_list_category a').removeClass('filter_area_filter_item_selected');
+    $filterarea.find('.filter_area_filter_list_category a').removeClass('filter_area_filter_item_selected');
     $('#filter_area_available_category_' + settings.available_category()).addClass('filter_area_filter_item_selected');
     
     if ($('#filter_area_available_text_filter').val() != '') {
@@ -671,24 +687,29 @@ function jsApplyOnlineModFilter() {
     } else {
         $('#filters_on_available').hide();
     }
+    
+    jsUpdateModListPadding('available');
 }
 
 function jsApplyInstalledModFilter(context) {
     var boolFiltersEnabled = false;
     var installedcontext = 'installed_' + context;
     
-    $('#mod_list_' + installedcontext).find('.mod_entry').removeClass('mod_entry_filtered');
+    var $modlist = $('#mod_list_' + installedcontext);
+    var $filterarea = $('#' + installedcontext + ' > div.filter_area');
+    
+    $modlist.find('.mod_entry').removeClass('mod_entry_filtered');
             
     if (settings[installedcontext + '_category']() != "ALL") {
-        $('#mod_list_' + installedcontext).find('.mod_entry').not('.mod_entry_category_' + settings[installedcontext + '_category']()).addClass('mod_entry_filtered');
+        $modlist.find('.mod_entry').not('.mod_entry_category_' + settings[installedcontext + '_category']()).addClass('mod_entry_filtered');
         boolFiltersEnabled = true;
     }
-    $('#mod_list_' + installedcontext + ' .filter_area_filter_list_category a').removeClass('filter_area_filter_item_selected');
+    $filterarea.find('.filter_area_filter_list_category a').removeClass('filter_area_filter_item_selected');
     $('#filter_area_' + installedcontext + '_category_' + settings[installedcontext + '_category']()).addClass('filter_area_filter_item_selected');
     
     if ($('#filter_area_' + installedcontext + '_text_filter').val() != '') {
         var strSearch = $('#filter_area_' + installedcontext + '_text_filter').val().toLowerCase();
-        $('#mod_list_' + installedcontext).find('.mod_entry').each(function() {
+        $modlist.find('.mod_entry').each(function() {
             if ($(this).find('.mod_entry_name').text().toLowerCase().indexOf(strSearch) < 0) {
                 $(this).addClass('mod_entry_filtered');
             }
@@ -701,6 +722,8 @@ function jsApplyInstalledModFilter(context) {
     } else {
         $('#filters_on_' + installedcontext).hide();
     }
+    
+    jsUpdateModListPadding(installedcontext);
 }
 
 function jsDisplayPanel(strPanelName) {
@@ -724,6 +747,8 @@ function jsDisplayPanel(strPanelName) {
         jsSetAvailableModsFilterContext("client")
     else if (strPanelName === "installed_server")
         jsSetAvailableModsFilterContext("server");
+    
+    jsUpdateModListPadding(strPanelName);
 }
 
 function jsPreInstallMod(strURL, strModID, objModsPreInstalled) {

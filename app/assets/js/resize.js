@@ -13,17 +13,6 @@ $(function() {
         console.log('ERROR: ' + error);
     }
     
-    // autoresize body with window
-    var $window = $(window);
-    var $body = $('body');
-    
-    var autoresize = function() {
-        $body.height($window.height() - 180);
-    }
-    
-    $window.on('resize', _.debounce(autoresize, 50, { maxWait: 50 }));
-    $window.trigger('resize');
-    
     // remember size
     var remembersize = function() {
         try {
@@ -32,5 +21,5 @@ $(function() {
             console.log('ERROR: ' + error);
         }
     }
-    $window.on('resize', _.debounce(remembersize, 100));
+     $(window).on('resize', _.debounce(remembersize, 100));
 });

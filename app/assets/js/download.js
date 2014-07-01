@@ -5,7 +5,7 @@ exports.download = function(strURL, opts) {
     var datatype = opts.tofile ? "arraybuffer" : "text";
     
     intDownloading++;
-    document.getElementById("downloading").style.display = "block";
+    $("#downloading").show();
     jsAddLogMessage("[Message ID: " + intCurrentMessageID + "] GET <code class='log_url'>" + strURL + "</code>", 4);
     
     $.get(strURL, function(data, textStatus, jqXHR) {
@@ -29,7 +29,7 @@ exports.download = function(strURL, opts) {
     .always(function() {
         var nbdl = --intDownloading;
         if (nbdl == 0) {
-            document.getElementById("downloading").style.display = "none";
+            $("#downloading").hide();
         }
     });
 }
