@@ -43,6 +43,12 @@ $.ajaxTransport("+*", function(options, originalOptions, jqXHR){
                     completeCallback(xhr.status, xhr.statusText, res, xhr.getAllResponseHeaders());
                 });
 
+                xhr.addEventListener('progress', function(progress){
+                    // crappy way to track dl progress
+                    if(jqXHR.dlprogress)
+                        jqXHR.dlprogress(progress);
+                });
+
                 xhr.open(type, url, async);
                 xhr.responseType = dataType;
                 xhr.send(data);

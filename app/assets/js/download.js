@@ -8,7 +8,7 @@ exports.download = function(strURL, opts) {
     $("#downloading").show();
     jsAddLogMessage("[Message ID: " + intCurrentMessageID + "] GET <code class='log_url'>" + strURL + "</code>", 4);
     
-    $.get(strURL, function(data, textStatus, jqXHR) {
+    var jq = $.get(strURL, function(data, textStatus, jqXHR) {
         jsAddLogMessage("[Message ID: " + intCurrentMessageID + "] HTTP " + jqXHR.status, 4);
         
         if(opts.tofile) {
@@ -32,4 +32,8 @@ exports.download = function(strURL, opts) {
             $("#downloading").hide();
         }
     });
+    
+    // crappy way to track dl progress
+    if(opts.progress)
+        jq.dlprogress = opts.progress;
 }

@@ -374,8 +374,14 @@ function jsGenerateModEntryHTML(objMod, boolIsInstalled) {
             }
         }
     }
-                
-    var strHTML = "<div class='" + strHTML_classes + "' " + strHTML_entry_onclick + ">" + strHTML_icon + "<div class='mod_entry_container'>" + strHTML_checkbox + strHTML_checkbox_image + "<div>" + strHTML_display_name + strHTML_author + "</div>" + "<div class='mod_entry_details'>" + strHTML_version + strHTML_build + strHTML_date + strHTML_update_available + strHTML_new + "</div>" + strHTML_requires + strHTML_description + strHTML_category + strHTML_forum_link + strHTML_update_link + strHTML_install_link + strHTML_uninstall_link + strHTML_downloads + strHTML_likes + "</div></div>";
+    
+    var strHTML = "<div class='" + strHTML_classes + "' " + strHTML_entry_onclick + ">" + strHTML_icon + "<div class='mod_entry_container'>" + strHTML_checkbox + strHTML_checkbox_image + "<div>" + strHTML_display_name + strHTML_author + "</div>" + "<div class='mod_entry_details'>" + strHTML_version + strHTML_build + strHTML_date + strHTML_update_available + strHTML_new + "</div>" + strHTML_requires + strHTML_description + strHTML_category + strHTML_forum_link + strHTML_update_link + strHTML_install_link + strHTML_uninstall_link + strHTML_downloads + strHTML_likes + "</div>";
+    
+    if (!boolIsInstalled) {
+        strHTML += "<div id='" + id + "_dlprogress' class='dlprogress'></div>";
+    }
+    
+    strHTML += "</div>";
     
     return strHTML;
 }
@@ -785,7 +791,18 @@ function jsPreInstallMod(strURL, strModID, objModsPreInstalled) {
             jsDownload(MANAGE_URL + "?download=" + strModID);
         }
         jsRefresh(false, false);
-    });
+    }
+    ,function(identifier, state) {
+        if(state.lengthComputable) {
+            var divId = identifier.replace(/\./g, '\\.') + "_dlprogress";
+            var percent = ( state.loaded * 100 ) / state.total;
+            
+            var $div = $('#'+divId);
+            $div.width(percent+'%');
+            $div.show();
+        }
+    }
+    );
 }
 
 function jsPreUninstallMod(strModID) {

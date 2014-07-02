@@ -627,6 +627,15 @@ footer > *:last-child {
 	padding-right: 5px;
 }
 
+.dlprogress {
+	height: 5px;
+	width: 0;
+	background-color: #008cff;
+	display: none;
+	clear: both;
+	border-radius: 5px;
+}
+
 .buttons {
 	width: 350px;
 }

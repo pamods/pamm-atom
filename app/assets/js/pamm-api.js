@@ -163,7 +163,7 @@ var getRequiredBy = function(id, requiredby) {
 };
 exports.getRequiredBy = getRequiredBy;
 
-exports.install = function (id, callback) {
+exports.install = function (id, callback, progressCallback) {
     var mod = available[id];
     
     var ids = getRequires(id);
@@ -248,6 +248,10 @@ exports.install = function (id, callback) {
                 }
                 ,error: function(e) {
                     _finish("An unexpected error occured during the download: " + e, id);
+                }
+                ,progress: function(state) {
+                    if(progressCallback)
+                        progressCallback(mod.identifier, state);
                 }
             });
         }
