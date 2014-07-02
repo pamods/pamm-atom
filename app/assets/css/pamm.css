@@ -654,3 +654,7 @@ footer > *:last-child {
 #context input:disabled + span {
 	color: #999;
 }
+
+div.news_item.legacypamm_only {
+	display: none;
+}
