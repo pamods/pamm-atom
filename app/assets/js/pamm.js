@@ -877,6 +877,7 @@ function jsRefresh_asynch(boolDownloadData) {
         objInstalledMods.server.sort(sort_by('display_name', true, null));
         
         if (boolOnline == true && boolDownloadData == true) {
+            checkPAMMversion();
             jsDownloadNews();
             jsDownloadOnlineMods();
         } else {
@@ -1045,8 +1046,14 @@ function jsDownloadOnlineModLikeCount() {
     }, 500);
 }
 
+var latestCheck = 0;
 function checkPAMMversion() {
     if (boolOnline == true) {
+        var now = Date.now();
+        if( (now - latestCheck) < 300000 ) // one check per 5mn max
+            return;
+        latestCheck = now;
+        
         jsAddLogMessage("Checking for PAMM updates", 2);
         var intCurrentMessageID = ++intMessageID;
         var packageurl = sprintf(PAMM_VERSION_DATA_URL, params.info);
