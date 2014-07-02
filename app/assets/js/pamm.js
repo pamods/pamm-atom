@@ -41,6 +41,8 @@ var MOD_GENERIC_ICON_URL = "assets/img/generic.png";
 
 var strPAMMversion = params.info.version;
 
+$.ajaxSetup({ cache: false });
+
 /* Localisation Functions */
 function jsGetLocaleText(strKey) {
     var locale = settings.locale();
