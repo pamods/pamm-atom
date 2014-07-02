@@ -191,7 +191,15 @@ function jsGenerateModEntryHTML(objMod, boolIsInstalled) {
     }
     
     /* Author */
-    var strHTML_author = "<div class='mod_entry_author'>" + jsGetLocaleText('by') + " " + objMod.author + "</div>";
+    var strHTML_author = "<div class='mod_entry_author'>" + jsGetLocaleText('by') + " ";
+    var authors = objMod.author.replace(" and ",",").split(",");
+    for(var i = 0; i < authors.length; ++i) {
+        var author = authors[i].trim();
+        if(i!==0)
+            strHTML_author += ", ";
+        strHTML_author += sprintf("<a href='#' onclick='LaunchURL(\"https://forums.uberent.com/members/?username=%1$s\")'>%1$s</a>", author);
+    }
+    strHTML_author += "</div>";
     
     /* Version */
     var strHTML_version = jsGetLocaleText('Version') + ": " + objMod.version;
