@@ -5,8 +5,9 @@ var shell = require('shell');
 var _ = require('lodash');
 
 var jsDownload = require('./assets/js/download.js').download;
-var pamm = require('./assets/js/pamm-api.js');
 var pa = require('./assets/js/pa.js');
+var pamm = require('./assets/js/pamm-api.js');
+var compat = require('./assets/js/pamm-compat.js');
 //(function() {
 
 var url = require('url');
@@ -970,10 +971,13 @@ function jsDownloadOnlineModDownloadCount() {
                     var objOnlineModsDownloadCount = JSON.parse(strResult);
                     for (var i = 0; i < objOnlineMods.length; i++) {
                         var mod = objOnlineMods[i];
-                        mod.downloads = objOnlineModsDownloadCount[mod.identifier] ? objOnlineModsDownloadCount[mod.identifier] : 0;
-                        if(mod.id) {
+                        var identifier = mod.identifier;
+                        var compatId = compat.toId(identifier);
+                        
+                        mod.downloads = objOnlineModsDownloadCount[identifier] ? objOnlineModsDownloadCount[identifier] : 0;
+                        if(compatId) {
                             // legacy modcount :)
-                            mod.downloads += objOnlineModsDownloadCount[mod.id] ? objOnlineModsDownloadCount[mod.id] : 0;
+                            mod.downloads += objOnlineModsDownloadCount[compatId] ? objOnlineModsDownloadCount[compatId] : 0;
                         }
                         
                         intTotalDownloadCount += mod.downloads;

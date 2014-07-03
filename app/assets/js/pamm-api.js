@@ -2,6 +2,7 @@ var fs = require('fs');
 var path = require('path');
 var _ = require('lodash');
 var pa = require('./pa.js');
+var compat = require('./pamm-compat.js');
 
 var ONLINE_MODS_LIST_URL = "http://pamods.github.io/modlist2.json";
 
@@ -16,8 +17,6 @@ var stream = pa.last ? pa.last.stream : 'stable';
 
 var installed = {};
 var available = {};
-
-var compatibility = {};
 
 var paths = {
     cache: pa.cachepath
@@ -51,13 +50,13 @@ exports.getAvailableMods = function (callback, force) {
                     for (var i in modlist) {
                         var mod = modlist[i];
                         
-                        if(!mod.id) {
+                        if(!mod.id)
                             mod.id = mod.identifier;
-                        }
+                        else
+                            compat.push(mod.identifier, mod.id)
                         
                         mod.likes = -2;
                         
-                        compatibility[mod.id] = mod.identifier;
                         mods[mod.identifier] = mod;
                     }
                 } catch (e) {
@@ -467,7 +466,8 @@ var findInstalledMods = function() {
                     
                     if(mod.context === 'server' || !mod.id)
                         mod.id = mod.identifier;
-                    compatibility[mod.id] = mod.identifier;
+                    else
+                        compat.push(mod.identifier, mod.id)
                     
                     if (!mod.priority)
                         mod.priority = 100;
@@ -554,13 +554,14 @@ var _fixDependencies = function(mods) {
             var dependencies = [];
             var mismatch = false;
             for(var i = 0; i < mod.requires.length; ++i) {
-                var dependency = mod.requires[i];
-                if(compatibility[dependency]) {
-                    dependencies.push(compatibility[dependency]);
+                var id = mod.requires[i];
+                var identifier = compat.toIdentifier(id);
+                if(identifier) {
+                    dependencies.push(identifier);
                 }
                 else {
                     mismatch = true;
-                    dependencies.push(dependency);
+                    dependencies.push(id);
                 }
             }
             mod.dependencies = dependencies;
