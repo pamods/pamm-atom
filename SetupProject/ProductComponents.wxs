@@ -270,8 +270,8 @@
                             <Component Id="cmpE7F80B98EB620D47C348BDDED96AF737" Guid="*">
                                 <File Id="fil338C9C864FCFD325EDCE4BACD263E59D" KeyPath="yes" Source="$(var.PammDir)\resources\app\assets\js\download.js" />
                             </Component>
-                            <Component Id="cmp8ACFCCDE0840DB5F2E4B57CEE341D37D" Guid="*">
-                                <File Id="filD1306E776A601651A4C42FE9E8504433" KeyPath="yes" Source="$(var.PammDir)\resources\app\assets\js\jquery-1.10.2.min.js" />
+                            <Component Id="cmp6F166E7E5D8CF7E0811A968E96B3269E" Guid="*">
+                                <File Id="fil8357C483BFB90DDDE57791D7852B360B" KeyPath="yes" Source="$(var.PammDir)\resources\app\assets\js\jquery-2.1.1.min.js" />
                             </Component>
                             <Component Id="cmpCCF24DE7040857BF2619217ABD996445" Guid="*">
                                 <File Id="filD8CDA2C7CD3C2EFD14162C4FF30429E6" KeyPath="yes" Source="$(var.PammDir)\resources\app\assets\js\jquery-ajax-blob-arraybuffer.js" />
@@ -291,8 +291,14 @@
                             <Component Id="cmpBE4658BB14F5CC975B9A5C2795E7C09A" Guid="*">
                                 <File Id="filB377E5105424BA1F238A34609C4C595B" KeyPath="yes" Source="$(var.PammDir)\resources\app\assets\js\pamm-api.js" />
                             </Component>
+                            <Component Id="cmp19B89AD3A2F3C8B0DF03E8FEF0F6FC2B" Guid="*">
+                                <File Id="fil0F9532B1B5C0F01AADE58C6CADDC443C" KeyPath="yes" Source="$(var.PammDir)\resources\app\assets\js\pamm-compat.js" />
+                            </Component>
                             <Component Id="cmp9E793A10BF3F138124F00B48006BD9A9" Guid="*">
                                 <File Id="filB52B6663691ED46BAC80793AF7E5E6FF" KeyPath="yes" Source="$(var.PammDir)\resources\app\assets\js\pamm.js" />
+                            </Component>
+                            <Component Id="cmpC91404322265A2E2474013EC911FE668" Guid="*">
+                                <File Id="filDB4BAC4E9073ABCDFF23F946D9E24ECD" KeyPath="yes" Source="$(var.PammDir)\resources\app\assets\js\resize.js" />
                             </Component>
                         </Directory>
                     </Directory>
@@ -883,14 +889,16 @@
             <ComponentRef Id="cmp5C1DBDEEBACDB52262791272D5F74835" />
             <ComponentRef Id="cmpFB7944D39942419124209D1D59C4AE75" />
             <ComponentRef Id="cmpE7F80B98EB620D47C348BDDED96AF737" />
-            <ComponentRef Id="cmp8ACFCCDE0840DB5F2E4B57CEE341D37D" />
+            <ComponentRef Id="cmp6F166E7E5D8CF7E0811A968E96B3269E" />
             <ComponentRef Id="cmpCCF24DE7040857BF2619217ABD996445" />
             <ComponentRef Id="cmpDCBCA7ADB4F553CD35E0310066FB3142" />
             <ComponentRef Id="cmp3697529719E70AEB815E69EC1EAC4B0D" />
             <ComponentRef Id="cmpADDD1A15F84329DF43344580805C13E8" />
             <ComponentRef Id="cmpB65B6C4F96F1E079F02B6974346433D6" />
             <ComponentRef Id="cmpBE4658BB14F5CC975B9A5C2795E7C09A" />
+            <ComponentRef Id="cmp19B89AD3A2F3C8B0DF03E8FEF0F6FC2B" />
             <ComponentRef Id="cmp9E793A10BF3F138124F00B48006BD9A9" />
+            <ComponentRef Id="cmpC91404322265A2E2474013EC911FE668" />
             <ComponentRef Id="cmpFA3EFF53D3260A5ABB1D9CC1A8B379F6" />
             <ComponentRef Id="cmp8BA62B152EB3D89A8510C17283663502" />
             <ComponentRef Id="cmp33D2449306E3D07FD5468784D40C216A" />
