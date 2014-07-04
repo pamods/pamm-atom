@@ -67,47 +67,48 @@ function jsApplyLocaleText() {
 }
 
 /* Sorting Functions */
-function sort_random(){
-    return (Math.round(Math.random())-0.5);
-}
-
-function sort_by(field, reverse, primer) {
+function sortModBy(field, reverse, primer) {
     var key = primer ? function(x) {return primer(x[field])} : function(x) {return x[field]};
     reverse = [-1, 1][+!!reverse];
 
     return function (a, b) {
-        return a = key(a), b = key(b), reverse * ((a > b) - (b > a));
+        var av = key(a), bv = key(b);
+        var compare = reverse * ((av > bv) - (bv > av));
+        if(compare !== 0)
+            return compare;
+        
+        return a = a.display_name, b = b.display_name, ((a > b) - (b > a))
     } 
 }
 
 function jsSortOnlineMods() {
     switch (settings.sort()) {
         case "LAST_UPDATED":
-            objOnlineMods.sort(sort_by('date', false, function(x) { return new Date(x); } ));
+            objOnlineMods.sort(sortModBy('date', false, function(x) { return new Date(x); } ));
             $("#filter_area_sort_last_updated").addClass('filter_area_filter_item_selected');
             break;
         case "TITLE":
-            objOnlineMods.sort(sort_by('display_name', true, null));
+            objOnlineMods.sort(sortModBy('display_name', true));
             $("#filter_area_sort_last_title").addClass('filter_area_filter_item_selected');
             break;
         case "AUTHOR":
-            objOnlineMods.sort(sort_by('author', true, null));
+            objOnlineMods.sort(sortModBy('author', true));
             $("#filter_area_sort_last_author").addClass('filter_area_filter_item_selected');
             break;
         case "BUILD":
-            objOnlineMods.sort(sort_by('build', false, null));
+            objOnlineMods.sort(sortModBy('build', false));
             $("#filter_area_sort_last_build").addClass('filter_area_filter_item_selected');
             break;
         case "LIKES":
-            objOnlineMods.sort(sort_by('likes', false, parseInt));
+            objOnlineMods.sort(sortModBy('likes', false));
             $("#filter_area_sort_last_likes").addClass('filter_area_filter_item_selected');
             break;
         case "DOWNLOADS":
-            objOnlineMods.sort(sort_by('downloads', false, parseInt));
+            objOnlineMods.sort(sortModBy('downloads', false));
             $("#filter_area_sort_last_downloads").addClass('filter_area_filter_item_selected');
             break;
         case "RANDOM":
-            objOnlineMods.sort(sort_random);
+            objOnlineMods.sort(function () { return (Math.round(Math.random())-0.5); });
             $("#filter_area_sort_last_random").addClass('filter_area_filter_item_selected');
             break;
     }
@@ -874,8 +875,8 @@ function jsRefresh_asynch(boolDownloadData) {
     
     findInstalledMods(function() {
         document.getElementById('total_installed_mods').innerHTML = objInstalledMods.client.length + objInstalledMods.server.length;
-        objInstalledMods.client.sort(sort_by('display_name', true, null));
-        objInstalledMods.server.sort(sort_by('display_name', true, null));
+        objInstalledMods.client.sort(sortModBy('display_name', true, null));
+        objInstalledMods.server.sort(sortModBy('display_name', true, null));
         
         if (boolOnline == true && boolDownloadData == true) {
             checkPAMMversion();
