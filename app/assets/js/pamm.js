@@ -776,13 +776,15 @@ function jsPreInstallMod(strURL, strModID, objModsPreInstalled) {
             var displaynames = [];
             for(var i = 0; i < requires.length; ++i) {
                 var dependencyId = requires[i];
+                
+                if(jsGetInstalledMod(dependencyId))
+                    continue;
+                
                 var dependency = jsGetOnlineMod(dependencyId);
-                if(!dependency)
-                    dependency = jsGetInstalledMod(dependencyId);
                 displaynames.push(dependency ? dependency.display_name : dependencyId);
             }
             
-            if(!confirm("Install required dependency '" + displaynames.join("', '") + "'?")) {
+            if(displaynames.length > 0 && !confirm("Install required dependency '" + displaynames.join("', '") + "'?")) {
                 return;
             }
         }
