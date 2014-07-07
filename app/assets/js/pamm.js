@@ -119,7 +119,7 @@ function jsUpdateAll(context) {
     var mods = objInstalledMods[context];
     for (var i = 0; i < mods.length; i++) {
         if (jsGetOnlineMod(mods[i].identifier) != null && mods[i].version !== jsGetOnlineMod(mods[i].identifier).version) {
-            jsPreInstallMod(jsGetOnlineMod(mods[i].identifier).url, mods[i].identifier, {});
+            jsPreInstallMod(mods[i].identifier);
         }
     }
 }
@@ -195,13 +195,13 @@ function jsGenerateModEntryHTML(objMod, boolIsInstalled) {
     }
     
     /* Author */
-    var strHTML_author = "<div class='mod_entry_author'>" + jsGetLocaleText('by') + " ";
+    var strHTML_author = "<div class='mod_entry_link mod_entry_author'>" + jsGetLocaleText('by') + " ";
     var authors = objMod.author.replace(" and ",",").split(",");
     for(var i = 0; i < authors.length; ++i) {
         var author = authors[i].trim();
         if(i!==0)
             strHTML_author += ", ";
-        strHTML_author += sprintf("<a href='#' onclick='LaunchURL(\"https://forums.uberent.com/members/?username=%1$s\")'>%1$s</a>", author);
+        strHTML_author += sprintf("<a href='https://forums.uberent.com/members/?username=%1$s'>%1$s</a>", author);
     }
     strHTML_author += "</div>";
     
@@ -271,13 +271,12 @@ function jsGenerateModEntryHTML(objMod, boolIsInstalled) {
     /* Forum Link */
     var strHTML_forum_link = "";
     if (objMod.forum != null) {
-        strHTML_forum_link = "<div class='mod_entry_link' onclick='window.event.cancelBubble = true'>[ <a href='#' onClick='LaunchURL(\"" + objMod.forum + "\")'>" + jsGetLocaleText('forum') + "</a> ]</div>";
+        strHTML_forum_link = "<div class='mod_entry_link'>[ <a href='" + objMod.forum + "'>" + jsGetLocaleText('forum') + "</a> ]</div>";
     }
     
     /* Installed Mods List Only */
     var strHTML_checkbox = "";
     var strHTML_checkbox_image = "";
-    var strHTML_entry_onclick = "";
     var strHTML_uninstall_link = "";
     var strHTML_update_available = "";
     var strHTML_update_link = "";
@@ -304,13 +303,10 @@ function jsGenerateModEntryHTML(objMod, boolIsInstalled) {
             strHTML_checkbox_image = "<div class='mod_entry_enabled_image'><img id='modimg" + id + "' src='assets/img/checkbox_unchecked.png' /></div>";
         }
         
-        /* Mod OnClick Function */
-        strHTML_entry_onclick = " data-mod='" + id + "'";
-        
         /* Update Available Notification */
         if (objOnlineMod != null) {
             if (objMod.version !== objOnlineMod.version) {
-                strHTML_update_link = "<div class='mod_entry_link mod_entry_update_link'>[ <a href='#' onClick='jsPreInstallMod(\"" + objOnlineMod.url + "\",\"" + id + "\", {})'>" + jsGetLocaleText('update') + "</a> ]</div>";
+                strHTML_update_link = "<div class='mod_entry_link mod_entry_update_link'>[ <a href='#' data-action='install'>" + jsGetLocaleText('update') + "</a> ]</div>";
                 
                 /* Update Classes */
                 strHTML_classes = strHTML_classes.replace('mod_entry', 'mod_entry mod_entry_filter_update_available');
@@ -319,7 +315,7 @@ function jsGenerateModEntryHTML(objMod, boolIsInstalled) {
         
         if(!objMod.stockmod) {
             /* Uninstall Link */
-            strHTML_uninstall_link = "<div class='mod_entry_link mod_entry_uninstall_link' onclick='window.event.cancelBubble = true'>[ <a href='#' onClick='jsPreUninstallMod(\"" + id + "\")'>" + jsGetLocaleText('uninstall') + "</a> ]</div>";
+            strHTML_uninstall_link = "<div class='mod_entry_link mod_entry_uninstall_link'>[ <a href='#' data-action='uninstall'>" + jsGetLocaleText('uninstall') + "</a> ]</div>";
         }
     }
     
@@ -354,18 +350,18 @@ function jsGenerateModEntryHTML(objMod, boolIsInstalled) {
         
         if (objInstalledMod != null) {
             if (objMod.version !== objInstalledMod.version) {
-                strHTML_install_link = "<div class='mod_entry_link mod_entry_update_link'>[ <a href='#' onClick='jsPreInstallMod(\"" + objMod.url + "\", \"" + id + "\", {})'>" + jsGetLocaleText('update') + "</a> ]</div>";
+                strHTML_install_link = "<div class='mod_entry_link mod_entry_update_link'>[ <a href='#' data-action='install'>" + jsGetLocaleText('update') + "</a> ]</div>";
                 
                 /* Update Classes */
                 strHTML_classes = strHTML_classes.replace('mod_entry', 'mod_entry mod_entry_filter_update_available');
             } else {
-                strHTML_install_link = "<div class='mod_entry_link mod_entry_reinstall_link'>[ <a href='#' onClick='jsPreInstallMod(\"" + objMod.url + "\", \"" + id + "\", {})'>" + jsGetLocaleText('reinstall') + "</a> ]</div>";
+                strHTML_install_link = "<div class='mod_entry_link mod_entry_reinstall_link'>[ <a href='#' data-action='install'>" + jsGetLocaleText('reinstall') + "</a> ]</div>";
                 
                 /* Update Classes */
                 strHTML_classes = strHTML_classes.replace('mod_entry', 'mod_entry mod_entry_filter_installed');
             }
         } else {
-            strHTML_install_link = "<div class='mod_entry_link mod_entry_install_link'>[ <a href='#' onClick='jsPreInstallMod(\"" + objMod.url + "\", \"" + id + "\", {})'>" + jsGetLocaleText('install') + "</a> ]</div>";
+            strHTML_install_link = "<div class='mod_entry_link mod_entry_install_link'>[ <a href='#' data-action='install'>" + jsGetLocaleText('install') + "</a> ]</div>";
             
             /* Update Classes */
             strHTML_classes = strHTML_classes.replace('mod_entry', 'mod_entry mod_entry_filter_not_installed');
@@ -387,7 +383,7 @@ function jsGenerateModEntryHTML(objMod, boolIsInstalled) {
         }
     }
     
-    var strHTML = "<div class='" + strHTML_classes + "' " + strHTML_entry_onclick + ">" + strHTML_icon + "<div class='mod_entry_container'>" + strHTML_checkbox + strHTML_checkbox_image + "<div>" + strHTML_display_name + strHTML_author + "</div>" + "<div class='mod_entry_details'>" + strHTML_version + strHTML_build + strHTML_date + strHTML_update_available + strHTML_new + "</div>" + strHTML_requires + strHTML_description + strHTML_category + strHTML_forum_link + strHTML_update_link + strHTML_install_link + strHTML_uninstall_link + strHTML_downloads + strHTML_likes + "</div>";
+    var strHTML = "<div class='" + strHTML_classes + "' data-mod='" + id + "'>" + strHTML_icon + "<div class='mod_entry_container'>" + strHTML_checkbox + strHTML_checkbox_image + "<div>" + strHTML_display_name + strHTML_author + "</div>" + "<div class='mod_entry_details'>" + strHTML_version + strHTML_build + strHTML_date + strHTML_update_available + strHTML_new + "</div>" + strHTML_requires + strHTML_description + strHTML_category + strHTML_forum_link + strHTML_update_link + strHTML_install_link + strHTML_uninstall_link + strHTML_downloads + strHTML_likes + "</div>";
     
     if (!boolIsInstalled) {
         strHTML += "<div id='" + id + "_dlprogress' class='dlprogress'></div>";
@@ -769,7 +765,7 @@ function jsDisplayPanel(strPanelName) {
     jsUpdateModListPadding(strPanelName);
 }
 
-function jsPreInstallMod(strURL, strModID, objModsPreInstalled) {
+function jsPreInstallMod(strModID) {
     try {
         var requires = pamm.getRequires(strModID);
         if(requires.length) {
@@ -1455,13 +1451,34 @@ $(function() {
         jsDisplayPanel(panel);
     });
     
-    $('#installed_client').on('click', 'div.mod_entry', function() {
+    $('#installed_client').on('click', 'div.mod_entry', function(event) {
+        if (event.target.nodeName === 'A') return;
         var modid = $(this).data('mod');
         jsModEnabledToggle(modid);
     });
-    $('#installed_server').on('click', 'div.mod_entry', function() {
+    $('#installed_server').on('click', 'div.mod_entry', function(event) {
+        if (event.target.nodeName === 'A') return;
         var modid = $(this).data('mod');
         jsModEnabledToggle(modid);
+    });
+    
+    $('body').on('click', 'div.mod_entry_link a', function(event) {
+        event.preventDefault();
+        var $this = $(this);
+        var $modentry = $this.parents('div.mod_entry');
+        var action = $this.data('action');
+        var modid = $modentry.data('mod');
+        
+        if(action === 'install') {
+            jsPreInstallMod(modid);
+        }
+        else if(action === 'uninstall') {
+            jsPreUninstallMod(modid);
+        }
+        else {
+            var href = $this.attr('href');
+            LaunchURL(href);
+        }
     });
     
     if(pa.last) {
@@ -1516,7 +1533,7 @@ $(function() {
                 var modid = params.install;
                 var mod = jsGetOnlineMod(modid);
                 if (mod) {
-                    jsPreInstallMod(mod.url, modid, {});
+                    jsPreInstallMod(modid);
                     alert("Installing '" + mod.display_name + "'");
                 } else {
                     jsAddLogMessage("Failed to install from commandline with mod id = " + modid, 1);
