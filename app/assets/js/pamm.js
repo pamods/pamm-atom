@@ -1188,7 +1188,8 @@ function initSettings() {
         installed_server_view: "",
         installed_server_icon: false,
         show_installed_server_filters: false,
-        nolegacypamm: false
+        nolegacypamm: false,
+        fixedpammhandler: false
     };
     
     if(fs.existsSync(filepath)) {
@@ -1389,6 +1390,60 @@ function checkLegacyPAMM() {
     }
 };
 
+/* fix pamm:// handler on windows */
+function fixPammHandler() {
+    if(process.platform !== 'win32')
+            return;
+    
+    if(settings.fixedpammhandler())
+        return;
+    
+    // we only try once
+    settings.fixedpammhandler(true);
+    
+    var _error = function(err) {
+        jsAddLogMessage("Unexpected error while fixing pamm:// handler: " + err, 1);
+    }
+    
+    try {
+        var Winreg = require('winreg');
+        var regkey = new Winreg({
+            hive: Winreg.HKCU,
+            key: '\\Software\\Classes\\pamm\\shell\\open\\command'
+        });
+        
+        regkey.values(
+            function(err, values) {
+                if (err) {
+                    _error("registry key not found");
+                    return;
+                }
+                
+                if (values.length !== 1) {
+                    _error("registry key default value not found");
+                    return;
+                }
+                
+                var value = values[0].value;
+                
+                if (value.indexOf('?') !== -1) {
+                    _error("unsupported characters found");
+                    return;
+                }
+                
+                if (value.indexOf('$1') !== -1) {
+                    regkey.set('', Winreg.REG_SZ, value.replace('$1','%1'), function(err) {
+                        if (err) _error("failed to update the value");
+                    });
+                }
+            }
+        )
+    }
+    catch(err) {
+       _error(err);
+    }
+}
+
 $(function() {
     jsAddLogMessage("PAMM version: " + params.info.version, 2);
     checkPAMMversion();
@@ -1443,8 +1498,6 @@ $(function() {
     
     ko.applyBindings(model);
     
-    checkLegacyPAMM();
-    
     jsApplyLocaleText();
     jsDisplayPanel(settings.tab());
     
@@ -1464,13 +1517,16 @@ $(function() {
                     jsPreInstallMod(mod.url, modid, {});
                     alert("Installing '" + mod.display_name + "'");
                 } else {
-                    jsAddLogMessage("Failed to install from commandline with mod id = " + mod_id_str, 1);
+                    jsAddLogMessage("Failed to install from commandline with mod id = " + modid, 1);
                 }
                 
                 clearInterval(intervalId);
             }
         }, 1000);
     }
+    
+    checkLegacyPAMM();
+    fixPammHandler();
 });
 
 //})();
