@@ -115,14 +115,25 @@ var init = function() {
     }
     rootpath = path.join(localpath, "/Uber Entertainment/Planetary Annihilation");
     
-    modspath = {
-        client: path.join(rootpath, "/mods") // client_mods soon(tm)
-        ,server: path.join(rootpath, "/server_mods")
-    };
-    cachepath = path.join(rootpath, "/pamm_cache");
+    modspath = {};
+    
+    modspath.client = path.join(rootpath, "/client_mods");
+    if(!fs.existsSync(modspath.client)) {
+        var oldclient = path.join(rootpath, "/mods");
+        if(!fs.existsSync(oldclient)) {
+            mkdirp.sync(modspath.client);
+        }
+        else {
+            modspath.client = oldclient;
+        }
+    }
     
     mkdirp.sync(modspath.client);
+    
+    modspath.server = path.join(rootpath, "/server_mods");
     mkdirp.sync(modspath.server);
+    
+    cachepath = path.join(rootpath, "/pamm_cache");
     mkdirp.sync(cachepath);
     
     var lastrunpath = findLastRunPath();
