@@ -345,6 +345,9 @@ exports.setEnabled = function(id, enabled) {
 exports.setAllEnabled = function(enabled, context) {
     var ids = [];
     for(var key in installed) {
+        if(key === PAMM_MOD_IDENTIFIER)
+            continue;
+        
         if (installed.hasOwnProperty(key)) {
             var mod = installed[key];
             try {
