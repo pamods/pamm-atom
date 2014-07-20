@@ -116,13 +116,21 @@
               <tr>
                 <td colspan="2">
                   <span class="setting_heading"><span class="LOC_PA_Install_Location">PA Install Location</span>:</span><br/>
-                  <input id="setting_installLocation" type="text" disabled="true" class="textInput" data-bind="value: pa.last ? pa.last.bin : ''"/>
+                  <input type="text" disabled="true" class="textInput" data-bind="value: pa.last ? pa.last.bin : ''"/>
                 </td>
               </tr>
               <tr>
                 <td colspan="2">
-                  <span class="setting_heading"><span class="LOC_PA_Mod_Location">PA Mods Location</span>:</span><br/>
-                  <input id="setting_modLocation" type="text" disabled="true" class="textInput" data-bind="value: pa.modspath.client"/>
+                  <span class="setting_heading"><span class="LOC_PA_Client_Mod_Location">PA UI Mods Location</span>:</span><br/>
+                  <input type="text" disabled="true" class="textInput" data-bind="value: pa.modspath.client">
+                  <button class="openfolder" data-context="client">...</button>
+                </td>
+              </tr>
+              <tr>
+                <td colspan="2">
+                  <span class="setting_heading"><span class="LOC_PA_Server_Mod_Location">PA Server Mods Location</span>:</span><br/>
+                  <input type="text" disabled="true" class="textInput" data-bind="value: pa.modspath.server">
+                  <button class="openfolder" data-context="server">...</button>
                 </td>
               </tr>
             </table>

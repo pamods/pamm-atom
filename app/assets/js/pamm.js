@@ -1264,11 +1264,6 @@ function LaunchPA() {
     ClosePAMM();
 }
 
-function OpenModsFolder() {
-    //var item = strModsDirectoryPath + '/mods.json';
-    //shell.showItemInFolder(item.replace(/\//g,"\\"));
-}
-
 function UpdatePAMM(info) {
     var updateurl = sprintf(PAMM_UPDATE_URL, params.info);
     var zipfile = path.join(pa.cachepath, params.info.name + ".zip");
@@ -1517,10 +1512,13 @@ $(function() {
         });
     }
     
-    initSettings();
+    $('button.openfolder').on('click', function() {
+        var context = $(this).data('context');
+        var modspath = pa.modspath[context];
+        shell.openItem(modspath);
+    });
     
-    //document.getElementById("setting_installLocation").value = pa.last ? pa.last.bin : "";
-    //document.getElementById("setting_modLocation").value = pa.modspath.client;
+    initSettings();
     
     var model = {
         settings: settings
