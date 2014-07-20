@@ -1249,13 +1249,18 @@ function initSettings() {
 }
 
 function LaunchPA() {
-    var child_process = require('child_process');
-    var path = require('path');
-    
-    var binpath = pa.streams[pamm.getStream()].bin;
-    var wd = path.dirname(binpath);
-    var child = child_process.spawn(binpath, null, { cwd: wd, detached: true });
-    child.unref();
+    if(pamm.getStream() === 'steam') {
+        shell.openExternal('steam://rungameid/233250');
+    }
+    else {
+        var child_process = require('child_process');
+        var path = require('path');
+        
+        var binpath = pa.streams[pamm.getStream()].bin;
+        var wd = path.dirname(binpath);
+        var child = child_process.spawn(binpath, null, { cwd: wd, detached: true });
+        child.unref();
+    }
     ClosePAMM();
 }
 
@@ -1489,21 +1494,28 @@ $(function() {
         document.getElementById("btnLaunch").disabled = true;
     }
     
-    $("input[name='stream']").each(function(i, input) {
-        var $input = $(input);
-        var value = $input.val();
-        if(!pa.streams[value]) {
-            $input.prop('disabled', true);
+    var nbstreams = _.size(pa.streams);
+    if (nbstreams === 0) {
+        $('#context > span').html('none');
+    }
+    else if (nbstreams === 1) {
+        $('#context > span').html('steam');
+    }
+    else {
+        var _generateStreamInput = function(stream) {
+            return '<input type="radio" name="stream"'
+                + (pa.last.stream === stream ? ' checked="checked"' : '')
+                + ' value="' + stream + '">'
+                + '<span>' + stream + '</span>'
         }
-        else if ( pa.last.stream === value ) {
-            $input.prop('checked', true);
-        }
-    });
-    
-    $("input[name='stream']").click(function() {
-        pamm.setStream(this.value);
-        jsRefresh(true, true);
-    });
+        
+        $('#context > span').html(_generateStreamInput('stable') + _generateStreamInput('PTE'));
+        
+        $('#context').on('click', 'input[name="stream"]', function() {
+            pamm.setStream(this.value);
+            jsRefresh(true, true);
+        });
+    }
     
     initSettings();
     

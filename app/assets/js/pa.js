@@ -150,7 +150,7 @@ var init = function() {
             }
             else {
                 // Steam distrib ?
-                obj.stream = 'stable'
+                obj.stream = 'steam'
             }
             
             streams[obj.stream] = obj;

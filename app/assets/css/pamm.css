@@ -647,10 +647,9 @@ footer > *:last-child {
 }
 
 #context {
-}
-#context > span {
 	margin-right: 40px;
 }
+
 #context input:disabled + span {
 	color: #999;
 }
