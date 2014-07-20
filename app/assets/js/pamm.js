@@ -6,6 +6,7 @@ var _ = require('lodash');
 
 var jsDownload = require('./assets/js/download.js').download;
 var pa = require('./assets/js/pa.js');
+var uberent = require('./assets/js/uberent.js');
 var pamm = require('./assets/js/pamm-api.js');
 var compat = require('./assets/js/pamm-compat.js');
 //(function() {
@@ -1258,7 +1259,13 @@ function LaunchPA() {
         
         var binpath = pa.streams[pamm.getStream()].bin;
         var wd = path.dirname(binpath);
-        var child = child_process.spawn(binpath, null, { cwd: wd, detached: true });
+        
+        var args = [];
+        if(uberent.getSessionTicket()) {
+            args = ['--ticket', uberent.getSessionTicket()];
+        }
+        
+        var child = child_process.spawn(binpath, args, { cwd: wd, detached: true });
         child.unref();
     }
     ClosePAMM();
@@ -1534,6 +1541,70 @@ $(function() {
     jsRefresh(true, true);
     
     checkVersionPA();
+    
+    // manage UberNet login if PA found and not Steam distrib
+    if(pa.last && pa.last.stream !== 'steam') {
+        var _afterLogin = function(userinfo) {
+            $('#ubername').text( userinfo.DisplayName );
+            $('#login').hide();
+            $('#logged').show();
+        }
+        
+        // login using previous session ticket
+        uberent.login().done(_afterLogin);
+        
+        var btLogin = function() {
+            uberent.login($('#name').val(), $('#password').val())
+            .done(_afterLogin)
+            .done(function() {
+                dlgLogin.dialog( "close" );
+            })
+            .fail(function(jqXHR, textStatus, errorThrown) {
+                var $info = $('#dialog-login p.ui-state-highlight');
+                $info.text('Login or password incorrect.');
+                $info.addClass('ui-state-error');
+                console.log(errorThrown);
+            });
+        };
+        
+        var dlgLogin = $( "#dialog-login" ).dialog({
+            autoOpen: false,
+            height: 300,
+            width: 350,
+            modal: true,
+            buttons: {
+                "Login": btLogin,
+                "Cancel": function() {
+                    dlgLogin.dialog( "close" );
+                }
+            },
+            close: function() {
+            }
+        });
+        
+        $("#dialog-login").on("keyup", "input", function(e) {
+            if (e.which == 13) {
+                btLogin();
+            }
+        });
+        
+        $("#userinfo").on("click", "a", function() {
+            var action = $(this).data('action');
+            if(action === 'login') {
+                var $info = $('#dialog-login p.ui-state-highlight');
+                $info.text('Enter your UberNet credentials.');
+                $info.removeClass('ui-state-error');
+                dlgLogin.dialog( "open" );
+            }
+            else {
+                uberent.logout();
+                $('#logged').hide();
+                $('#login').show();
+            }
+        });
+        
+        $("#userinfo").show();
+    }
     
     if(params.install) {
         var intervalId = setInterval(function() {

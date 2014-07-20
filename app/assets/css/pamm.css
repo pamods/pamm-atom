@@ -23,6 +23,23 @@ header {
 	padding: 5px;
 }
 
+#userinfo {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    display: none;
+}
+#logged {
+    display: none;
+}
+#dialog-login p.ui-state-highlight {
+    padding: 2px;
+}
+
+.ui-widget {
+    font-size: 1em !important;
+}
+
 nav {
 	position: fixed;
 	top: 100px;

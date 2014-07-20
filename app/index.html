@@ -2,13 +2,18 @@
 <html>
   <head>
     <meta charset='utf-8'>
-    <link href="assets/css/pamm.css" rel="stylesheet" type="text/css">
     <title>PA Mod Manager</title>
+    <link href="assets/css/pamm.css" rel="stylesheet" type="text/css">
+    <link href="assets/jquery-ui-1.11.0.custom/jquery-ui.min.css" rel="stylesheet" type="text/css">
   </head>
   <body>
     <header>
       <div class="banner_heading"><span class="LOC_MOD_MANAGER">LOC_MOD_MANAGER</span></div>
       <div class="banner_image"><img src="assets/img/img_pa_logo_start_rest.png"></div>
+      <div id="userinfo">
+        <div id="login"><a href="#" data-action="login">login</a></div>
+        <div id="logged"><span id="ubername">???</span> (<a href="#" data-action="logout">logout</a>)</div>
+      </div>
     </header>
     <nav class="ui_tabs">
       <div class="ui_tab_link"><span class="ui_tab_edges">[</span> <a href="#" data-target='news'><span class="LOC_NEWS">NEWS</span></a> <span class="ui_tab_edges">]</span></div>
@@ -181,8 +186,18 @@
         <img id="downloading" src="assets/img/loading.gif">
       </div>
     </footer>
+    
+    <div id="dialog-login" title="UberNet">
+        <p class="ui-state-highlight"></p>
+        <label for="name">Username</label>
+        <input type="text" name="name" id="name" value="" class="text ui-widget-content ui-corner-all">
+        <label for="password">Password</label>
+        <input type="password" name="password" id="password" value="" class="text ui-widget-content ui-corner-all">
+    </div>
+    
     <script>window.$ = window.jQuery = require('./assets/js/jquery-2.1.1.min.js');</script>
     <script src="assets/js/jquery-ajax-blob-arraybuffer.js"></script>
+    <script src="assets/jquery-ui-1.11.0.custom/jquery-ui.min.js"></script>
     <script src="assets/js/knockout-3.1.0.min.js"></script>
     <script src="assets/js/knockout.mapping-2.4.1.min.js"></script>
 	<script src="assets/js/locale.js"></script>
