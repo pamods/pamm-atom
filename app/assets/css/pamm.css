@@ -32,6 +32,10 @@ header {
 #logged {
     display: none;
 }
+
+#dialog-login {
+    display: none;
+}
 #dialog-login p.ui-state-highlight {
     padding: 2px;
 }
