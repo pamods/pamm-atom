@@ -72,6 +72,7 @@ function createStreamObject(papath) {
     if(!fs.existsSync(versionpath))
         return;
     var version = fs.readFileSync(versionpath, { encoding: 'utf8' });
+    version = (version.split(/\r?\n/))[0];
     
     var binpath;
     var stockmodspath;
