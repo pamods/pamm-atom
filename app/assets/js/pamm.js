@@ -1501,7 +1501,7 @@ $(function() {
         $('#context > span').html('none');
     }
     else if (nbstreams === 1) {
-        $('#context > span').html('steam');
+        $('#context > span').html(pa.last.stream);
     }
     else {
         var _generateStreamInput = function(stream) {
