@@ -658,10 +658,10 @@ footer > *:last-child {
 }
 
 .buttons {
-	width: 350px;
+	width: 450px;
 }
 
-.buttons input {
+.buttons button {
 	width: 90px;
 	margin-right: 6px;
 	margin-top: 3px;

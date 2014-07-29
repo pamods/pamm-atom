@@ -1249,7 +1249,7 @@ function initSettings() {
     });
 }
 
-function LaunchPA() {
+function LaunchPA(nomods) {
     if(pamm.getStream() === 'steam') {
         shell.openExternal('steam://rungameid/233250');
     }
@@ -1264,6 +1264,9 @@ function LaunchPA() {
         if(uberent.getSessionTicket()) {
             args = ['--ticket', uberent.getSessionTicket()];
         }
+        
+        if(nomods)
+            args.push('--nomods');
         
         var child = child_process.spawn(binpath, args, { cwd: wd, detached: true });
         child.unref();
@@ -1490,10 +1493,6 @@ $(function() {
     
     if(pa.last) {
         $('#current_pa_build').text(pa.last.build);
-        document.getElementById("btnLaunch").disabled = false;
-    }
-    else {
-        document.getElementById("btnLaunch").disabled = true;
     }
     
     var nbstreams = _.size(pa.streams);
@@ -1517,6 +1516,31 @@ $(function() {
             pamm.setStream(this.value);
             jsRefresh(true, true);
         });
+    }
+    
+    // manage buttons
+    $('footer > .buttons').on('click', 'button', function() {
+        var action = $(this).data('action');
+        if(action === 'launchpa') {
+            LaunchPA();
+        }
+        else if(action === 'launchpa_nomods') {
+            LaunchPA(true);
+        }
+        else if(action === 'refresh') {
+            jsRefresh(true, true);
+        }
+        else if(action === 'exit') {
+            ClosePAMM();
+        }
+    });
+    
+    if(!pa.last) {
+        $("#bt_launchpa").hide();
+        $("#bt_launchpa_nomods").hide();
+    }
+    else if(pa.last.stream === "steam") {
+        $("#bt_launchpa_nomods").hide();
     }
     
     $('button.openfolder').on('click', function() {

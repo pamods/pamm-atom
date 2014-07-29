@@ -35,6 +35,12 @@ var strlocaleText = {
 		"nl": "Start PA",
 		"de": "PA starten"
 	},
+	"Launch_PA_NOMODS": {
+		"en": "Safe Mode",
+		"fr": "Safe Mode",
+		"nl": "Safe Mode",
+		"de": "Safe Mode"
+	},
 	"Refresh": {
 		"en": "Refresh",
 		"fr": "Actualiser",
@@ -469,6 +475,7 @@ var strLocaleTextItems = [
 	"INSTALLED_MODS",
 	"AVAILABLE_MODS",
 	"Launch_PA",
+    "Launch_PA_NOMODS",
 	"Refresh",
 	"Exit",
 	"Version",

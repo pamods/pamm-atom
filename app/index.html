@@ -175,9 +175,10 @@
     </div>
     <footer>
       <div class="buttons">
-        <input id="btnLaunch" type="button" value="Launch PA" class="LOC_Launch_PA" onClick="LaunchPA()"/>
-        <input type="button" value="Refresh" class="LOC_Refresh" onClick="jsRefresh(true, true)"/>
-        <input type="button" value="Exit" class="LOC_Exit" onClick="ClosePAMM()"/>
+        <button id="bt_launchpa" data-action="launchpa" class="LOC_Launch_PA"/>
+        <button id="bt_launchpa_nomods" data-action="launchpa_nomods" class="LOC_Launch_PA_NOMODS"/>
+        <button data-action="refresh" class="LOC_Refresh"/>
+        <button data-action="exit" class="LOC_Exit"/>
       </div>
       <div id="context">
         PA Stream: <span></span>
