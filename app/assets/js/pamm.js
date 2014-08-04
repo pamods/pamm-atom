@@ -8,7 +8,6 @@ var jsDownload = require('./assets/js/download.js').download;
 var pa = require('./assets/js/pa.js');
 var uberent = require('./assets/js/uberent.js');
 var pamm = require('./assets/js/pamm-api.js');
-var compat = require('./assets/js/pamm-compat.js');
 //(function() {
 
 var url = require('url');
@@ -16,6 +15,7 @@ var fs = require('fs');
 var path = require('path');
 
 var params = require('remote').getGlobal('params');
+var devmode = params.devmode;
 var settings;
 
 var objInstalledMods = { client: [], server: [], union: [] };
@@ -31,8 +31,6 @@ var intLogNumber = 0;
 var intLikeCountRemaining = 0;
 
 var UNINSTALL_LEGACY_PAMM = 1;
-var ONLINE_MODS_DOWNLOAD_COUNT_URL = "http://pa.raevn.com/modcount_json.php";
-var MANAGE_URL = "http://pa.raevn.com/manage.php";
 var MOD_IS_NEW_PERIOD_DAYS = 7;
 var NEWS_URL = "http://pamods.github.io/news.html";
 var PAMM_VERSION_DATA_URL = "https://raw.githubusercontent.com/%(author)s/%(name)s/stable/app/package.json";
@@ -369,7 +367,9 @@ function jsGenerateModEntryHTML(objMod, boolIsInstalled) {
         }
         
         /* Install Count */
-        strHTML_downloads = "<img src='assets/img/download.png' style='position: absolute; margin-top:4px'> <div class='mod_entry_count'>" + objMod.downloads + "</div>"; //TODO: Fix Up
+        if(objMod.downloads) {
+            strHTML_downloads = "<img src='assets/img/download.png' style='position: absolute; margin-top:4px'> <div class='mod_entry_count'>" + objMod.downloads + "</div>"; //TODO: Fix Up
+        }
         
         /* Like Count */            
         if (settings.modlikes() == true) {
@@ -795,11 +795,7 @@ function jsPreInstallMod(strModID) {
     pamm.install(strModID, function(error) {
         if(error) {
             alert(error);
-            return
-        }
-        
-        if(!params.devmode) {
-            jsDownload(MANAGE_URL + "?download=" + strModID);
+            return;
         }
         jsRefresh(false, false);
     }
@@ -955,47 +951,23 @@ function jsDownloadOnlineMods() {
             objOnlineMods = mods;
             objOnlineModCategories = pamm.groupByCategories(mods);
             
-            document.getElementById('total_available_mods').innerHTML = objOnlineMods.length;
-            jsDownloadOnlineModDownloadCount();
-        }, true);
-    }
-}
-
-function jsDownloadOnlineModDownloadCount() {
-    if (boolOnline == true) {
-        jsAddLogMessage("Getting availailable mod download counts", 2);
-        jsDownload(ONLINE_MODS_DOWNLOAD_COUNT_URL, {
-            success: function(strResult) {
-                var intTotalDownloadCount = 0;
-                try {
-                    var objOnlineModsDownloadCount = JSON.parse(strResult);
-                    for (var i = 0; i < objOnlineMods.length; i++) {
-                        var mod = objOnlineMods[i];
-                        var identifier = mod.identifier;
-                        var compatId = compat.toId(identifier);
-                        
-                        mod.downloads = objOnlineModsDownloadCount[identifier] ? objOnlineModsDownloadCount[identifier] : 0;
-                        if(compatId) {
-                            // legacy modcount :)
-                            mod.downloads += objOnlineModsDownloadCount[compatId] ? objOnlineModsDownloadCount[compatId] : 0;
-                        }
-                        
-                        intTotalDownloadCount += mod.downloads;
-                    }
-                    
-                    jsGenerateOnlineModsListHTML();
-                    jsGenerateInstalledModsListHTML("client");
-                    jsGenerateInstalledModsListHTML("server");
-                    if (settings.modlikes()) {
-                        jsDownloadOnlineModLikeCount();
-                    }
-                    
-                } catch (e) {
-                    jsAddLogMessage("Error loading online mod download count data: " + e.message, 1);
-                }
-                document.getElementById('total_available_mod_downloads').innerHTML = intTotalDownloadCount;
+            var intTotalDownloadCount = 0;
+            for(var idx in objOnlineMods) {
+                var mod = objOnlineMods[idx];
+                intTotalDownloadCount += mod.downloads;
             }
-        });
+            
+            jsGenerateOnlineModsListHTML();
+            jsGenerateInstalledModsListHTML("client");
+            jsGenerateInstalledModsListHTML("server");
+            if (settings.modlikes()) {
+                jsDownloadOnlineModLikeCount();
+            }
+            
+            $('#total_available_mods').text(objOnlineMods.length);
+            $('#total_available_mod_downloads').text(intTotalDownloadCount);
+            
+        }, true);
     }
 }
 

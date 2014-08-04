@@ -36,4 +36,6 @@ exports.download = function(strURL, opts) {
     // crappy way to track dl progress
     if(opts.progress)
         jq.dlprogress = opts.progress;
+    
+    return jq;
 }

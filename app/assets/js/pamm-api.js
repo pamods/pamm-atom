@@ -4,7 +4,9 @@ var _ = require('lodash');
 var pa = require('./pa.js');
 var compat = require('./pamm-compat.js');
 
-var ONLINE_MODS_LIST_URL = "http://pamods.github.io/modlist2.json";
+var URL_MODLIST = "http://pamods.github.io/modlist2.json";
+var URL_MODCOUNT = "http://pa.raevn.com/modcount_json.php";
+var URL_MODCOUNT_ADD = "http://pa.raevn.com/manage.php";
 
 var PAMM_MOD_ID = "PAMM";
 var PAMM_MOD_IDENTIFIER = "com.pa.deathbydenim.dpamm";
@@ -36,47 +38,72 @@ exports.getStream = function() {
 };
 
 exports.getAvailableMods = function (callback, force) {
+    available = {};
     var mods = {};
     
     var _finish = function() {
         callback(_.toArray(available));
     };
     
-    var _loadAvailableMods = function() {
-        jsDownload(ONLINE_MODS_LIST_URL, {
-            success: function(data) {
-                try {
-                    var modlist = JSON.parse(data);
-                    for (var i in modlist) {
-                        var mod = modlist[i];
-                        
-                        if(!mod.id)
-                            mod.id = mod.identifier;
-                        else
-                            compat.push(mod.identifier, mod.id)
-                        
-                        mod.likes = -2;
-                        
-                        mods[mod.identifier] = mod;
-                    }
-                } catch (e) {
-                    jsAddLogMessage("Error loading online mod data: " + e.message, 1);
-                }
-                finally {
-                    available = mods;
-                    _finish();
-                }
-            }
-            ,error: function(e) {
-                callback([]);
-            }
-        });
-    };
-    
-    if(force || !_.size(available))
-        _loadAvailableMods();
-    else
+    if(_.size(available) && !force)
         _finish();
+    
+    var prmModlist = jsDownload(URL_MODLIST);
+    var prmModcount = jsDownload(URL_MODCOUNT);
+    
+    prmModlist.done(function(data) {
+        var modlist;
+        
+        try {
+            modlist = JSON.parse(data);
+        } catch (e) {
+            jsAddLogMessage("Error loading modlist data: " + e.message, 1);
+            _finish();
+            return;
+        }
+        
+        for (var i in modlist) {
+            var mod = modlist[i];
+            
+            if(!mod.id)
+                mod.id = mod.identifier;
+            else
+                compat.push(mod.identifier, mod.id);
+            
+            mod.downloads = 0;
+            mod.likes = -2;
+            
+            mods[mod.identifier] = mod;
+        }
+        available = mods;
+        
+        prmModcount.done(function(data) {
+            var modcount;
+            try {
+                modcount = JSON.parse(data);
+            } catch (e) {
+                jsAddLogMessage("Error loading modcount data: " + e.message, 1);
+                return;
+            }
+            
+            for (var identifier in available) {
+                var mod = available[identifier];
+                var compatId = compat.toId(identifier);
+                
+                mod.downloads = modcount[identifier] ? modcount[identifier] : 0;
+                if(compatId) {
+                    // legacy modcount :)
+                    mod.downloads += modcount[compatId] ? modcount[compatId] : 0;
+                }
+            }
+        })
+        .always(function() {
+            _finish();
+        });
+    })
+    .fail(function() {
+        _finish();
+    });
 };
 
 exports.getInstalledMods = function (context, callback, force) {
@@ -231,6 +258,12 @@ exports.install = function (id, callback, progressCallback) {
                 modinfo.installpath = installpath;
                 
                 installed[id] = modinfo;
+                
+                if(!devmode) {
+                    jsDownload(URL_MODCOUNT_ADD + "?download=" + id);
+                    mod.downloads++;
+                }
+                
                 _install(ids, callback);
             }
             catch(e) {
