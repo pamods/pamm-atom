@@ -1472,14 +1472,15 @@ $(function() {
         $('#context > span').html('none');
     }
     else if (nbstreams === 1) {
-        $('#context > span').html(pa.last.stream);
+        $('#context > span').html(pa.last.stream + ' (' + pa.last.build + ')');
     }
     else {
         var _generateStreamInput = function(stream) {
+            var stream = pa.streams[stream];
             return '<input type="radio" name="stream"'
-                + (pa.last.stream === stream ? ' checked="checked"' : '')
-                + ' value="' + stream + '">'
-                + '<span>' + stream + '</span>'
+                + (pa.last.stream === stream.stream ? ' checked="checked"' : '')
+                + ' value="' + stream.stream + '">'
+                + '<span>' + stream.stream + ' (' + stream.build + ')</span>'
         }
         
         $('#context > span').html(_generateStreamInput('stable') + _generateStreamInput('PTE'));

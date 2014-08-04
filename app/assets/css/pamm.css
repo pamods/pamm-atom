@@ -671,8 +671,8 @@ footer > *:last-child {
 	margin-right: 40px;
 }
 
-#context input:disabled + span {
-	color: #999;
+#context span span {
+	margin-right: 10px;
 }
 
 div.news_item.legacypamm_only {
