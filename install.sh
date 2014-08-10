@@ -1,6 +1,6 @@
 #!/bin/bash
 
-WORKINGDIR=`dirname "$0"`
+WORKINGDIR=/tmp/pamm_$RANDOM
 
 case $OSTYPE in
 linux*)
@@ -23,18 +23,21 @@ esac
 wget --version >/dev/null 2>&1 && HTTPCLIENT="wget"
 curl --version >/dev/null 2>&1 && HTTPCLIENT="curl"
 if [ ! -v HTTPCLIENT ]; then
-	echo "wget or curl not found!"
-	exit 1
+    echo "wget or curl not found!"
+    exit 1
 fi
 
-echo "Find last Atom Shell release..."
+mkdir $WORKINGDIR
 
-LATESTURL=https://github.com/atom/atom-shell/releases/latest
+echo "Downloading latest PAMM release..."
+
+LATEST_PAMM_URL=https://github.com/pamods/pamm-atom/archive/stable.zip
+PAMM_ARCHIVE=$WORKINGDIR/stable.zip
 
 if [ $HTTPCLIENT == "wget" ]; then
-	HTML=`wget -qO- $LATESTURL`
+    wget "$LATEST_PAMM_URL" -O "$PAMM_ARCHIVE"
 else
-	HTML=`curl -L $LATESTURL`
+    curl -L "$LATEST_PAMM_URL" -o "$PAMM_ARCHIVE"
 fi
 
 if [ $? -gt 0 ]; then
@@ -42,23 +45,38 @@ if [ $? -gt 0 ]; then
     exit 1
 fi
 
-ARCHIVEURL=`echo $HTML | egrep -o "/atom/atom-shell/releases/download/[^\"]+-$PLATFORM-x64.zip" | head -1`
-ARCHIVEURL="https://github.com$ARCHIVEURL"
+echo "Find latest Atom Shell release..."
 
-ARCHIVE=`echo $ARCHIVEURL | sed -E 's/.+\/(.+)/\1/'`
-ARCHIVE="$WORKINGDIR/$ARCHIVE"
+LATEST_ATOM_URL=https://github.com/atom/atom-shell/releases/latest
+
+if [ $HTTPCLIENT == "wget" ]; then
+    HTML=`wget -qO- $LATEST_ATOM_URL`
+else
+    HTML=`curl -L $LATEST_ATOM_URL`
+fi
+
+if [ $? -gt 0 ]; then
+    echo "ERROR!"
+    exit 1
+fi
+
+ATOM_ARCHIVE_URL=`echo $HTML | egrep -o "/atom/atom-shell/releases/download/[^\"]+-$PLATFORM-x64.zip" | head -1`
+ATOM_ARCHIVE_URL="https://github.com$ATOM_ARCHIVE_URL"
+
+ATOM_ARCHIVE=`echo $ATOM_ARCHIVE_URL | sed -E 's/.+\/(.+)/\1/'`
+ATOM_ARCHIVE="$WORKINGDIR/$ATOM_ARCHIVE"
 
 rm -rf "$PAMMDIR"
 mkdir -p "$PAMMDIR"
 
 echo "Downloading Atom Shell..."
-echo "  from: $ARCHIVEURL"
-echo "  to: $ARCHIVE"
+echo "  from: $ATOM_ARCHIVE_URL"
+echo "  to: $ATOM_ARCHIVE"
 
 if [ $HTTPCLIENT == "wget" ]; then
-	wget "$ARCHIVEURL" -O "$ARCHIVE"
+    wget "$ATOM_ARCHIVE_URL" -O "$ATOM_ARCHIVE"
 else
-	curl -L "$ARCHIVEURL" -o "$ARCHIVE"
+    curl -L "$ATOM_ARCHIVE_URL" -o "$ATOM_ARCHIVE"
 fi
 
 if [ $? -gt 0 ]; then
@@ -67,18 +85,28 @@ if [ $? -gt 0 ]; then
 fi
 
 echo "Extracting Atom Shell..."
-unzip -u "$ARCHIVE" -d "$PAMMDIR"
+unzip -q -u "$ATOM_ARCHIVE" -d "$PAMMDIR"
+if [ $? -gt 0 ]; then
+    echo "ERROR!"
+    exit 1
+fi
+
+echo "Extracting PAMM module..."
+unzip -q -u "$PAMM_ARCHIVE" -d "$WORKINGDIR"
 if [ $? -gt 0 ]; then
     echo "ERROR!"
     exit 1
 fi
 
 echo "Copying PAMM module..."
-cp -R "$WORKINGDIR/app" "$APPDIR"
+cp -R "$WORKINGDIR/pamm-atom-stable/app" "$APPDIR"
 if [ $? -gt 0 ]; then
     echo "ERROR!"
     exit 1
 fi
+
+echo "Cleaning up tmp files..."
+rm -rf "$WORKINGDIR"
 
 case $OSTYPE in
 linux*)
