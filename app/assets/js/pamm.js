@@ -84,7 +84,7 @@ function sortModBy(field, reverse, primer) {
 function jsSortOnlineMods() {
     switch (settings.sort()) {
         case "LAST_UPDATED":
-            objOnlineMods.sort(sortModBy('date', false, function(x) { return new Date(x); } ));
+            objOnlineMods.sort(sortModBy('date', false, function(x) { return new Date(x ? x : 0); } ));
             $("#filter_area_sort_last_updated").addClass('filter_area_filter_item_selected');
             break;
         case "TITLE":
