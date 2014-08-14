@@ -108,7 +108,12 @@ exports.getAvailableMods = function (callback, force) {
 
 exports.getInstalledMods = function (context, callback, force) {
     if(force || !_.size(installed)) {
-        findInstalledMods();
+        try {
+            findInstalledMods();
+        }
+        catch(e) {
+            jsAddLogMessage("Error loading installed " + context + " mods: " + e, 4);
+        }
     }
     callback(
         _.filter(
