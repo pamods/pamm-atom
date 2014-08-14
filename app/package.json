@@ -11,6 +11,6 @@
     ,"mkdirp"
   ],
   "engines" : {
-    "atom-shell" : ">=0.12.5"
+    "atom-shell" : ">=0.13.2"
   }
 }
