@@ -252,7 +252,7 @@ var strlocaleText = {
 		"de": ""
 	},
 	"Name_Filter": {
-		"en": "Name Filter",
+		"en": "Filter",
 		"fr": "",
 		"nl": "",
 		"de": ""

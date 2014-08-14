@@ -690,8 +690,9 @@ function jsApplyOnlineModFilter() {
     if ($('#filter_area_available_text_filter').val() != '') {
         var strSearch = $('#filter_area_available_text_filter').val().toLowerCase();
         $('#mod_list_available').find('.mod_entry').each(function() {
-            if ($(this).find('.mod_entry_name').text().toLowerCase().indexOf(strSearch) < 0) {
-                $(this).addClass('mod_entry_filtered');
+            var $modentry = $(this);
+            if(!searchTermInMod($modentry, strSearch)) {
+                $modentry.addClass('mod_entry_filtered');
             }
         });
         boolFiltersEnabled = true;
@@ -725,8 +726,9 @@ function jsApplyInstalledModFilter(context) {
     if ($('#filter_area_' + installedcontext + '_text_filter').val() != '') {
         var strSearch = $('#filter_area_' + installedcontext + '_text_filter').val().toLowerCase();
         $modlist.find('.mod_entry').each(function() {
-            if ($(this).find('.mod_entry_name').text().toLowerCase().indexOf(strSearch) < 0) {
-                $(this).addClass('mod_entry_filtered');
+            var $modentry = $(this);
+            if(!searchTermInMod($modentry, strSearch)) {
+                $modentry.addClass('mod_entry_filtered');
             }
         });
         boolFiltersEnabled = true;
@@ -739,6 +741,16 @@ function jsApplyInstalledModFilter(context) {
     }
     
     jsUpdateModListPadding(installedcontext);
+}
+
+function searchTermInMod($modentry, search) {
+    if ($modentry.find('.mod_entry_name').text().toLowerCase().indexOf(search) !== -1)
+        return true;
+    if ($modentry.find('.mod_entry_description').text().toLowerCase().indexOf(search) !== -1)
+        return true;
+    if ($modentry.find('.mod_entry_author').text().toLowerCase().indexOf(search) !== -1)
+        return true;
+    return false;
 }
 
 function jsDisplayPanel(strPanelName) {
