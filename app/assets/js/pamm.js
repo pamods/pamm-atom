@@ -1136,7 +1136,9 @@ function Initialise() {
 }
 
 function LaunchURL(strURL) {
-    shell.openExternal(strURL);
+    if(strURL.indexOf("http://") == 0 || strURL.indexOf("https://") == 0) {
+        shell.openExternal(strURL);
+    }
 }
 
 function ClosePAMM() {
