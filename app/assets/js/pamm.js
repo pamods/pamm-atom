@@ -1617,7 +1617,13 @@ $(function() {
                 $info.addClass('ui-state-error');
                 console.log(errorThrown);
             });
+            $('#password').val('');
+            localStorage.lastUberName = $('#name').val();
         };
+        
+        if(localStorage.lastUberName) {
+            $('#name').val(localStorage.lastUberName);
+        }
         
         var dlgLogin = $( "#dialog-login" ).dialog({
             autoOpen: false,
