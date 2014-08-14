@@ -29,6 +29,7 @@ var intDownloading = 0;
 var intLogLevel = 0;
 var intLogNumber = 0;
 var intLikeCountRemaining = 0;
+var filters = {}
 
 var UNINSTALL_LEGACY_PAMM = 1;
 var MOD_IS_NEW_PERIOD_DAYS = 7;
@@ -456,12 +457,20 @@ function jsGenerateOnlineModsListHTML() {
         "<div id='filters_on_available'>" + 
             "<img class='filter_area_img' src='assets/img/filter.png'>" +
             "<div class='filter_area_message'> " + jsGetLocaleText('One_or_more_filters_are_currently_applied') + " " +
-                "<span class='filter_area_link'>[ <a href='#' onClick='document.getElementById(\"filter_area_available_text_filter\").value=\"\"; jsSetAvailableModsFilter(\"ALL\"); jsSetAvailableModsFilterCategory(\"ALL\")'>" + jsGetLocaleText('clear') + "</a> ]</span>" +
+                "<span class='filter_area_link'>[ <a href='#'>" + jsGetLocaleText('clear') + "</a> ]</span>" +
             "</div>" +
         "</div>" +
     "");
     
+    $('#filter_area_available_text_filter').val(filters['available']);
     $('#filter_area_available_text_filter').on("keyup", jsApplyOnlineModFilter);
+    
+    $('#filters_on_available a').on('click', function(event) {
+        filters['available'] = '';
+        $('#filter_area_available_text_filter').val(filters['available']);
+        jsSetAvailableModsFilter("ALL");
+        jsSetAvailableModsFilterCategory("ALL");
+    });
     
     jsSortOnlineMods();
     
@@ -520,12 +529,19 @@ function jsGenerateInstalledModsListHTML(context) {
         "<div id='filters_on_" + installedcontext + "'>" +
             "<img class='filter_area_img' src='assets/img/filter.png'>" +
             "<div class='filter_area_message'> " + jsGetLocaleText('One_or_more_filters_are_currently_applied') + " " +
-                "<span class='filter_area_link'>[ <a href='#' onClick='document.getElementById(\"filter_area_" + installedcontext + "_text_filter\").value=\"\"; jsSetInstalledModsFilterCategory(\"" + context + "\", \"ALL\")'>" + jsGetLocaleText('clear') + "</a> ]</span>" +
+                "<span class='filter_area_link'>[ <a href='#'>" + jsGetLocaleText('clear') + "</a> ]</span>" +
             "</div>" +
         "</div>" +
     "");
     
+    $("#filter_area_" + installedcontext + "_text_filter").val(filters[installedcontext]);
     $("#filter_area_" + installedcontext + "_text_filter").on("keyup", function() { jsApplyInstalledModFilter(context) });
+    
+    $("#filters_on_" + installedcontext + " a").on('click', function(event) {
+        filters[installedcontext] = '';
+        $("#filter_area_" + installedcontext + "_text_filter").val(filters[installedcontext]);
+        jsSetInstalledModsFilterCategory(context, "ALL");
+    });
     
     var strHTML = "";
     
@@ -687,8 +703,9 @@ function jsApplyOnlineModFilter() {
     $filterarea.find('.filter_area_filter_list_category a').removeClass('filter_area_filter_item_selected');
     $('#filter_area_available_category_' + settings.available_category()).addClass('filter_area_filter_item_selected');
     
-    if ($('#filter_area_available_text_filter').val() != '') {
-        var strSearch = $('#filter_area_available_text_filter').val().toLowerCase();
+    filters['available'] = $('#filter_area_available_text_filter').val();
+    if (filters['available']) {
+        var strSearch = filters['available'].toLowerCase();
         $('#mod_list_available').find('.mod_entry').each(function() {
             var $modentry = $(this);
             if(!searchTermInMod($modentry, strSearch)) {
@@ -723,8 +740,9 @@ function jsApplyInstalledModFilter(context) {
     $filterarea.find('.filter_area_filter_list_category a').removeClass('filter_area_filter_item_selected');
     $('#filter_area_' + installedcontext + '_category_' + settings[installedcontext + '_category']()).addClass('filter_area_filter_item_selected');
     
-    if ($('#filter_area_' + installedcontext + '_text_filter').val() != '') {
-        var strSearch = $('#filter_area_' + installedcontext + '_text_filter').val().toLowerCase();
+    filters[installedcontext] = $('#filter_area_' + installedcontext + '_text_filter').val();
+    if (filters[installedcontext]) {
+        var strSearch = filters[installedcontext].toLowerCase();
         $modlist.find('.mod_entry').each(function() {
             var $modentry = $(this);
             if(!searchTermInMod($modentry, strSearch)) {
