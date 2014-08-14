@@ -1089,11 +1089,20 @@ function jsDownloadNews() {
         jsAddLogMessage("Downloading news", 2);
         var $news = $("#news_data");
         $news.html("<div class=\"loading\">" + jsGetLocaleText('Loading') + "...</div>");
-        $news.load(NEWS_URL, function( response, status, xhr ) {
-            if ( status == "error" ) {
-                var msg = "Sorry but there was an error: ";
-                $news.html("<div class=\"loading\">" +msg + xhr.status + " " + xhr.statusText + "</div>");
-            }
+        $.get(NEWS_URL, function(data) {
+            // cleanup hardcode js events
+            var regex = new RegExp("on[\\w]+=", "g");
+            data = data.replace(regex, " cleansed=");
+            
+            // convert to html without script execution
+            var newshtml = $.parseHTML(data);
+            
+            // display should be safe now
+            $news.html(newshtml);
+        })
+        .fail(function(jqXHR, textStatus, errorThrown ) {
+            var msg = "Sorry but there was an error: ";
+            $news.html("<div class=\"loading\">" + msg + errorThrown + "</div>");
         });
     }
 }
@@ -1486,6 +1495,20 @@ $(function() {
         }
         else if(action === 'uninstall') {
             jsPreUninstallMod(modid);
+        }
+        else {
+            var href = $this.attr('href');
+            LaunchURL(href);
+        }
+    });
+    
+    $('#news_data').on('click', 'a', function(event) {
+        event.preventDefault();
+        var $this = $(this);
+        var identifier = $this.data('identifier');
+        
+        if(identifier) {
+            jsPreInstallMod(identifier);
         }
         else {
             var href = $this.attr('href');
