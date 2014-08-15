@@ -251,28 +251,21 @@ exports.install = function (id, callback, progressCallback) {
         }
         
         var _extract = function() {
-            try {
-                var modinfo = _uncompress(id, cachefile, installpath);
-                if(!modinfo.context)
-                    throw "no context property in modinfo"
-                if(modinfo.context === 'server' || !modinfo.id)
-                    modinfo.id = modinfo.identifier;
-                if (!modinfo.priority)
-                    modinfo.priority = 100;
-                modinfo.enabled = true;
-                modinfo.installpath = installpath;
-                
-                installed[id] = modinfo;
-                
-                if(!devmode) {
-                    jsDownload(URL_MODCOUNT_ADD + "?download=" + id);
-                    mod.downloads++;
-                }
-                
-                _install(ids, callback);
-            }
-            catch(e) {
-                _finish("An unexpected error occured during the mod archive extraction: " + e, id);
+            var modinfo = _uncompress(id, cachefile, installpath);
+            if(!modinfo.context)
+                throw "no context property in modinfo"
+            if(modinfo.context === 'server' || !modinfo.id)
+                modinfo.id = modinfo.identifier;
+            if (!modinfo.priority)
+                modinfo.priority = 100;
+            modinfo.enabled = true;
+            modinfo.installpath = installpath;
+            
+            installed[id] = modinfo;
+            
+            if(!devmode) {
+                jsDownload(URL_MODCOUNT_ADD + "?download=" + id);
+                mod.downloads++;
             }
         };
         
@@ -281,7 +274,14 @@ exports.install = function (id, callback, progressCallback) {
             jsDownload(mod.url, {
                 tofile: cachefile
                 ,success: function() {
-                    _extract();
+                    try {
+                        _extract();
+                    }
+                    catch(e) {
+                        _finish("An unexpected error occured during the mod archive extraction: " + e, id);
+                        return;
+                    }
+                    _install(ids, callback);
                 }
                 ,error: function(e) {
                     _finish("An unexpected error occured during the download: " + e, id);
@@ -294,9 +294,25 @@ exports.install = function (id, callback, progressCallback) {
         }
         else {
             jsAddLogMessage("Using cache for mod '" + id + "'", 3);
-            _extract();
+            try {
+                _extract();
+            }
+            catch(e) {
+                jsAddLogMessage("An unexpected error occured during the cached mod archive extraction: " + e, 3);
+                try {
+                    //remove from cache and try again
+                    fs.unlinkSync(cachefile);
+                    ids.unshift(id);
+                }
+                catch(e) {
+                    _finish("An unexpected error occured while removing the cached mod archive: " + e, id);
+                    return;
+                }
+            }
+            _install(ids, callback);
         }
     };
+    
     _install(ids, callback);
 };
 
