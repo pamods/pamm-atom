@@ -50,7 +50,7 @@ exports.getAvailableMods = function (callback, force) {
         _finish();
     
     var prmModlist = jsDownload(URL_MODLIST);
-    var prmModcount = jsDownload(URL_MODCOUNT);
+    var prmModcount = jsDownload(URL_USAGE);
     
     prmModlist.done(function(data) {
         var modlist;
@@ -79,23 +79,20 @@ exports.getAvailableMods = function (callback, force) {
         available = mods;
         
         prmModcount.done(function(data) {
-            var modcount;
+            var usages;
             try {
-                modcount = JSON.parse(data);
+                usages = JSON.parse(data);
+                usages = _.indexBy(usages, 'identifier');
             } catch (e) {
-                jsAddLogMessage("Error loading modcount data: " + e.message, 1);
+                jsAddLogMessage("Error loading usage data: " + e.message, 1);
                 return;
             }
             
             for (var identifier in available) {
                 var mod = available[identifier];
-                var compatId = compat.toId(identifier);
-                
-                mod.downloads = modcount[identifier] ? modcount[identifier] : 0;
-                if(compatId) {
-                    // legacy modcount :)
-                    mod.downloads += modcount[compatId] ? modcount[compatId] : 0;
-                }
+                var usage = usages[identifier];
+                mod.downloads = usage ? usage.total : 0;
+                mod.popularity = usage ? usage.popularity : 0;
             }
         })
         .always(function() {

@@ -191,6 +191,12 @@ var strlocaleText = {
 		"nl": "DOWNLOADS",
 		"de": "DOWNLOADS"
 	},
+	"POPULARITY": {
+		"en": "POPULARITY",
+		"fr": "Popularité",
+		"nl": "POPULARITY",
+		"de": "POPULARITY"
+	},
 	"LIKES": {
 		"en": "LIKES",
 		"fr": "AIMÉ BIEN",
@@ -501,6 +507,7 @@ var strLocaleTextItems = [
 	"AUTHOR",
 	"BUILD",
 	"DOWNLOADS",
+    "POPULARITY",
 	"LIKES",
 	"RANDOM",
 	"LOG",

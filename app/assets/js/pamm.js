@@ -107,6 +107,10 @@ function jsSortOnlineMods() {
             objOnlineMods.sort(sortModBy('downloads', false));
             $("#filter_area_sort_last_downloads").addClass('filter_area_filter_item_selected');
             break;
+        case "POPULARITY":
+            objOnlineMods.sort(sortModBy('popularity', false));
+            $("#filter_area_sort_last_popularity").addClass('filter_area_filter_item_selected');
+            break;
         case "RANDOM":
             objOnlineMods.sort(function () { return (Math.round(Math.random())-0.5); });
             $("#filter_area_sort_last_random").addClass('filter_area_filter_item_selected');
@@ -445,6 +449,7 @@ function jsGenerateOnlineModsListHTML() {
                     "<a href='#' id='filter_area_sort_last_author' onClick='jsSetAvailableModsSort(\"AUTHOR\")'>" + jsGetLocaleText('AUTHOR') + "</a> - " + 
                     "<a href='#' id='filter_area_sort_last_build' onClick='jsSetAvailableModsSort(\"BUILD\")'>" + jsGetLocaleText('BUILD') + "</a> - " + 
                     "<a href='#' id='filter_area_sort_last_downloads' onClick='jsSetAvailableModsSort(\"DOWNLOADS\")'>" + jsGetLocaleText('DOWNLOADS') + "</a> - " + 
+                    "<a href='#' id='filter_area_sort_last_popularity' onClick='jsSetAvailableModsSort(\"POPULARITY\")'>" + jsGetLocaleText('POPULARITY') + "</a> - " + 
                     (settings.modlikes() ? "<a href='#' id='filter_area_sort_last_likes' onClick='jsSetAvailableModsSort(\"LIKES\")'>" + jsGetLocaleText('LIKES') + "</a> - " : "") + 
                     "<a href='#' id='filter_area_sort_last_random' onClick='jsSetAvailableModsSort(\"RANDOM\")'>" + jsGetLocaleText('RANDOM') + "</a>" + 
                 "</td>" +
