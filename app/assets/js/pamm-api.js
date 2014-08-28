@@ -4,10 +4,9 @@ var _ = require('lodash');
 var pa = require('./pa.js');
 var compat = require('./pamm-compat.js');
 
-var URL_MODLIST = "http://pamods.github.io/modlist2.json";
-var URL_MODCOUNT = "http://pa.raevn.com/modcount_json.php";
-var URL_MODCOUNT_ADD = "http://pa.raevn.com/manage.php";
+var URL_MODLIST = "https://pamm-mereth.rhcloud.com/api/mod";
 var URL_USAGE = "http://pamm-mereth.rhcloud.com/api/usage";
+var URL_OLD_MODCOUNT = "http://pa.raevn.com/manage.php";
 
 var PAMM_MOD_ID = "PAMM";
 var PAMM_MOD_IDENTIFIER = "com.pa.deathbydenim.dpamm";
@@ -262,7 +261,7 @@ exports.install = function (id, callback, progressCallback) {
             installed[id] = modinfo;
             
             if(!devmode) {
-                jsDownload(URL_MODCOUNT_ADD + "?download=" + id);
+                jsDownload(URL_OLD_MODCOUNT + "?download=" + id);
                 $.post(URL_USAGE, { identifier: id, action: (update ? "update" : "install") });
                 mod.downloads++;
             }
