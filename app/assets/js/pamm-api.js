@@ -37,12 +37,14 @@ exports.getStream = function() {
     return stream;
 };
 
-exports.getAvailableMods = function (callback, force) {
+exports.getAvailableMods = function (force) {
     available = {};
     var mods = {};
     
+    var deferred = $.Deferred();
+    
     var _finish = function() {
-        callback(_.toArray(available));
+        deferred.resolve(_.toArray(available));
     };
     
     if(_.size(available) && !force)
@@ -57,8 +59,7 @@ exports.getAvailableMods = function (callback, force) {
         try {
             modlist = JSON.parse(data);
         } catch (e) {
-            jsAddLogMessage("Error loading modlist data: " + e.message, 1);
-            _finish();
+            deferred.reject("Failed to parse modlist data: " + e.message);
             return;
         }
         
@@ -83,7 +84,7 @@ exports.getAvailableMods = function (callback, force) {
                 usages = JSON.parse(data);
                 usages = _.indexBy(usages, 'identifier');
             } catch (e) {
-                jsAddLogMessage("Error loading usage data: " + e.message, 1);
+                jsAddLogMessage("Failed to parse usage data: " + e.message, 1);
                 return;
             }
             
@@ -98,26 +99,52 @@ exports.getAvailableMods = function (callback, force) {
             _finish();
         });
     })
-    .fail(function() {
-        _finish();
+    .fail(function(jqXHR, textStatus, errorThrown) {
+        deferred.reject("Failed to load modlist data");
     });
+    
+    return deferred.promise();
 };
 
-exports.getInstalledMods = function (context, callback, force) {
-    if(force || !_.size(installed)) {
-        try {
-            findInstalledMods();
-        }
-        catch(e) {
-            jsAddLogMessage("Error loading installed " + context + " mods: " + e, 4);
-        }
+var deferInstalledMods;
+exports.getInstalledMods = function (context, force) {
+    var localDeferInstalledMods = deferInstalledMods;
+    
+    if(!localDeferInstalledMods) {
+        deferInstalledMods = $.Deferred(function(defer) {
+            process.nextTick(function() {
+                try {
+                    if(force || !_.size(installed)) {
+                        findInstalledMods();
+                    }
+                    defer.resolve();
+                }
+                catch(e) {
+                    defer.reject("Failed to load installed mods: " + e);
+                }
+            });
+        })
+        .promise();
+        
+        localDeferInstalledMods = deferInstalledMods;
     }
-    callback(
-        _.filter(
-            _.toArray(installed)
-            ,function(mod) { return mod.identifier !== PAMM_MOD_IDENTIFIER && mod.context === context }
-        )
-    );
+    
+    var deferred = $.Deferred();
+    
+    localDeferInstalledMods.done(function() {
+        deferred.resolve(
+            _.filter(
+                _.toArray(installed)
+                ,function(mod) { return mod.identifier !== PAMM_MOD_IDENTIFIER && mod.context === context }
+            )
+        );
+    }).fail(function(err) {
+        deferred.reject(err);
+    }).always(function() {
+        deferInstalledMods = null;
+    });
+    
+    return deferred.promise();
 };
 
 exports.groupByCategories = function(mods) {

@@ -28,21 +28,24 @@
       <div id="installed_client" class="tab">
 		<div class='filter_area'></div>
         <div id="mod_list_installed_client" class="tab_content">
+            <div class="loading LOC_Loading"></div>
         </div>
       </div>
       <div id="installed_server" class="tab">
 		<div class='filter_area'></div>
         <div id="mod_list_installed_server" class="tab_content">
+            <div class="loading LOC_Loading"></div>
         </div>
       </div>
       <div id="available" class="tab">
 		<div class='filter_area'></div>
         <div id="mod_list_available" class="tab_content">
+            <div class="loading LOC_Loading"></div>
         </div>
       </div>
       <div id="news" class="tab">
         <div id="news_data" class="tab_content">
-          
+          <div class="loading LOC_Loading"></div>
         </div>
       </div>
       <div id="log" class="tab">
@@ -152,9 +155,9 @@
             <div class='mod_entry_link'>[ <a href='#' onClick='LaunchURL("https://forums.uberent.com/threads/59992/")'><span class='LOC_forum'>forum</span></a> ]</div>
             <br/><br/>
             <div class="tab_subheading"><span class="LOC_Statistics">Statistics</span></div>
-            <div class="tab_about_text"><span class="LOC_Total_Available_Mods">Total Available Mods</span>: <span id="total_available_mods" class="tab_about_value">Loading...</span></div>
-            <div class="tab_about_text"><span class="LOC_Total_Mod_Downloads">Total Mod Downloads</span>: <span id="total_available_mod_downloads" class="tab_about_value">Loading...</span></div>
-            <div class="tab_about_text"><span class="LOC_Current_Mods_Installed">Current Mods Installed</span>: <span id="total_installed_mods" class="tab_about_value">Loading...</span></div>
+            <div class="tab_about_text"><span class="LOC_Total_Available_Mods">Total Available Mods</span>: <span id="total_available_mods" class="tab_about_value LOC_Loading"></span></div>
+            <div class="tab_about_text"><span class="LOC_Total_Mod_Downloads">Total Mod Downloads</span>: <span id="total_available_mod_downloads" class="tab_about_value LOC_Loading"></span></div>
+            <div class="tab_about_text"><span class="LOC_Current_Mods_Installed">Current Mods Installed</span>: <span id="total_installed_mods" class="tab_about_value LOC_Loading"></span></div>
             <br/>
             <div class="tab_subheading"><span class="LOC_Credits">Credits</span></div>
             <div class="tab_about_text"><span class="LOC_Created_by">Created by</span> <span class="tab_about_user"><a href='#' onClick='LaunchURL("https://forums.uberent.com/members/?username=Raevn")'>raevn</a></span></div>

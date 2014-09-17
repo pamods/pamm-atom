@@ -380,7 +380,7 @@ function jsGenerateModEntryHTML(objMod, boolIsInstalled) {
         if (settings.modlikes() == true) {
             if (objMod.likes != null) {
                 if (objMod.likes == -2) {
-                    strHTML_likes = "<span id='" + id + "_like_count' class='mod_entry_likes'>" + jsGetLocaleText('Loading') + "...</span>" //TODO: Fix Up
+                    strHTML_likes = "<span id='" + id + "_like_count' class='mod_entry_likes'>" + jsGetLocaleText('Loading') + "</span>" //TODO: Fix Up
                 }
                 if (objMod.likes >= 0) {
                     strHTML_likes = "<img src='assets/img/like.png' height='15' width='15' style='position: absolute; margin-top:4px; margin-left: 8px;'> <div class='mod_entry_likes'>" + objMod.likes + "</div>"; //TODO: Fix Up
@@ -879,47 +879,30 @@ function jsSetModsListIcon(listname, mode) {
 
 /* Refresh & Update Functions */
 function jsRefresh(boolShowLoading, boolDownloadData) {
-    //TODO: Localisation
-    if (boolShowLoading == true) {
-        document.getElementById("mod_list_installed_client").innerHTML = "<div class=\"loading\">" + jsGetLocaleText('Loading') + "...</div>";
-        document.getElementById("mod_list_installed_server").innerHTML = "<div class=\"loading\">" + jsGetLocaleText('Loading') + "...</div>";
-        document.getElementById("mod_list_available").innerHTML = "<div class=\"loading\">" + jsGetLocaleText('Loading') + "...</div>";
-        document.getElementById('total_available_mods').innerHTML = jsGetLocaleText('Loading') + "...";
-        document.getElementById('total_available_mod_downloads').innerHTML = jsGetLocaleText('Loading') + "...";
-    }
-    jsRefresh_asynch(boolDownloadData);
-}
-
-function jsRefresh_asynch(boolDownloadData) {
-    if (boolOnline == false) {
-        document.getElementById("news_data").innerHTML = "<div class=\"loading\">" + jsGetLocaleText('Mod_Manager_is_offline') + "</div>";    
-        document.getElementById("mod_list_available").innerHTML = "<div class=\"loading\">" + jsGetLocaleText('Mod_Manager_is_offline') + "</div>";
-        document.getElementById('total_available_mods').innerHTML = jsGetLocaleText('Mod_Manager_is_offline');
-        document.getElementById('total_available_mod_downloads').innerHTML = jsGetLocaleText('Mod_Manager_is_offline');
-    }
-    
     jsAddLogMessage("Refreshing Data", 2);
     
     objInstalledModCategories.client["ALL"] = 0;
     objInstalledModCategories.server["ALL"] = 0;
     
-    findInstalledMods(function() {
-        document.getElementById('total_installed_mods').innerHTML = objInstalledMods.client.length + objInstalledMods.server.length;
-        objInstalledMods.client.sort(sortModBy('display_name', true, null));
-        objInstalledMods.server.sort(sortModBy('display_name', true, null));
-        
-        if (boolOnline == true && boolDownloadData == true) {
-            checkPAMMversion();
-            jsDownloadNews();
-            jsDownloadOnlineMods();
-        } else {
+    if(boolDownloadData) {
+        checkPAMMversion();
+        jsDownloadNews();
+    }
+    
+    var prmInstalledMods = getInstalledMods(boolDownloadData);
+    var prmAvailableMods = getAvailableMods(boolDownloadData);
+    var prmRefreshMods = $.when(prmInstalledMods, prmAvailableMods);
+    
+    prmRefreshMods.always(function() {
+        prmInstalledMods.done(function() {
             jsGenerateInstalledModsListHTML("client");
             jsGenerateInstalledModsListHTML("server");
-            if (boolOnline == true) {
-                jsGenerateOnlineModsListHTML();
-            }
-        }
-    }, boolDownloadData);
+        });
+        
+        prmAvailableMods.done(function() {
+            jsGenerateOnlineModsListHTML();
+        });
+    });
 }
 
 function jsGetModsRequiringUpdates(context) {
@@ -978,32 +961,80 @@ function jsSetLogLevel(intLevel) {
     }
 }
 
-function jsDownloadOnlineMods() {
-    if (boolOnline == true) {
-        jsAddLogMessage("Downloading available mods list", 2);
-        
-        pamm.getAvailableMods(function(mods) {
-            objOnlineMods = mods;
-            objOnlineModCategories = pamm.groupByCategories(mods);
-            
-            var intTotalDownloadCount = 0;
-            for(var idx in objOnlineMods) {
-                var mod = objOnlineMods[idx];
-                intTotalDownloadCount += mod.downloads;
-            }
-            
-            jsGenerateOnlineModsListHTML();
-            jsGenerateInstalledModsListHTML("client");
-            jsGenerateInstalledModsListHTML("server");
-            if (settings.modlikes()) {
-                jsDownloadOnlineModLikeCount();
-            }
-            
-            $('#total_available_mods').text(objOnlineMods.length);
-            $('#total_available_mod_downloads').text(intTotalDownloadCount);
-            
-        }, true);
+function getInstalledMods(force) {
+    var prmClientMods = pamm.getInstalledMods("client", force);
+    var prmServerMods = pamm.getInstalledMods("server", force);
+    var prmBoth = $.when(prmClientMods, prmServerMods);
+    
+    var fillModsArray = function(context, mods) {
+        mods.sort(sortModBy('display_name', true, null));
+        objInstalledMods[context] = mods;
+        objInstalledModCategories[context] = pamm.groupByCategories(mods);
+    };
+    
+    prmClientMods.done(function(mods) {
+        fillModsArray("client", mods);
+        jsAddLogMessage("Found " + mods.length + " installed client mods", 2);
+    })
+    .fail(function(error) {
+        fillModsArray("client", []);
+        $("#mod_list_installed_client").html("<div class=\"loading\">" + error + "...</div>");
+    });
+    
+    prmServerMods.done(function(mods) {
+        fillModsArray("server", mods);
+        jsAddLogMessage("Found " + mods.length + " installed server mods", 2);
+    })
+    .fail(function(error) {
+        fillModsArray("server", []);
+        $("#mod_list_installed_server").html("<div class=\"loading\">" + error + "...</div>");
+    });
+    
+    prmBoth.always(function() {
+        objInstalledMods.union = objInstalledMods.client.concat(objInstalledMods.server);
+        $('#total_installed_mods').text(objInstalledMods.client.length + objInstalledMods.server.length);
+    });
+    
+    return prmBoth;
+}
+
+function getAvailableMods(force) {
+    if (!boolOnline) {
+        jsAddLogMessage("Available mods list download disabled - offline mode", 2);
+        $('#mod_list_available').html("<div class=\"loading\">" + jsGetLocaleText('Mod_Manager_is_offline') + "</div>");
+        $('#total_available_mods').html(jsGetLocaleText('Mod_Manager_is_offline'));
+        $('#total_available_mod_downloads').html(jsGetLocaleText('Mod_Manager_is_offline'));
+        return $.Deferred().resolve().reject();
     }
+    
+    if(force) jsAddLogMessage("Downloading available mods list", 2);
+    
+    var intTotalDownloadCount = 0;
+    var prmAvailableMods = pamm.getAvailableMods(force);
+    
+    prmAvailableMods.done(function(mods) {
+        objOnlineMods = mods;
+        objOnlineModCategories = pamm.groupByCategories(mods);
+        
+        for(var idx in objOnlineMods) {
+            var mod = objOnlineMods[idx];
+            intTotalDownloadCount += mod.downloads;
+        }
+        
+        jsGenerateOnlineModsListHTML();
+    })
+    .fail(function(error) {
+        objOnlineMods = [];
+        objOnlineModCategories = {};
+        jsAddLogMessage(error, 1);
+        $("#mod_list_available").html("<div class=\"loading\">" + error + "...</div>");
+    })
+    .always(function() {
+        $('#total_available_mods').text(objOnlineMods.length);
+        $('#total_available_mod_downloads').text(intTotalDownloadCount);
+    });
+    
+    return prmAvailableMods;
 }
 
 function jsDownloadOnlineModLikeCount() {
@@ -1090,26 +1121,31 @@ function checkPAMMversion() {
 }
 
 function jsDownloadNews() {
-    if (boolOnline == true) {
-        jsAddLogMessage("Downloading news", 2);
-        var $news = $("#news_data");
-        $news.html("<div class=\"loading\">" + jsGetLocaleText('Loading') + "...</div>");
-        $.get(NEWS_URL, function(data) {
-            // cleanup hardcode js events
-            var regex = new RegExp("on[\\w]+=", "g");
-            data = data.replace(regex, " cleansed=");
-            
-            // convert to html without script execution
-            var newshtml = $.parseHTML(data);
-            
-            // display should be safe now
-            $news.html(newshtml);
-        })
-        .fail(function(jqXHR, textStatus, errorThrown ) {
-            var msg = "Sorry but there was an error: ";
-            $news.html("<div class=\"loading\">" + msg + errorThrown + "</div>");
-        });
+    var $news = $("#news_data");
+    
+    if(!boolOnline) {
+        jsAddLogMessage("News download disabled - offline mode", 2);
+        document.getElementById("news_data").innerHTML = "<div class=\"loading\">" + jsGetLocaleText('Mod_Manager_is_offline') + "</div>";    
+        return;
     }
+    
+    jsAddLogMessage("Downloading news...", 2);
+    
+    jsDownload(NEWS_URL).done(function(data) {
+        // cleanup hardcode js events
+        var regex = new RegExp("on[\\w]+=", "g");
+        data = data.replace(regex, " cleansed=");
+        
+        // convert to html without script execution
+        var newshtml = $.parseHTML(data);
+        
+        // display should be safe now
+        $news.html(newshtml);
+    })
+    .fail(function(jqXHR, textStatus, errorThrown ) {
+        var msg = "Sorry but there was an error: ";
+        $news.html("<div class=\"loading\">" + msg + errorThrown + "</div>");
+    });
 }
 
 function checkVersionPA() {
@@ -1160,26 +1196,6 @@ function RestartPAMM() {
     var child = child_process.spawn(argv[0], argv.splice(1), { detached: true, stdio: 'inherit' });
     child.unref();
     ClosePAMM();
-}
-
-function findInstalledMods(callback, force) {
-    pamm.getInstalledMods("client", function(mods) {
-        objInstalledMods.client = mods;
-        objInstalledModCategories.client = pamm.groupByCategories(mods);
-        
-        jsAddLogMessage("Found " + mods.length + " installed client mods", 2);
-        
-        pamm.getInstalledMods("server", function(mods) {
-            objInstalledMods.server = mods;
-            objInstalledModCategories.server = pamm.groupByCategories(mods);
-            
-            jsAddLogMessage("Found " + mods.length + " installed server mods", 2);
-            
-            objInstalledMods.union = objInstalledMods.client.concat(objInstalledMods.server);
-            
-            callback();
-        });
-    }, force);
 }
 
 function initSettings() {

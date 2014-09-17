@@ -252,8 +252,8 @@ var strlocaleText = {
 		"de": "Sprache"
 	},
 	"Loading": {
-		"en": "Loading",
-		"fr": "",
+		"en": "Loading...",
+		"fr": "Chargement...",
 		"nl": "",
 		"de": ""
 	},
