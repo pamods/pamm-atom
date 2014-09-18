@@ -183,6 +183,9 @@ function jsSetAllModStatus(enabled, context) {
 
 function jsGenerateModEntryHTML(objMod, boolIsInstalled) {
     var id = objMod.identifier;
+    var modOnline = _.find(objOnlineMods, function(mod) { return mod.identifier === id });
+    var modInstalled = _.find(objInstalledMods.union, function(mod) { return mod.identifier === id });
+    
     var strHTML_classes = "mod_entry mod_entry_context_" + objMod.context;
     
     /* Icon */
@@ -285,8 +288,6 @@ function jsGenerateModEntryHTML(objMod, boolIsInstalled) {
     var strHTML_update_available = "";
     var strHTML_update_link = "";
     if (boolIsInstalled == true) {
-        var objOnlineMod = jsGetOnlineMod(id);
-    
         /* Update Classes */
         if (settings['installed_' + objMod.context + '_view']() == 'detailed') {
             strHTML_classes = strHTML_classes.replace('mod_entry', 'mod_entry mod_entry_detailed');
@@ -296,30 +297,6 @@ function jsGenerateModEntryHTML(objMod, boolIsInstalled) {
         
         if (settings['installed_' + objMod.context + '_icon']() == false) {
             strHTML_icon = strHTML_icon.replace('mod_entry_icon', 'mod_entry_icon mod_entry_icon_disabled');
-        }
-        
-        /* Enabled Checkbox, Image */
-        if (objMod.enabled == true) {
-            strHTML_checkbox = "<input type='checkbox' class='mod_entry_enabled' id='mod" + id + "' checked='checked'>";
-            strHTML_checkbox_image = "<div class='mod_entry_enabled_image'><img id='modimg" + id + "' src='assets/img/checkbox_checked.png' /></div>";
-        } else {
-            strHTML_checkbox = "<input type='checkbox' class='mod_entry_enabled' id='mod" + id + "'>";
-            strHTML_checkbox_image = "<div class='mod_entry_enabled_image'><img id='modimg" + id + "' src='assets/img/checkbox_unchecked.png' /></div>";
-        }
-        
-        /* Update Available Notification */
-        if (objOnlineMod != null) {
-            if (objMod.version !== objOnlineMod.version) {
-                strHTML_update_link = "<div class='mod_entry_link mod_entry_update_link'>[ <a href='#' data-action='install'>" + jsGetLocaleText('update') + "</a> ]</div>";
-                
-                /* Update Classes */
-                strHTML_classes = strHTML_classes.replace('mod_entry', 'mod_entry mod_entry_filter_update_available');
-            }
-        }
-        
-        if(!objMod.stockmod) {
-            /* Uninstall Link */
-            strHTML_uninstall_link = "<div class='mod_entry_link mod_entry_uninstall_link'>[ <a href='#' data-action='uninstall'>" + jsGetLocaleText('uninstall') + "</a> ]</div>";
         }
     }
     
@@ -349,44 +326,62 @@ function jsGenerateModEntryHTML(objMod, boolIsInstalled) {
             strHTML_new = "<span class='mod_entry_new'> ! " + jsGetLocaleText('NEW') + "</span>";
             strHTML_classes = strHTML_classes.replace('mod_entry', 'mod_entry mod_entry_filter_new');
         }
-        
-        /* Install Link */
-        
-        if (objInstalledMod != null) {
-            if (objMod.version !== objInstalledMod.version) {
-                strHTML_install_link = "<div class='mod_entry_link mod_entry_update_link'>[ <a href='#' data-action='install'>" + jsGetLocaleText('update') + "</a> ]</div>";
-                
-                /* Update Classes */
-                strHTML_classes = strHTML_classes.replace('mod_entry', 'mod_entry mod_entry_filter_update_available');
-            } else {
-                strHTML_install_link = "<div class='mod_entry_link mod_entry_reinstall_link'>[ <a href='#' data-action='install'>" + jsGetLocaleText('reinstall') + "</a> ]</div>";
-                
-                /* Update Classes */
-                strHTML_classes = strHTML_classes.replace('mod_entry', 'mod_entry mod_entry_filter_installed');
-            }
+    }
+    
+    /* enable/disable radio button */
+    if(modInstalled) {
+        /* Enabled Checkbox, Image */
+        if (modInstalled.enabled == true) {
+            strHTML_checkbox = "<input type='checkbox' class='mod_entry_enabled' id='mod" + id + "' checked='checked'>";
+            strHTML_checkbox_image = "<div class='mod_entry_enabled_image'><img id='modimg" + id + "' src='assets/img/checkbox_checked.png' /></div>";
         } else {
-            strHTML_install_link = "<div class='mod_entry_link mod_entry_install_link'>[ <a href='#' data-action='install'>" + jsGetLocaleText('install') + "</a> ]</div>";
-            
-            /* Update Classes */
-            strHTML_classes = strHTML_classes.replace('mod_entry', 'mod_entry mod_entry_filter_not_installed');
+            strHTML_checkbox = "<input type='checkbox' class='mod_entry_enabled' id='mod" + id + "'>";
+            strHTML_checkbox_image = "<div class='mod_entry_enabled_image'><img id='modimg" + id + "' src='assets/img/checkbox_unchecked.png' /></div>";
         }
-        
+    }
+    
+    /* metrics */
+    if(modOnline) {
         /* Install Count */
-        if(objMod.downloads) {
-            strHTML_downloads = "<img src='assets/img/download.png' style='position: absolute; margin-top:4px'> <div class='mod_entry_count'>" + objMod.downloads + "</div>"; //TODO: Fix Up
+        if(modOnline.downloads) {
+            strHTML_downloads = "<img src='assets/img/download.png' style='position: absolute; margin-top:4px'> <div class='mod_entry_count'>" + modOnline.downloads + "</div>"; //TODO: Fix Up
         }
         
         /* Like Count */            
         if (settings.modlikes() == true) {
-            if (objMod.likes != null) {
-                if (objMod.likes == -2) {
+            if (modOnline.likes != null) {
+                if (modOnline.likes == -2) {
                     strHTML_likes = "<span id='" + id + "_like_count' class='mod_entry_likes'>" + jsGetLocaleText('Loading') + "</span>" //TODO: Fix Up
                 }
-                if (objMod.likes >= 0) {
-                    strHTML_likes = "<img src='assets/img/like.png' height='15' width='15' style='position: absolute; margin-top:4px; margin-left: 8px;'> <div class='mod_entry_likes'>" + objMod.likes + "</div>"; //TODO: Fix Up
+                if (modOnline.likes >= 0) {
+                    strHTML_likes = "<img src='assets/img/like.png' height='15' width='15' style='position: absolute; margin-top:4px; margin-left: 8px;'> <div class='mod_entry_likes'>" + modOnline.likes + "</div>"; //TODO: Fix Up
                 }
             }
         }
+    }
+    
+    /* install/update/uninstall links */
+    if(!modInstalled) {
+        strHTML_install_link = "<div class='mod_entry_link mod_entry_install_link'>[ <a href='#' data-action='install'>" + jsGetLocaleText('install') + "</a> ]</div>";
+        
+        // filter classe
+        strHTML_classes = strHTML_classes.replace('mod_entry', 'mod_entry mod_entry_filter_not_installed');
+    }
+    else {
+        if(!modInstalled.stockmod) {
+            if (modOnline && modInstalled.version !== modOnline.version) {
+                strHTML_update_link = "<div class='mod_entry_link mod_entry_update_link'>[ <a href='#' data-action='install'>" + jsGetLocaleText('update') + "</a> ]</div>";
+                
+                // filter classe
+                strHTML_classes = strHTML_classes.replace('mod_entry', 'mod_entry mod_entry_filter_update_available');
+            }
+            
+            /* Uninstall Link */
+            strHTML_uninstall_link = "<div class='mod_entry_link mod_entry_uninstall_link'>[ <a href='#' data-action='uninstall'>" + jsGetLocaleText('uninstall') + "</a> ]</div>";
+        }
+        
+        // filter classe
+        strHTML_classes = strHTML_classes.replace('mod_entry', 'mod_entry mod_entry_filter_installed');
     }
     
     var strHTML = "<div class='" + strHTML_classes + "' data-mod='" + id + "'>" + strHTML_icon + "<div class='mod_entry_container'>" + strHTML_checkbox + strHTML_checkbox_image + "<div>" + strHTML_display_name + strHTML_author + "</div>" + "<div class='mod_entry_details'>" + strHTML_version + strHTML_build + strHTML_date + strHTML_update_available + strHTML_new + "</div>" + strHTML_requires + strHTML_description + strHTML_category + strHTML_forum_link + strHTML_update_link + strHTML_install_link + strHTML_uninstall_link + strHTML_downloads + strHTML_likes + "</div>";
@@ -1495,16 +1490,14 @@ $(function() {
         jsDisplayPanel(panel);
     });
     
-    $('#installed_client').on('click', 'div.mod_entry', function(event) {
+    var evtToggleModEnabled = function(event) {
         if (event.target.nodeName === 'A') return;
         var modid = $(this).data('mod');
         jsModEnabledToggle(modid);
-    });
-    $('#installed_server').on('click', 'div.mod_entry', function(event) {
-        if (event.target.nodeName === 'A') return;
-        var modid = $(this).data('mod');
-        jsModEnabledToggle(modid);
-    });
+    };
+    $('#installed_client').on('click', 'div.mod_entry', evtToggleModEnabled);
+    $('#installed_server').on('click', 'div.mod_entry', evtToggleModEnabled);
+    $('#available').on('click', 'div.mod_entry', evtToggleModEnabled);
     
     $('body').on('click', 'div.mod_entry_link a', function(event) {
         event.preventDefault();
