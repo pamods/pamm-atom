@@ -6,12 +6,15 @@ var rootpath;
 var modspath;
 var cachepath;
 
+var logpath;
+var lastlogfile;
+
 var streams = {};
 var last;
 
 function findLastRunPath() {
     var platform = process.platform;
-    var logpath = path.join(rootpath, '/log');
+    
     if(!fs.existsSync(logpath))
         return "";
     
@@ -21,7 +24,6 @@ function findLastRunPath() {
         return "";
     
     // find last log file
-    var lastlogfile
     var laststat;
     for(var i = 0; i < logfiles.length; ++i) {
         var logfile = path.join(logpath, logfiles[i]);
@@ -100,7 +102,7 @@ function createStreamObject(papath) {
     }
 }
 
-var init = function() {
+var initialize = function() {
     var localpath;
     if (process.platform === 'win32') {
         localpath = process.env.LOCALAPPDATA
@@ -112,9 +114,15 @@ var init = function() {
         localpath = path.join(process.env.HOME, "/Library/Application Support")
     }
     else {
-        throw "Unsupported platform: " + process.platform;
+        throw new Error("Unsupported platform: " + process.platform);
     }
+    
     rootpath = path.join(localpath, "/Uber Entertainment/Planetary Annihilation");
+    if(!rootpath.match(/^[\x00-\x7F]+$/i)) {
+        throw new Error("Non-ASCII characters found in '" + rootpath + "'. Sorry, but Planetary Annihilation is known to not work properly with unicode characters.");
+    }
+    
+    logpath = path.join(rootpath, '/log');
     
     modspath = {};
     
@@ -161,12 +169,22 @@ var init = function() {
             }
         }
     }
+    
+    exports.rootpath = rootpath;
+    exports.modspath = modspath;
+    exports.cachepath = cachepath;
+    exports.last = last;
+    exports.streams = streams;
 };
-init();
 
-exports.rootpath = rootpath;
-exports.modspath = modspath;
-exports.cachepath = cachepath;
-exports.last = last;
-exports.streams = streams;
+var deferredInitialize = $.Deferred(function(deferred) {
+    try {
+        initialize();
+        deferred.resolve();
+    }
+    catch(error) {
+        deferred.reject(error);
+    }
+});
 
+exports.ready = deferredInitialize.promise();

@@ -20,11 +20,7 @@ var stream = pa.last ? pa.last.stream : 'stable';
 var installed = {};
 var available = {};
 
-var paths = {
-    cache: pa.cachepath
-    ,mods: pa.modspath
-    ,pamm: path.join(pa.modspath.client, PAMM_MOD_ID)
-};
+var paths = {};
 
 exports.setStream = function(newstream) {
     stream = newstream;
@@ -746,7 +742,12 @@ var _updateFiles = function(context) {
     );
 };
 
-var init = function() {
+var initialize = function() {
+    paths.cache = pa.cachepath;
+    paths.mods = pa.modspath;
+    
+    paths.pamm = path.join(pa.modspath.client, PAMM_MOD_ID);
+    
     var strPammModDirectoryPath = paths.pamm;
     CreateFolderIfNotExists(strPammModDirectoryPath);
     CreateFolderIfNotExists(strPammModDirectoryPath + "/ui");
@@ -766,5 +767,15 @@ var init = function() {
     };
     fs.writeFileSync(path.join(strPammModDirectoryPath, "modinfo.json"), JSON.stringify(modinfo, null, 4));
 };
-init();
 
+var deferredInitialize = $.Deferred(function(deferred) {
+    try {
+        initialize();
+        deferred.resolve();
+    }
+    catch(error) {
+        deferred.reject(error);
+    }
+});
+
+exports.ready = pa.ready.then(deferredInitialize);

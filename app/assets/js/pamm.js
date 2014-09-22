@@ -1481,7 +1481,7 @@ function fixPammHandler() {
     }
 }
 
-$(function() {
+$.when(pamm.ready, $.ready).done(function() {
     jsAddLogMessage("PAMM version: " + params.info.version, 2);
     checkPAMMversion();
     
@@ -1699,6 +1699,12 @@ $(function() {
     
     checkLegacyPAMM();
     fixPammHandler();
+});
+
+pamm.ready.fail(function(err) {
+    var message = err.message ? err.message : err;
+    alert(message);
+    ClosePAMM();
 });
 
 //})();
