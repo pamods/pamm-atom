@@ -959,7 +959,6 @@ function jsSetLogLevel(intLevel) {
 function getInstalledMods(force) {
     var prmClientMods = pamm.getInstalledMods("client", force);
     var prmServerMods = pamm.getInstalledMods("server", force);
-    var prmBoth = $.when(prmClientMods, prmServerMods);
     
     var fillModsArray = function(context, mods) {
         mods.sort(sortModBy('display_name', true, null));
@@ -985,12 +984,10 @@ function getInstalledMods(force) {
         $("#mod_list_installed_server").html("<div class=\"loading\">" + error + "...</div>");
     });
     
-    prmBoth.always(function() {
+    return $.when(prmClientMods, prmServerMods).always(function() {
         objInstalledMods.union = objInstalledMods.client.concat(objInstalledMods.server);
         $('#total_installed_mods').text(objInstalledMods.client.length + objInstalledMods.server.length);
     });
-    
-    return prmBoth;
 }
 
 function getAvailableMods(force) {
