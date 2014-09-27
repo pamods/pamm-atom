@@ -1478,10 +1478,12 @@ function fixPammHandler() {
     }
 }
 
-$.when(pamm.ready, $.ready).done(function() {
+$(function() {
     jsAddLogMessage("PAMM version: " + params.info.version, 2);
     checkPAMMversion();
-    
+});
+
+$.when(pamm.ready, $.ready).done(function() {
     $('.ui_tabs').on('click', 'a', function() {
         var panel = $(this).data('target');
         jsDisplayPanel(panel);
@@ -1699,9 +1701,9 @@ $.when(pamm.ready, $.ready).done(function() {
 });
 
 pamm.ready.fail(function(err) {
+    $('body *').hide();
     var message = err.message ? err.message : err;
     alert(message);
-    ClosePAMM();
 });
 
 //})();
