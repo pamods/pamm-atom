@@ -337,7 +337,7 @@ exports.install = function (id, callback, progressCallback) {
 
 var _uncompress = function(modid, zipfile, targetfolder) {
     var zipdata = fs.readFileSync(zipfile);
-    var zip = new JSZip(zipdata.toArrayBuffer());
+    var zip = new JSZip(zipdata);
     
     // zip.folders not reliable, some directories are not detected as directory (eg. instant_sandbox zip)
     

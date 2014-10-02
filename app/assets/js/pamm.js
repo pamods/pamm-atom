@@ -1312,7 +1312,7 @@ function UpdatePAMM(info) {
                 var bkppath = path.dirname(__dirname) + '/app_backup';
                 
                 var zipdata = fs.readFileSync(zipfile);
-                var zip = new JSZip(zipdata.toArrayBuffer());
+                var zip = new JSZip(zipdata);
                 
                 for(var i in zip.files) {
                     var file = zip.files[i];
