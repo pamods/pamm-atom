@@ -171,43 +171,58 @@ exports.getPaths = function () {
     return paths;
 };
 
-var getRequires = function(id, requires) {
-    var mod = available[id];
-    if(!mod) {
-        mod = installed[id];
+var getRequires = function(id) {
+    var requires = {};
+    requires[id] = id;
+    
+    var _fillrequires = function(id, requires) {
+        var mod = available[id];
         if(!mod) {
-            throw "Mod '" + id + "' not found.";
+            mod = installed[id];
+            if(!mod) {
+                throw "Mod '" + id + "' not found.";
+            }
         }
-    }
-    
-    if(!requires)
-        requires = {};
-    
-    if(mod.dependencies) {
-        //TODO some protection against infinite recurse
-        for(var i = 0; i < mod.dependencies.length; ++i) {
-            var require = mod.dependencies[i];
-            requires[require] = require;
-            getRequires(require, requires);
+        
+        var dependencies = mod.dependencies;
+        if(dependencies) {
+            for(var i = 0; i < dependencies.length; ++i) {
+                var dependency = mod.dependencies[i];
+                if(!requires[dependency]) {
+                    requires[dependency] = dependency;
+                    _fillrequires(dependency, requires);
+                }
+            }
         }
-    }
+    };
+    
+    _fillrequires(id, requires);
+    delete requires[id];
+    
     return _.toArray(requires);
 };
 exports.getRequires = getRequires;
 
-var getRequiredBy = function(id, requiredby) {
-    if(!requiredby)
-        requiredby = {};
+var getRequiredBy = function(id) {
+    requiredby = {};
+    requiredby[id] = id;
     
-    for(var key in installed) {
-        if (installed.hasOwnProperty(key)) {
-            var mod = installed[key];
-            if(mod.dependencies && mod.dependencies.indexOf(id) !== -1) {
-                requiredby[mod.identifier] = mod.identifier;
-                getRequiredBy(mod.identifier, requiredby);
+    var _fillrequiredby = function(id, requiredby) {
+        for(var key in installed) {
+            if (installed.hasOwnProperty(key)) {
+                var mod = installed[key];
+                if(mod.dependencies && mod.dependencies.indexOf(id) !== -1) {
+                    if(!requiredby[mod.identifier]) {
+                        requiredby[mod.identifier] = mod.identifier;
+                        _fillrequiredby(mod.identifier, requiredby);
+                    }
+                }
             }
         }
     }
+    
+    _fillrequiredby(id, requiredby);
+    delete requiredby[id];
     
     return _.toArray(requiredby);
 };
