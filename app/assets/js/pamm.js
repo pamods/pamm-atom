@@ -1494,9 +1494,9 @@ $.when(pamm.ready, $.ready).done(function() {
         var modid = $(this).data('mod');
         jsModEnabledToggle(modid);
     };
-    $('#installed_client').on('click', 'div.mod_entry', evtToggleModEnabled);
-    $('#installed_server').on('click', 'div.mod_entry', evtToggleModEnabled);
-    $('#available').on('click', 'div.mod_entry', evtToggleModEnabled);
+    $('#installed_client').on('click', 'div.mod_entry.mod_entry_filter_installed', evtToggleModEnabled);
+    $('#installed_server').on('click', 'div.mod_entry.mod_entry_filter_installed', evtToggleModEnabled);
+    $('#available').on('click', 'div.mod_entry.mod_entry_filter_installed', evtToggleModEnabled);
     
     $('body').on('click', 'div.mod_entry_link a', function(event) {
         event.preventDefault();
