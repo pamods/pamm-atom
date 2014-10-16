@@ -79,7 +79,7 @@ function createStreamObject(papath) {
     var binpath;
     var stockmodspath;
     if (platform === 'win32') {
-        binpath = path.join(papath, 'PA.exe');
+        binpath = path.join(papath, 'bin_x64/PA.exe');
         stockmodspath = path.join(papath, '/media/stockmods');
     }
     else if (platform === 'linux') {
