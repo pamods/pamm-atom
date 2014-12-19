@@ -1212,9 +1212,7 @@ function initSettings() {
         installed_server_category: "ALL",
         installed_server_view: "",
         installed_server_icon: false,
-        show_installed_server_filters: false,
-        nolegacypamm: false,
-        fixedpammhandler: false
+        show_installed_server_filters: false
     };
     
     if(fs.existsSync(filepath)) {
@@ -1372,116 +1370,6 @@ function rmdirRecurseSync(dir) {
     }
     fs.rmdirSync(dir);
 };
-
-function checkLegacyPAMM() {
-    if(process.platform !== 'win32')
-        return;
-    
-    if(!UNINSTALL_LEGACY_PAMM || settings.nolegacypamm())
-        return;
-    
-    var _uninstallLegacyPAMM = function(uninstallpath) {
-        try {
-            jsAddLogMessage("Uninstalling Legacy PAMM: " + uninstallpath, 2);
-        
-            alert("An older version of PAMM is still installed on your computer.\n\nWe are going to proceeds to its uninstallation !");
-            
-            var child_process = require('child_process');
-            var child = child_process.spawn('cmd.exe', ['/C', uninstallpath], null, { detached: true });
-            child.unref();
-        }
-        catch(error) {
-            jsAddLogMessage("Unexpected error while uninstalling Legacy PAMM: " + error, 1);
-        }
-    }
-    
-    try {
-        var Winreg = require('winreg');
-        var regkey = new Winreg({
-            hive: Winreg.HKLM,
-            key: '\\SOFTWARE\\Wow6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\PA Mod Manager'
-        });
-        
-        regkey.get('UninstallString', function (err, item) {
-            if (err) {
-                regkey = new Winreg({
-                    hive: Winreg.HKLM,
-                    key: '\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\PA Mod Manager'
-                });
-                
-                regkey.get('UninstallString', function (err, item) {
-                    if (err) {
-                        // Legacy PAMM not found
-                        settings.nolegacypamm(true); 
-                    }
-                    else {
-                        _uninstallLegacyPAMM(item.value);
-                    }
-                });
-            }
-            else {
-                _uninstallLegacyPAMM(item.value);
-            }
-        });
-    }
-    catch(error) {
-        jsAddLogMessage("Unexpected error while checking for Legacy PAMM: " + error, 1);
-    }
-};
-
-/* fix pamm:// handler on windows */
-function fixPammHandler() {
-    if(process.platform !== 'win32')
-            return;
-    
-    if(settings.fixedpammhandler())
-        return;
-    
-    // we only try once
-    settings.fixedpammhandler(true);
-    
-    var _error = function(err) {
-        jsAddLogMessage("Unexpected error while fixing pamm:// handler: " + err, 1);
-    }
-    
-    try {
-        var Winreg = require('winreg');
-        var regkey = new Winreg({
-            hive: Winreg.HKCU,
-            key: '\\Software\\Classes\\pamm\\shell\\open\\command'
-        });
-        
-        regkey.values(
-            function(err, values) {
-                if (err) {
-                    _error("registry key not found");
-                    return;
-                }
-                
-                if (values.length !== 1) {
-                    _error("registry key default value not found");
-                    return;
-                }
-                
-                var value = values[0].value;
-                
-                if (value.indexOf('?') !== -1) {
-                    _error("unsupported characters found");
-                    return;
-                }
-                
-                if (value.indexOf('$1') !== -1) {
-                    regkey.set('', Winreg.REG_SZ, value.replace('$1','%1'), function(err) {
-                        if (err) _error("failed to update the value");
-                    });
-                }
-            }
-        )
-    }
-    catch(err) {
-       _error(err);
-    }
-}
 
 $(function() {
     jsAddLogMessage("PAMM version: " + params.info.version, 2);
@@ -1700,9 +1588,6 @@ $.when(pamm.ready, $.ready).done(function() {
             }
         }, 1000);
     }
-    
-    checkLegacyPAMM();
-    fixPammHandler();
 });
 
 pamm.ready.fail(function(err) {
