@@ -122,6 +122,14 @@
                 </td>
               </tr>
               <tr>
+                <td>
+                  <span class="setting_heading"><span class="LOC_Resize">Remember Window Size</span>:</span>
+                </td>
+                <td>
+                  <input type="checkbox" data-bind="checked: settings.resize" /> <span class="LOC_ResizeWarning">(can cause crash / white screen of death)</span>
+                </td>
+              </tr>
+              <tr>
                 <td colspan="2">
                   <span class="setting_heading"><span class="LOC_PA_Install_Location">PA Install Location</span>:</span><br/>
                   <input type="text" disabled="true" class="textInput" data-bind="value: pa.last ? pa.last.bin : ''"/>

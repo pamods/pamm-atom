@@ -1238,6 +1238,8 @@ function initSettings() {
         return ko.mapping.toJS(settings);
     });
     
+    settings.resize = ko.observable((localStorage.pamm_resize === "disabled" ? false : true));
+    
     settings.debug.subscribe(function(newValue) {
         jsSetLogLevel(newValue ? 4 : 2);
     });
@@ -1261,6 +1263,9 @@ function initSettings() {
     });
     settings.installed_server_icon.subscribe(function(newValue) {
         jsSetModsListIcon('installed_server', newValue);
+    });
+    settings.resize.subscribe(function(newValue) {
+        localStorage.pamm_resize = (newValue ? "enabled" : "disabled");
     });
     
     settings.autosave.subscribe(function(data) {

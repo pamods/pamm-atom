@@ -4,10 +4,12 @@ $(function() {
     
     // restore previous window size
     try {
-        if(localStorage.screenSize) {
-            var size = localStorage.screenSize.split(',');
+        if(localStorage.pamm_resize !== "disabled" && localStorage.pamm_screenSize) {
+            localStorage.pamm_resize = "disabled";
+            var size = localStorage.pamm_screenSize.split(',');
             remote.getCurrentWindow().setSize(parseInt(size[0]), parseInt(size[1]));
-            remote.getCurrentWindow().center()
+            remote.getCurrentWindow().center();
+            localStorage.pamm_resize = "enabled";
         }
     } catch(error) {
         console.log('ERROR: ' + error);
@@ -16,10 +18,10 @@ $(function() {
     // remember size
     var remembersize = function() {
         try {
-            localStorage.screenSize = remote.getCurrentWindow().getSize();
+            localStorage.pamm_screenSize = remote.getCurrentWindow().getSize();
         } catch(error) {
             console.log('ERROR: ' + error);
         }
     }
-     $(window).on('resize', _.debounce(remembersize, 100));
+    $(window).on('resize', _.debounce(remembersize, 100));
 });
