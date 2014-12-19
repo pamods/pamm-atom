@@ -28,6 +28,8 @@ function findLastRunPath() {
     for(var i = 0; i < logfiles.length; ++i) {
         var logfile = path.join(logpath, logfiles[i]);
         var stat = fs.statSync(logfile);
+        if(!stat.isFile())
+            continue;
         if(lastlogfile) {
             if(stat.mtime.getTime() < laststat.mtime.getTime())
                 continue;
