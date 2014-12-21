@@ -781,14 +781,19 @@ var initialize = function() {
     fs.writeFileSync(path.join(strPammModDirectoryPath, "modinfo.json"), JSON.stringify(modinfo, null, 4));
 };
 
-var deferredInitialize = $.Deferred(function(deferred) {
+var deferredInitialize = $.Deferred();
+
+pa.ready.done(function() {
     try {
         initialize();
-        deferred.resolve();
+        deferredInitialize.resolve();
     }
     catch(error) {
-        deferred.reject(error);
+        deferredInitialize.reject(error);
     }
+})
+.fail(function(err) {
+    deferredInitialize.reject(err);
 });
 
-exports.ready = pa.ready.then(deferredInitialize);
+exports.ready = deferredInitialize.promise();
