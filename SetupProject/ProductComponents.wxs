@@ -501,6 +501,14 @@
                                 </Directory>
                             </Directory>
                         </Directory>
+                        <Directory Id="dir72D451F3939996919147B90ED1172CD6" Name="line-by-line">
+                            <Component Id="cmp7C6D1F2FC563974CE3045485AD0A029A" Guid="*">
+                                <File Id="fil7DD66E906B9F2A9887570F4051882488" KeyPath="yes" Source="$(var.PammDir)\resources\app\node_modules\line-by-line\line-by-line.js" />
+                            </Component>
+                            <Component Id="cmp2B036D778214F9016502A5A064794868" Guid="*">
+                                <File Id="filE0BFEA195227640CC858EFC4299A8A6F" KeyPath="yes" Source="$(var.PammDir)\resources\app\node_modules\line-by-line\package.json" />
+                            </Component>
+                        </Directory>
                         <Directory Id="dir138D0CD16DD48E48E48F7BACED36B7EB" Name="lodash">
                             <Component Id="cmpA069E6E37E1B9D576A1A7E238A111BDB" Guid="*">
                                 <File Id="fil67B699B87EA6D9EAA03A50D5870FBBD7" KeyPath="yes" Source="$(var.PammDir)\resources\app\node_modules\lodash\package.json" />
@@ -534,28 +542,6 @@
                             <Directory Id="dir339126329202304EE3B3F2A7A8923281" Name="src">
                                 <Component Id="cmpD1A236FB12569787F06324F5E786915E" Guid="*">
                                     <File Id="filF3F9B80D7E7AC76829245BBCA1848267" KeyPath="yes" Source="$(var.PammDir)\resources\app\node_modules\sprintf\src\sprintf.js" />
-                                </Component>
-                            </Directory>
-                        </Directory>
-                        <Directory Id="dir15CB0A7C81EB33346BA12EDED2BB4B6D" Name="winreg">
-                            <Component Id="cmp97E0CE9D2AFE975A3B78B8E1D2C6F15A" Guid="*">
-                                <File Id="filA5C3E534CA4F1FFBAF3A3C4654EFD10C" KeyPath="yes" Source="$(var.PammDir)\resources\app\node_modules\winreg\.gitignore" />
-                            </Component>
-                            <Component Id="cmp3F6B69EC7D9A98B5DF90B42B180598A6" Guid="*">
-                                <File Id="filDB0ECBBD18457D73245562557ACFA5D2" KeyPath="yes" Source="$(var.PammDir)\resources\app\node_modules\winreg\.npmignore" />
-                            </Component>
-                            <Component Id="cmp41D8FC53DDD7C99C85A4F04142DF8C18" Guid="*">
-                                <File Id="fil2943ACDB849FBCFFC91E7310A2CFFB25" KeyPath="yes" Source="$(var.PammDir)\resources\app\node_modules\winreg\package.json" />
-                            </Component>
-                            <Component Id="cmp6C042518130D23DB350A46C3A458DCB3" Guid="*">
-                                <File Id="filF769FF9CA5428BE717FC29240232B744" KeyPath="yes" Source="$(var.PammDir)\resources\app\node_modules\winreg\README.md" />
-                            </Component>
-                            <Component Id="cmpEC664BDF6DEAB0403E9C5EA3ECB94B0E" Guid="*">
-                                <File Id="fil5A7C0E22130D68EE1FFE919F4560F88D" KeyPath="yes" Source="$(var.PammDir)\resources\app\node_modules\winreg\test.js" />
-                            </Component>
-                            <Directory Id="dir496072524686AA135E77435A8DB27EB2" Name="lib">
-                                <Component Id="cmpFF93C37A225E0CED8E8AEA29E62DC48A" Guid="*">
-                                    <File Id="fil1F632D57DD981100F32C32A0F4264A42" KeyPath="yes" Source="$(var.PammDir)\resources\app\node_modules\winreg\lib\registry.js" />
                                 </Component>
                             </Directory>
                         </Directory>
@@ -613,6 +599,12 @@
                             <Component Id="cmpA8D21F6D158BC0E53E6A0AA044484C8C" Guid="*">
                                 <File Id="fil193CAF9B876373BC3A344061F198D566" KeyPath="yes" Source="$(var.PammDir)\resources\atom\browser\lib\chrome-extension.js" />
                             </Component>
+                            <Component Id="cmp60D2378C41096282EE222250399F742F" Guid="*">
+                                <File Id="fil3C22F573F2A9C6CC98C4FC6D5DF40DC1" KeyPath="yes" Source="$(var.PammDir)\resources\atom\browser\lib\guest-view-manager.js" />
+                            </Component>
+                            <Component Id="cmpB4671263FE429A92C89F08942131A596" Guid="*">
+                                <File Id="fil86D908E253650A19991478CF85B79D8D" KeyPath="yes" Source="$(var.PammDir)\resources\atom\browser\lib\guest-window-manager.js" />
+                            </Component>
                             <Component Id="cmpB2FB8B07B0E7AF948ABF7BD47A1D1F67" Guid="*">
                                 <File Id="filA80318FA2734C889B46C375B8F77EAD1" KeyPath="yes" Source="$(var.PammDir)\resources\atom\browser\lib\init.js" />
                             </Component>
@@ -638,6 +630,9 @@
                                 </Component>
                                 <Component Id="cmp73F89E9063D38F117810A0FA13A3A39F" Guid="*">
                                     <File Id="filCD7A0A15A44FF5353016B65D6CB4C98E" KeyPath="yes" Source="$(var.PammDir)\resources\atom\common\api\lib\id-weak-map.js" />
+                                </Component>
+                                <Component Id="cmp021B6220351DEB2683A9FD6432B88E08" Guid="*">
+                                    <File Id="filF6586893AA996F9D6C0E156051DEE013" KeyPath="yes" Source="$(var.PammDir)\resources\atom\common\api\lib\original-fs.js" />
                                 </Component>
                                 <Component Id="cmp23A9CC5C8E702DF6FA5CE01B6DB033A4" Guid="*">
                                     <File Id="filE8716DC0F05DDD136C25CC14B84AA911" KeyPath="yes" Source="$(var.PammDir)\resources\atom\common\api\lib\screen.js" />
@@ -665,6 +660,9 @@
                                 <Component Id="cmpEE1090E535A7393716D5EB3879463075" Guid="*">
                                     <File Id="fil8BDED97B9CB33FACE2A3FCD1B4A7D459" KeyPath="yes" Source="$(var.PammDir)\resources\atom\renderer\api\lib\remote.js" />
                                 </Component>
+                                <Component Id="cmp6A18F871FEFD8D9EB3206A6AC09EA17B" Guid="*">
+                                    <File Id="fil78F021E2986AD827C8DE303980E92644" KeyPath="yes" Source="$(var.PammDir)\resources\atom\renderer\api\lib\web-frame.js" />
+                                </Component>
                                 <Component Id="cmpC7B305E8724D1F14DB5B6AF4F0EF1A3B" Guid="*">
                                     <File Id="fil9991EA65A7A0FA67CD091402EEBE5AA1" KeyPath="yes" Source="$(var.PammDir)\resources\atom\renderer\api\lib\web-view.js" />
                                 </Component>
@@ -674,6 +672,9 @@
                             <Component Id="cmp6B56F91713BE0011AFB76C5F95CE3301" Guid="*">
                                 <File Id="fil7985D957D479667F5032FBCFD5F98CC2" KeyPath="yes" Source="$(var.PammDir)\resources\atom\renderer\lib\chrome-api.js" />
                             </Component>
+                            <Component Id="cmp2B525F7F5D005D63054C35DBB449D0CA" Guid="*">
+                                <File Id="filD90875C3C2706CB358E5FF7E81D924B6" KeyPath="yes" Source="$(var.PammDir)\resources\atom\renderer\lib\guest-view-internal.js" />
+                            </Component>
                             <Component Id="cmpAE59C2FD5F4F8616DC0D6BAF72574EDA" Guid="*">
                                 <File Id="fil110EA23F4678740558CAF93AA67757D8" KeyPath="yes" Source="$(var.PammDir)\resources\atom\renderer\lib\init.js" />
                             </Component>
@@ -682,6 +683,9 @@
                             </Component>
                             <Component Id="cmpB02370B9FD8CE04F5B347C30B4BAC306" Guid="*">
                                 <File Id="fil2CCD9F60630609BD591F0E00DC68B8F5" KeyPath="yes" Source="$(var.PammDir)\resources\atom\renderer\lib\override.js" />
+                            </Component>
+                            <Component Id="cmp94A7BB35D51867970E26332C870A2FDD" Guid="*">
+                                <File Id="fil3522B5AE3661BA878E1E6F129537710D" KeyPath="yes" Source="$(var.PammDir)\resources\atom\renderer\lib\web-view.js" />
                             </Component>
                         </Directory>
                     </Directory>
@@ -1047,6 +1051,8 @@
             <ComponentRef Id="cmp6481F4685537DDC46863DFE6204D3ECE" />
             <ComponentRef Id="cmp8CEBBFB9D46877952B0DB50F3E3AE166" />
             <ComponentRef Id="cmp003F4266227B0DFDEBA2FF91EAA284AE" />
+            <ComponentRef Id="cmp7C6D1F2FC563974CE3045485AD0A029A" />
+            <ComponentRef Id="cmp2B036D778214F9016502A5A064794868" />
             <ComponentRef Id="cmpA069E6E37E1B9D576A1A7E238A111BDB" />
             <ComponentRef Id="cmp6A687592733DD62F44A3D866567112DC" />
             <ComponentRef Id="cmpDB8B7750974961F0414745D52228A398" />
@@ -1055,12 +1061,6 @@
             <ComponentRef Id="cmpEEFAA9B31C730F62F4A7EC899324AB79" />
             <ComponentRef Id="cmpC2FD32850AC172760007179A48744E61" />
             <ComponentRef Id="cmpD1A236FB12569787F06324F5E786915E" />
-            <ComponentRef Id="cmp97E0CE9D2AFE975A3B78B8E1D2C6F15A" />
-            <ComponentRef Id="cmp3F6B69EC7D9A98B5DF90B42B180598A6" />
-            <ComponentRef Id="cmp41D8FC53DDD7C99C85A4F04142DF8C18" />
-            <ComponentRef Id="cmp6C042518130D23DB350A46C3A458DCB3" />
-            <ComponentRef Id="cmpEC664BDF6DEAB0403E9C5EA3ECB94B0E" />
-            <ComponentRef Id="cmpFF93C37A225E0CED8E8AEA29E62DC48A" />
             <ComponentRef Id="cmp8FEE021BBBAA716A7D0A9D1420AAA087" />
             <ComponentRef Id="cmpC54813E537BAC0BAFEFD7795FCF746E6" />
             <ComponentRef Id="cmp7891C344AAC23EF10A8EFD23BE9D5926" />
@@ -1076,6 +1076,8 @@
             <ComponentRef Id="cmp9253D6E2E3313CD78E1703F0EEE0A570" />
             <ComponentRef Id="cmp397641BBDE9AC03D32B87E8A30B91E54" />
             <ComponentRef Id="cmpA8D21F6D158BC0E53E6A0AA044484C8C" />
+            <ComponentRef Id="cmp60D2378C41096282EE222250399F742F" />
+            <ComponentRef Id="cmpB4671263FE429A92C89F08942131A596" />
             <ComponentRef Id="cmpB2FB8B07B0E7AF948ABF7BD47A1D1F67" />
             <ComponentRef Id="cmp2E4BDF236064ECF7D5F6DD3C0E40E5F9" />
             <ComponentRef Id="cmpBA00FEFD065FD5C0246DC97C6FFE8517" />
@@ -1083,17 +1085,21 @@
             <ComponentRef Id="cmpE2FD25CD5F72764AA095F1C7AA4C80CB" />
             <ComponentRef Id="cmp9A5C802725D1211B48D6A5DCC4C687EB" />
             <ComponentRef Id="cmp73F89E9063D38F117810A0FA13A3A39F" />
+            <ComponentRef Id="cmp021B6220351DEB2683A9FD6432B88E08" />
             <ComponentRef Id="cmp23A9CC5C8E702DF6FA5CE01B6DB033A4" />
             <ComponentRef Id="cmpA535B9A440B091E8B429405117E215A0" />
             <ComponentRef Id="cmp803F8A3DDFAF81629962880AC8749D7A" />
             <ComponentRef Id="cmpC944AFEC78449EB5F76159713711DD45" />
             <ComponentRef Id="cmp2CE995194A2F8CCB54F853D39047FDC6" />
             <ComponentRef Id="cmpEE1090E535A7393716D5EB3879463075" />
+            <ComponentRef Id="cmp6A18F871FEFD8D9EB3206A6AC09EA17B" />
             <ComponentRef Id="cmpC7B305E8724D1F14DB5B6AF4F0EF1A3B" />
             <ComponentRef Id="cmp6B56F91713BE0011AFB76C5F95CE3301" />
+            <ComponentRef Id="cmp2B525F7F5D005D63054C35DBB449D0CA" />
             <ComponentRef Id="cmpAE59C2FD5F4F8616DC0D6BAF72574EDA" />
             <ComponentRef Id="cmp35D5B957CF385D785A55197BA80C5DD6" />
             <ComponentRef Id="cmpB02370B9FD8CE04F5B347C30B4BAC306" />
+            <ComponentRef Id="cmp94A7BB35D51867970E26332C870A2FDD" />
             <ComponentRef Id="cmp4719EB739A74E669BA5A458DA6C9EA06" />
             <ComponentRef Id="cmp8B1E8E44FD56A18FB634268885462666" />
             <ComponentRef Id="cmp4175FFCBD71999169B20D52A90655CE4" />
