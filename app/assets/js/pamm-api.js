@@ -4,7 +4,7 @@ var _ = require('lodash');
 var pa = require('./pa.js');
 var compat = require('./pamm-compat.js');
 
-var URL_MODLIST = "https://pamm-mereth.rhcloud.com/api/mod";
+var URL_MODLIST = "http://pamm-mereth.rhcloud.com/api/mod";
 var URL_USAGE = "http://pamm-mereth.rhcloud.com/api/usage";
 
 var PAMM_MOD_ID = "PAMM";
@@ -95,7 +95,10 @@ exports.getAvailableMods = function (force) {
         });
     })
     .fail(function(jqXHR, textStatus, errorThrown) {
-        deferred.reject("Failed to load modlist data");
+        if(!errorThrown) {
+            errorThrown = "network issue";
+        }
+        deferred.reject("Failed to load modlist data: " + errorThrown);
     });
     
     return deferred.promise();

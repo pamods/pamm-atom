@@ -1135,7 +1135,10 @@ function jsDownloadNews() {
         $news.html(newshtml);
     })
     .fail(function(jqXHR, textStatus, errorThrown ) {
-        var msg = "Sorry but there was an error: ";
+        var msg = "Failed to load news data: ";
+        if(!errorThrown) {
+            errorThrown = "network issue";
+        }
         $news.html("<div class=\"loading\">" + msg + errorThrown + "</div>");
     });
 }
