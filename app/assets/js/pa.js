@@ -1,7 +1,6 @@
 var fs = require('fs');
 var path = require('path');
 var mkdirp = require('mkdirp');
-var LineByLineReader = require('line-by-line');
 
 var rootpath;
 var modspath;
@@ -13,16 +12,16 @@ var lastlogfile;
 var streams = {};
 var last;
 
-function findLastRunPath(next) {
+function findLastRunPath() {
     var platform = process.platform;
     
     if(!fs.existsSync(logpath))
-        return next("");
+        return "";
     
     var logfiles = fs.readdirSync(logpath);
     
     if(logfiles.length === 0)
-        return next("");
+        return "";
     
     // find last log file
     var laststat;
@@ -40,17 +39,17 @@ function findLastRunPath(next) {
     }
     
     // read log file & split to lines
-    var reader = new LineByLineReader(lastlogfile);
+    var logs = fs.readFileSync(lastlogfile, { encoding: 'utf8' });
+    var lines = logs.split(/\r?\n/);
     
-    var papath;
-    reader.on('line', function (line) {
-        if(papath) return;
+    // find the right line
+    for(i = 0; i < lines.length; ++i) {
+        var line = lines[i];
         if(line.indexOf("Coherent host dir: ") !== -1) {
-            console.log(line);
             // extract PA path
             var spos = line.indexOf('"') + 1;
             var epos = line.lastIndexOf('"');
-            papath = line.substring(spos, epos);
+            var papath = line.substring(spos, epos);
             
             if(platform === "win32") {
                 papath = path.join(papath, '../..'); // remove /x64/host
@@ -62,19 +61,11 @@ function findLastRunPath(next) {
                 papath = path.join(papath, '../../../..') // remove /PA.app/Contents/MacOS/host
             }
             
-            reader.close();
-            
-            return next(papath);
+            return papath;
         }
-    });
+    }
     
-    reader.on('error', function (err) {
-        next("", err);
-    });
-    
-    reader.on('end', function () {
-        if(!papath) return next("");
-    });
+    return "";
 };
 
 function createStreamObject(papath) {
@@ -113,7 +104,7 @@ function createStreamObject(papath) {
     }
 }
 
-var initialize = function(next) {
+var initialize = function() {
     var localpath;
     if (process.platform === 'win32') {
         localpath = process.env.LOCALAPPDATA
@@ -125,12 +116,12 @@ var initialize = function(next) {
         localpath = path.join(process.env.HOME, "/Library/Application Support")
     }
     else {
-        return next(new Error("Unsupported platform: " + process.platform));
+        throw new Error("Unsupported platform: " + process.platform);
     }
     
     rootpath = path.join(localpath, "/Uber Entertainment/Planetary Annihilation");
     if(!rootpath.match(/^[\x00-\x7F]+$/i)) {
-        return next(new Error("Non-ASCII characters found in '" + rootpath + "'. Sorry, but Planetary Annihilation is known to not work properly with unicode characters."));
+        throw new Error("Non-ASCII characters found in '" + rootpath + "'. Sorry, but Planetary Annihilation is known to not work properly with unicode characters.");
     }
     
     logpath = path.join(rootpath, '/log');
@@ -156,48 +147,46 @@ var initialize = function(next) {
     cachepath = path.join(rootpath, "/pamm_cache");
     mkdirp.sync(cachepath);
     
-    findLastRunPath(function(lastrunpath, err) {
-        if(err) return next(err);
+    var lastrunpath = findLastRunPath();
+    if (lastrunpath) {
+        var obj = createStreamObject(lastrunpath);
+        var obj2;
         
-        if (lastrunpath) {
-            var obj = createStreamObject(lastrunpath);
-            var obj2;
+        if(obj) {
+            if (obj.stream === 'stable') {
+                var obj2 = createStreamObject(path.join(lastrunpath, '../PTE'));
+            }
+            else if (obj.stream === 'PTE') {
+                var obj2 = createStreamObject(path.join(lastrunpath, '../stable'));
+            }
+            else {
+                // Steam distrib ?
+                obj.stream = 'steam'
+            }
             
-            if(obj) {
-                if (obj.stream === 'stable') {
-                    var obj2 = createStreamObject(path.join(lastrunpath, '../PTE'));
-                }
-                else if (obj.stream === 'PTE') {
-                    var obj2 = createStreamObject(path.join(lastrunpath, '../stable'));
-                }
-                else {
-                    // Steam distrib ?
-                    obj.stream = 'steam'
-                }
-                
-                streams[obj.stream] = obj;
-                last = obj;
-                if(obj2) {
-                    streams[obj2.stream] = obj2;
-                }
+            streams[obj.stream] = obj;
+            last = obj;
+            if(obj2) {
+                streams[obj2.stream] = obj2;
             }
         }
-        
-        exports.rootpath = rootpath;
-        exports.modspath = modspath;
-        exports.cachepath = cachepath;
-        exports.last = last;
-        exports.streams = streams;
-        
-        next();
-    });
+    }
+    
+    exports.rootpath = rootpath;
+    exports.modspath = modspath;
+    exports.cachepath = cachepath;
+    exports.last = last;
+    exports.streams = streams;
 };
 
 var deferredInitialize = $.Deferred(function(deferred) {
-    initialize(function(err) {
-        if(err) return deferred.reject(err);
-        return deferred.resolve();
-    });
+    try {
+        initialize();
+        deferred.resolve();
+    }
+    catch(error) {
+        deferred.reject(error);
+    }
 });
 
 exports.ready = deferredInitialize.promise();
