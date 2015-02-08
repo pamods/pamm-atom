@@ -501,14 +501,6 @@
                                 </Directory>
                             </Directory>
                         </Directory>
-                        <Directory Id="dir72D451F3939996919147B90ED1172CD6" Name="line-by-line">
-                            <Component Id="cmp7C6D1F2FC563974CE3045485AD0A029A" Guid="*">
-                                <File Id="fil7DD66E906B9F2A9887570F4051882488" KeyPath="yes" Source="$(var.PammDir)\resources\app\node_modules\line-by-line\line-by-line.js" />
-                            </Component>
-                            <Component Id="cmp2B036D778214F9016502A5A064794868" Guid="*">
-                                <File Id="filE0BFEA195227640CC858EFC4299A8A6F" KeyPath="yes" Source="$(var.PammDir)\resources\app\node_modules\line-by-line\package.json" />
-                            </Component>
-                        </Directory>
                         <Directory Id="dir138D0CD16DD48E48E48F7BACED36B7EB" Name="lodash">
                             <Component Id="cmpA069E6E37E1B9D576A1A7E238A111BDB" Guid="*">
                                 <File Id="fil67B699B87EA6D9EAA03A50D5870FBBD7" KeyPath="yes" Source="$(var.PammDir)\resources\app\node_modules\lodash\package.json" />
@@ -1051,8 +1043,6 @@
             <ComponentRef Id="cmp6481F4685537DDC46863DFE6204D3ECE" />
             <ComponentRef Id="cmp8CEBBFB9D46877952B0DB50F3E3AE166" />
             <ComponentRef Id="cmp003F4266227B0DFDEBA2FF91EAA284AE" />
-            <ComponentRef Id="cmp7C6D1F2FC563974CE3045485AD0A029A" />
-            <ComponentRef Id="cmp2B036D778214F9016502A5A064794868" />
             <ComponentRef Id="cmpA069E6E37E1B9D576A1A7E238A111BDB" />
             <ComponentRef Id="cmp6A687592733DD62F44A3D866567112DC" />
             <ComponentRef Id="cmpDB8B7750974961F0414745D52228A398" />
