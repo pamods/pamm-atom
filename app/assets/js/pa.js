@@ -120,9 +120,6 @@ var initialize = function() {
     }
     
     rootpath = path.join(localpath, "/Uber Entertainment/Planetary Annihilation");
-    if(!rootpath.match(/^[\x00-\x7F]+$/i)) {
-        throw new Error("Non-ASCII characters found in '" + rootpath + "'. Sorry, but Planetary Annihilation is known to not work properly with unicode characters.");
-    }
     
     logpath = path.join(rootpath, '/log');
     
