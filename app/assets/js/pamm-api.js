@@ -267,6 +267,17 @@ exports.install = function (id, callback, progressCallback) {
         
         var installpath = update ? update.installpath : path.join(paths.mods[mod.context], id);
         
+        if(update && update.stockmod) {
+            if(update.enabled === false) {
+                _enablemod(id, true);
+            }
+            else {
+                jsAddLogMessage("Skipping mod '" + id + "', it's a 'stockmod'.", 3)
+            }
+            _install(ids, callback);
+            return;
+        }
+        
         if(fs.existsSync(installpath)) {
             var modinfopath = path.join(installpath, "modinfo.json");
             if(fs.existsSync(modinfopath)) {
