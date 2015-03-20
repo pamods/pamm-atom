@@ -753,16 +753,30 @@ var _updateFiles = function(context) {
         }
     });
     
-    var pamm_path = context === 'server' ? paths.pamm_server : paths.pamm;
+    var pamm_path, uimodlist;
     
-    var uimodlist = "var global_mod_list = " + JSON.stringify(globalmodlist, null, 4) + ";\n\nvar scene_mod_list = " + JSON.stringify(scenemodlist, null, 4) + ";";
-    fs.writeFileSync(
-        path.join(pamm_path, 'ui/mods/ui_mod_list.js')
-        ,uimodlist
-        ,{ encoding: 'utf8' }
-    );
-    
-    if ( context === 'client' ) {
+    if ( context == 'server' )
+    {
+        pamm_path = paths.pamm_server;
+        
+        // server version of ui_mod_list.js loads local client copy of ui_mod_list_for_server.js then merges server scenes into client scenes
+        
+        uimodlist = "var global_server_mod_list = " + JSON.stringify(globalmodlist, null, 4) + ";\n\nvar scene_server_mod_list = " + JSON.stringify(scenemodlist, null, 4) + ";\n\nloadScript('coui://ui/mods/ui_mod_list_for_server.js');\n\ntry { global_mod_list = _.union( global_mod_list, global_server_mod_list ) } catch (e) { console.log(e); } ;\n\ntry { _.forOwn( scene_server_mod_list, function( value, key ) { if ( scene_mod_list[ key ] ) { scene_mod_list[ key ] = _.union( scene_mod_list[ key ], value ) } else { scene__mod_list[ key ] = value } } ); } catch (e) { console.log(e); }\n\n";
+
+    }
+    else if ( context == 'client' )
+    {
+        pamm_path = paths.pamm;
+
+        uimodlist = "var global_mod_list = " + JSON.stringify(globalmodlist, null, 4) + ";\n\nvar scene_mod_list = " + JSON.stringify(scenemodlist, null, 4) + ";";
+
+        // extra copy of client ui_mod_list.js that can be loaded by server version of ui_mod_list.js for merging
+        
+        fs.writeFileSync(
+            path.join(pamm_path, 'ui/mods/ui_mod_list_for_server.js' )
+            ,uimodlist
+            ,{ encoding: 'utf8' }
+        );
 
         // mods/pamm/modlist
         jsAddLogMessage("Writing mods_list.json", 4);
@@ -771,8 +785,15 @@ var _updateFiles = function(context) {
             ,JSON.stringify(installed, null, 4)
             ,{ encoding: 'utf8' }
         );
-    
+
     }
+
+    fs.writeFileSync(
+        path.join(pamm_path, 'ui/mods/ui_mod_list.js' )
+        ,uimodlist
+        ,{ encoding: 'utf8' }
+    );
+
 };
 
 var initialize = function() {
