@@ -9,6 +9,7 @@ var URL_USAGE = "http://pamm-mereth.rhcloud.com/api/usage";
 
 var PAMM_MOD_ID = "PAMM";
 var PAMM_MOD_IDENTIFIER = "com.pa.deathbydenim.dpamm";
+var PAMM_SERVER_MOD_IDENTIFIER = "com.pa.deathbydenim.dpamm.server";
 if(process.platform === 'win32') {
     PAMM_MOD_ID = "rPAMM";
     PAMM_MOD_IDENTIFIER = "com.pa.raevn.rpamm";
@@ -133,7 +134,7 @@ exports.getInstalledMods = function (context, force) {
         deferred.resolve(
             _.filter(
                 _.toArray(installed)
-                ,function(mod) { return mod.identifier !== PAMM_MOD_IDENTIFIER && mod.context === context }
+                ,function(mod) { return mod.identifier !== PAMM_MOD_IDENTIFIER && mod.identifier !== PAMM_SERVER_MOD_IDENTIFIER && mod.context === context }
             )
         );
     }).fail(function(err) {
@@ -534,7 +535,7 @@ var CreateFolderIfNotExists = function(path) {
 var findInstalledMods = function() {
     var mods = {};
     var categories = {};
-    var mounted = [PAMM_MOD_IDENTIFIER];
+    var mounted = [PAMM_MOD_IDENTIFIER,PAMM_SERVER_MOD_IDENTIFIER];
     
     // load mounted mods list (aka enabled mods)
     var _loadMountedMods = function(context) {
@@ -701,28 +702,26 @@ var _updateFiles = function(context) {
     );
     
     // mods/mods.json
-    jsAddLogMessage("Writing " + context + " mods.json", 4)
+    jsAddLogMessage("Writing " + context + " mods.json", 4);
+
+    // for server mods we only enable the PAMM if there are other server mods enabled    
+    var mount_order = context === 'server' && enabledmods.length == 1 ? [] : _.pluck( enabledmods,'identifier');
+
     var mods = {
-        mount_order:
-            _.pluck(
-                enabledmods
-                ,'identifier'
-            )
-    };
+        mount_order:mount_order
+                };
+    
     fs.writeFileSync(
         path.join(pa.modspath[context], 'mods.json')
         ,JSON.stringify(mods, null, 4)
         ,{ encoding: 'utf8' }
     );
-    
-    if(context === 'server')
-        return;
-    
+
     // mods/pamm/uimodlist
     jsAddLogMessage("Writing ui_mod_list.js", 4);
     var globalmodlist = [];
     var scenemodlist = {};
-    var scenes = ["armory", "building_planets", "connect_to_game", "game_over", "icon_atlas", "live_game", "live_game_econ", "live_game_hover", "load_planet", "lobby", "matchmaking", "new_game", "replay_browser", "server_browser", "settings", "social", "special_icon_atlas", "start", "system_editor", "transit"] // deprecated
+    var scenes = context === 'server' ? ["new_game","live_game"] : ["armory", "building_planets", "connect_to_game", "game_over", "icon_atlas", "live_game", "live_game_econ", "live_game_hover", "load_planet", "lobby", "matchmaking", "new_game", "replay_browser", "server_browser", "settings", "social", "special_icon_atlas", "start", "system_editor", "transit"] // deprecated
     _.each(scenes, function(scene) { scenemodlist[scene] = []; }); // temp fix for PA Stats => all scenes must be initialized by empty an array
     _.each(enabledmods, function(mod) {
         // deprecated global_mod_list at modinfo root
@@ -753,20 +752,48 @@ var _updateFiles = function(context) {
             });
         }
     });
-    var uimodlist = "var global_mod_list = " + JSON.stringify(globalmodlist, null, 4) + ";\n\nvar scene_mod_list = " + JSON.stringify(scenemodlist, null, 4) + ";";
+    
+    var pamm_path, uimodlist;
+    
+    if ( context == 'server' )
+    {
+        pamm_path = paths.pamm_server;
+        
+        // server version of ui_mod_list.js loads local client copy of ui_mod_list_for_server.js then merges server scenes into client scenes
+        
+        uimodlist = "var global_server_mod_list = " + JSON.stringify(globalmodlist, null, 4) + ";\n\nvar scene_server_mod_list = " + JSON.stringify(scenemodlist, null, 4) + ";\n\nloadScript('coui://ui/mods/ui_mod_list_for_server.js');\n\ntry { global_mod_list = _.union( global_mod_list, global_server_mod_list ) } catch (e) { console.log(e); } ;\n\ntry { _.forOwn( scene_server_mod_list, function( value, key ) { if ( scene_mod_list[ key ] ) { scene_mod_list[ key ] = _.union( scene_mod_list[ key ], value ) } else { scene__mod_list[ key ] = value } } ); } catch (e) { console.log(e); }\n\n";
+
+    }
+    else if ( context == 'client' )
+    {
+        pamm_path = paths.pamm;
+
+        uimodlist = "var global_mod_list = " + JSON.stringify(globalmodlist, null, 4) + ";\n\nvar scene_mod_list = " + JSON.stringify(scenemodlist, null, 4) + ";";
+
+        // extra copy of client ui_mod_list.js that can be loaded by server version of ui_mod_list.js for merging
+        
+        fs.writeFileSync(
+            path.join(pamm_path, 'ui/mods/ui_mod_list_for_server.js' )
+            ,uimodlist
+            ,{ encoding: 'utf8' }
+        );
+
+        // mods/pamm/modlist
+        jsAddLogMessage("Writing mods_list.json", 4);
+        fs.writeFileSync(
+            path.join(pamm_path, 'ui/mods/mods_list.json')
+            ,JSON.stringify(installed, null, 4)
+            ,{ encoding: 'utf8' }
+        );
+
+    }
+
     fs.writeFileSync(
-        path.join(paths.pamm, 'ui/mods/ui_mod_list.js')
+        path.join(pamm_path, 'ui/mods/ui_mod_list.js' )
         ,uimodlist
         ,{ encoding: 'utf8' }
     );
-    
-    // mods/pamm/modlist
-    jsAddLogMessage("Writing mods_list.json", 4);
-    fs.writeFileSync(
-        path.join(paths.pamm, 'ui/mods/mods_list.json')
-        ,JSON.stringify(installed, null, 4)
-        ,{ encoding: 'utf8' }
-    );
+
 };
 
 var initialize = function() {
@@ -774,11 +801,12 @@ var initialize = function() {
     paths.mods = pa.modspath;
     
     paths.pamm = path.join(pa.modspath.client, PAMM_MOD_ID);
+    paths.pamm_server = path.join(pa.modspath.server, PAMM_MOD_ID);
     
-    var strPammModDirectoryPath = paths.pamm;
-    CreateFolderIfNotExists(strPammModDirectoryPath);
-    CreateFolderIfNotExists(strPammModDirectoryPath + "/ui");
-    CreateFolderIfNotExists(strPammModDirectoryPath + "/ui/mods");
+    var strPammClientModDirectoryPath = paths.pamm;
+    CreateFolderIfNotExists(strPammClientModDirectoryPath);
+    CreateFolderIfNotExists(strPammClientModDirectoryPath + "/ui");
+    CreateFolderIfNotExists(strPammClientModDirectoryPath + "/ui/mods");
     
     var modinfo = {
         "context": "client",
@@ -792,7 +820,27 @@ var initialize = function() {
         "enabled": true,
         "id": PAMM_MOD_ID
     };
-    fs.writeFileSync(path.join(strPammModDirectoryPath, "modinfo.json"), JSON.stringify(modinfo, null, 4));
+    fs.writeFileSync(path.join(strPammClientModDirectoryPath, "modinfo.json"), JSON.stringify(modinfo, null, 4));
+
+    var strPammServerModDirectoryPath = paths.pamm_server;
+    CreateFolderIfNotExists(strPammServerModDirectoryPath);
+    CreateFolderIfNotExists(strPammServerModDirectoryPath + "/ui");
+    CreateFolderIfNotExists(strPammServerModDirectoryPath + "/ui/mods");
+
+    var server_modinfo = {
+        "context": "server",
+        "identifier": PAMM_SERVER_MOD_IDENTIFIER,
+        "display_name": "PA Server Mod Manager",
+        "description": " ",
+        "author": "pamm-atom",
+        "version": "1.0.0",
+        "signature": "not yet implemented",
+        "priority": 0,
+        "enabled": true,
+        "id": PAMM_MOD_ID
+    };
+    fs.writeFileSync(path.join(strPammServerModDirectoryPath, "modinfo.json"), JSON.stringify(server_modinfo, null, 4));
+
 };
 
 var deferredInitialize = $.Deferred();
