@@ -761,7 +761,7 @@ var _updateFiles = function(context) {
         
         // server version of ui_mod_list.js loads local client copy of ui_mod_list_for_server.js then merges server scenes into client scenes
         
-        uimodlist = "var global_server_mod_list = " + JSON.stringify(globalmodlist, null, 4) + ";\n\nvar scene_server_mod_list = " + JSON.stringify(scenemodlist, null, 4) + ";\n\nloadScript('coui://ui/mods/ui_mod_list_for_server.js');\n\ntry { global_mod_list = _.union( global_mod_list, global_server_mod_list ) } catch (e) { console.log(e); } ;\n\ntry { _.forOwn( scene_server_mod_list, function( value, key ) { if ( scene_mod_list[ key ] ) { scene_mod_list[ key ] = _.union( scene_mod_list[ key ], value ) } else { scene__mod_list[ key ] = value } } ); } catch (e) { console.log(e); }\n\n";
+        uimodlist = "var global_server_mod_list = " + JSON.stringify(globalmodlist, null, 4) + ";\n\nvar scene_server_mod_list = " + JSON.stringify(scenemodlist, null, 4) + ";\n\ntry { \n\nloadScript('coui://ui/mods/ui_mod_list_for_server.js');\n\ntry { global_mod_list = _.union( global_mod_list, global_server_mod_list ) } catch (e) { console.log(e); } ;\n\ntry { _.forOwn( scene_server_mod_list, function( value, key ) { if ( scene_mod_list[ key ] ) { scene_mod_list[ key ] = _.union( scene_mod_list[ key ], value ) } else { scene_mod_list[ key ] = value } } ); } catch (e) { console.log(e); } \n\n\} catch (e) {\n\nconsole.log(e);\n\nvar global_mod_list = global_server_mod_list;\n\nvar scene_mod_list = scene_server_mod_list;\n\n}\n\n";
 
     }
     else if ( context == 'client' )
