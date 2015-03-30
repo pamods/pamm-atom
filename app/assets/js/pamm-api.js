@@ -701,22 +701,6 @@ var _updateFiles = function(context) {
         ,function(mod) { return mod.priority }
     );
     
-    // mods/mods.json
-    jsAddLogMessage("Writing " + context + " mods.json", 4);
-
-    // for server mods we only enable the PAMM if there are other server mods enabled    
-    var mount_order = context === 'server' && enabledmods.length == 1 ? [] : _.pluck( enabledmods,'identifier');
-
-    var mods = {
-        mount_order:mount_order
-                };
-    
-    fs.writeFileSync(
-        path.join(pa.modspath[context], 'mods.json')
-        ,JSON.stringify(mods, null, 4)
-        ,{ encoding: 'utf8' }
-    );
-
     // mods/pamm/uimodlist
     jsAddLogMessage("Writing ui_mod_list.js", 4);
     var globalmodlist = [];
@@ -754,15 +738,27 @@ var _updateFiles = function(context) {
     });
     
     var pamm_path, uimodlist;
+ 
+    var mount_order = _.pluck( enabledmods,'identifier'); // may be modified for server mods
     
     if ( context == 'server' )
     {
+
         pamm_path = paths.pamm_server;
         
+
         // server version of ui_mod_list.js loads local client copy of ui_mod_list_for_server.js then merges server scenes into client scenes
         
         uimodlist = "var global_server_mod_list = " + JSON.stringify(globalmodlist, null, 4) + ";\n\nvar scene_server_mod_list = " + JSON.stringify(scenemodlist, null, 4) + ";\n\ntry { \n\nloadScript('coui://ui/mods/ui_mod_list_for_server.js');\n\ntry { global_mod_list = _.union( global_mod_list, global_server_mod_list ) } catch (e) { console.log(e); } ;\n\ntry { _.forOwn( scene_server_mod_list, function( value, key ) { if ( scene_mod_list[ key ] ) { scene_mod_list[ key ] = _.union( scene_mod_list[ key ], value ) } else { scene_mod_list[ key ] = value } } ); } catch (e) { console.log(e); } \n\n\} catch (e) {\n\nconsole.log(e);\n\nvar global_mod_list = global_server_mod_list;\n\nvar scene_mod_list = scene_server_mod_list;\n\n}\n\n";
 
+        // for server mods we only enable the PA Server Mod Manager if there are other server mods enabled that use scenes
+        jsAddLogMessage( 'Found ' + sceneCount + ' scenes in ' + context + ' mods.json', 4);
+        
+         if ( sceneCount == 0 )
+        {
+            mount_order = _.without( mount_order, PAMM_SERVER_MOD_IDENTIFIER );
+        }
+ 
     }
     else if ( context == 'client' )
     {
@@ -788,12 +784,28 @@ var _updateFiles = function(context) {
 
     }
 
+    if ( uimodlist && pamm_path )
+    {
+        fs.writeFileSync(
+            path.join(pamm_path, 'ui/mods/ui_mod_list.js' )
+            ,uimodlist
+            ,{ encoding: 'utf8' }
+        );
+    }
+    
+    // mods/mods.json
+    
+    jsAddLogMessage("Writing " + context + " mods.json", 4);
+
+    var mods = {
+        mount_order:mount_order
+                };
+    
     fs.writeFileSync(
-        path.join(pamm_path, 'ui/mods/ui_mod_list.js' )
-        ,uimodlist
+        path.join(pa.modspath[context], 'mods.json')
+        ,JSON.stringify(mods, null, 4)
         ,{ encoding: 'utf8' }
     );
-
 };
 
 var initialize = function() {
