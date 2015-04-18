@@ -232,6 +232,21 @@ var getRequiredBy = function(id) {
 };
 exports.getRequiredBy = getRequiredBy;
 
+exports.hasUpdate = function(id) {
+    var mod = installed[id];
+    var online = available[id];
+    
+    if(!mod || !online) {
+        return false;
+    }
+    
+    if(!semver.valid(mod.version) || !semver.valid(online.version)) {
+        return mod.version !== online.version;
+    }
+    
+    return semver.lt(mod.version, online.version);
+};
+
 exports.install = function (id, callback, progressCallback) {
     var mod = available[id];
     

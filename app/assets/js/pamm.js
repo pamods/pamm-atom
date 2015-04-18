@@ -122,8 +122,9 @@ function jsSortOnlineMods() {
 function jsUpdateAll(context) {
     var mods = objInstalledMods[context];
     for (var i = 0; i < mods.length; i++) {
-        if (jsGetOnlineMod(mods[i].identifier) != null && mods[i].version !== jsGetOnlineMod(mods[i].identifier).version) {
-            jsPreInstallMod(mods[i].identifier);
+        var identifier = mods[i].identifier;
+        if (pamm.hasUpdate(identifier)) {
+            jsPreInstallMod(identifier);
         }
     }
 }
@@ -369,7 +370,7 @@ function jsGenerateModEntryHTML(objMod, boolIsInstalled) {
     }
     else {
         if(!modInstalled.stockmod) {
-            if (modOnline && modInstalled.version !== modOnline.version) {
+            if (pamm.hasUpdate(id)) {
                 strHTML_update_link = "<div class='mod_entry_link mod_entry_update_link'>[ <a href='#' data-action='install'>" + jsGetLocaleText('update') + "</a> ]</div>";
                 
                 // filter classe
@@ -905,7 +906,8 @@ function jsGetModsRequiringUpdates(context) {
     
     var mods = objInstalledMods[context];
     for(var i = 0; i < mods.length; i++) {
-        if (jsGetOnlineMod(mods[i]["identifier"]) != null && mods[i]["version"] !== jsGetOnlineMod(mods[i]["identifier"])["version"]) {
+        var identifier = mods[i].identifier;
+        if (pamm.hasUpdate(identifier)) {
             intModsRequiringUpdate++;
         }
     }
