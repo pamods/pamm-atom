@@ -1358,20 +1358,21 @@ function UpdatePAMM(info) {
     });
 }
 
-function rmdirRecurseSync(dir) {
-    var list = fs.readdirSync(dir);
-    for(var i = 0; i < list.length; ++i) {
-        var filename = dir + "/" + list[i];
-        var stat = fs.statSync(filename);
-        if(stat.isDirectory()) {
-            // rmdir recursively
-            rmdirRecurseSync(filename);
-        } else {
-            // rm filename
-            fs.unlinkSync(filename);
+function rmdirRecurseSync(path) {
+    var stat = fs.lstatSync(path);
+    if(stat.isDirectory()) {
+        // recurse
+        var list = fs.readdirSync(path);
+        for(var i = 0; i < list.length; ++i) {
+            var newpath = path + "/" + list[i];
+            rmdirRecurseSync(newpath);
         }
+        // rm dir
+        fs.rmdirSync(path);
+    } else {
+        // rm file / symlink
+        fs.unlinkSync(path);
     }
-    fs.rmdirSync(dir);
 };
 
 $(function() {
