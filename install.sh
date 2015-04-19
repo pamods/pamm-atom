@@ -47,7 +47,7 @@ fi
 
 echo "Find latest Atom Shell release..."
 
-LATEST_ATOM_URL=https://github.com/atom/atom-shell/releases/latest
+LATEST_ATOM_URL=https://github.com/atom/electron/releases/tag/v0.19.5
 
 if [ $HTTPCLIENT == "wget" ]; then
     HTML=`wget -qO- $LATEST_ATOM_URL`
@@ -60,7 +60,7 @@ if [ $? -gt 0 ]; then
     exit 1
 fi
 
-ATOM_ARCHIVE_URL=`echo $HTML | egrep -o "/atom/atom-shell/releases/download/[^\"]+-$PLATFORM-x64.zip" | head -1`
+ATOM_ARCHIVE_URL=`echo $HTML | egrep -o "/atom/electron/releases/download/[^\"]+-$PLATFORM-x64.zip" | head -1`
 ATOM_ARCHIVE_URL="https://github.com$ATOM_ARCHIVE_URL"
 
 ATOM_ARCHIVE=`echo $ATOM_ARCHIVE_URL | sed -E 's/.+\/(.+)/\1/'`
