@@ -6,13 +6,13 @@ $ErrorActionPreference = "Stop"
     $AtomDir = "$PammDir"
     $AppDir = "$PammDir\resources\app"
 
-    $ReleasesURL = "https://github.com/atom/atom-shell/releases/latest"
+    $ReleasesURL = "https://github.com/atom/electron/releases/tag/v0.19.5"
 
     try {
         Write-Host "Find latest Atom Shell release..."
         $Html = (New-Object System.Net.WebClient).DownloadString($ReleasesURL)
 
-        if($Html -match "href=`"(/atom/atom-shell/releases/download/[^`"]+-win32-ia32.zip)") {
+        if($Html -match "href=`"(/atom/electron/releases/download/[^`"]+-win32-ia32.zip)") {
 
             # Prepare PAMM installation folder
 
