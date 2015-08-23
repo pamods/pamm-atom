@@ -1284,14 +1284,15 @@ function initSettings() {
 }
 
 function LaunchPA(nomods) {
-    if(pamm.getStream() === 'steam') {
-        shell.openExternal('steam://rungameid/233250');
+    var stream = pa.streams[pamm.getStream()];
+    if(stream.stream === 'steam') {
+        shell.openExternal('steam://rungameid/' + stream.steamId);
     }
     else {
         var child_process = require('child_process');
         var path = require('path');
         
-        var binpath = pa.streams[pamm.getStream()].bin;
+        var binpath = stream.bin;
         var wd = path.dirname(binpath);
         
         var args = [];
@@ -1439,7 +1440,7 @@ $.when(pamm.ready, $.ready).done(function() {
         $('#context > span').html('none');
     }
     else if (nbstreams === 1) {
-        $('#context > span').html(pa.last.stream + ' (' + pa.last.build + ')');
+        $('#context > span').html(pa.last.stream + (pa.last.steamLabel ? '/'+pa.last.steamLabel : '' )  + ' (' + pa.last.build + ')');
     }
     else {
         var _generateStreamInput = function(stream) {
