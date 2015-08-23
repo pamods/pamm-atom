@@ -158,7 +158,19 @@ var initialize = function() {
             }
             else {
                 // Steam distrib ?
-                obj.stream = 'steam'
+                obj.stream = 'steam';
+                
+                if(path.basename(lastrunpath) == 'Planetary Annihilation') {
+                    obj.steamId = '233250';
+                    obj.steamLabel = 'classic';
+                }
+                else if(path.basename(lastrunpath) == 'Planetary Annihilation Titans') {
+                    obj.steamId = '386070';
+                    obj.steamLabel = 'titans';
+                }
+                else {
+                    obj.stream = 'unknown';
+                }
             }
             
             streams[obj.stream] = obj;
