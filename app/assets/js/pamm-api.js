@@ -722,7 +722,37 @@ var _updateFiles = function(context) {
         )
         ,function(mod) { return mod.priority }
     );
-    
+
+    var scenesRequired = _updateUiModList(context, enabledmods);
+
+    if ( scenesRequired )
+    {
+        jsAddLogMessage( 'Enabling PA ' + context + ' Mod Manager', 4);
+    }
+    else
+    {
+        jsAddLogMessage( 'Disabling PA ' + context + ' Mod Manager as not needed', 4);
+
+        var pamm_mod;
+        switch ( context )
+        {
+            case 'server':
+                pamm_mod = PAMM_SERVER_MOD_IDENTIFIER;
+                break;
+            case 'client':
+                pamm_mod = PAMM_MOD_IDENTIFIER;
+                break;
+            default:
+                jsAddLogMessage("Unknown context " + context, 4);
+        }
+
+        enabledmods = _.filter( enabledmods, function(mod) {return mod.identifier != pamm_mod});
+    }
+
+    _updateModsJson(context, enabledmods)
+}
+
+var _updateUiModList = function(context, enabledmods) {
     // mods/pamm/uimodlist
     jsAddLogMessage("Processing " + context + " scenes", 4);
     
@@ -762,8 +792,6 @@ var _updateFiles = function(context) {
     
     var pamm_path, uimodlist;
  
-    var mount_order = _.pluck( enabledmods,'identifier'); // may be modified for server mods
-    
     switch ( context )
     {
         
@@ -774,22 +802,6 @@ var _updateFiles = function(context) {
             // server version of ui_mod_list.js loads local client copy of ui_mod_list_for_server.js then merges server scenes into client scenes
     
             uimodlist = "var global_server_mod_list = " + JSON.stringify(globalmodlist, null, 4) + ";\n\nvar scene_server_mod_list = " + JSON.stringify(scenemodlist, null, 4) + ";\n\ntry { \n\nloadScript('coui://ui/mods/ui_mod_list_for_server.js');\n\ntry { global_mod_list = _.union( global_mod_list, global_server_mod_list ) } catch (e) { console.log(e); } ;\n\ntry { _.forOwn( scene_server_mod_list, function( value, key ) { if ( scene_mod_list[ key ] ) { scene_mod_list[ key ] = _.union( scene_mod_list[ key ], value ) } else { scene_mod_list[ key ] = value } } ); } catch (e) { console.log(e); } \n\n\} catch (e) {\n\nconsole.log(e);\n\nvar global_mod_list = global_server_mod_list;\n\nvar scene_mod_list = scene_server_mod_list;\n\n}\n\n";
-    
-            // for server mods we only enable the PA Server Mod Manager if there are other server mods enabled that use scenes
-    
-            var sceneCount = globalmodlist.length + _.flatten( _.values( scenemodlist ) ).length;
-            
-            jsAddLogMessage( 'Found ' + sceneCount + ' server mod scenes', 4);
-            
-            if ( sceneCount == 0 )
-            {
-                jsAddLogMessage( 'Disabling PA Server Mod Manager as not needed', 4);
-                mount_order = _.without( mount_order, PAMM_SERVER_MOD_IDENTIFIER );
-            }
-            else
-            {
-                jsAddLogMessage( 'Enabling PA Server Mod Manager', 4);                
-            }
     
             break;
         
@@ -839,11 +851,19 @@ var _updateFiles = function(context) {
             ,{ encoding: 'utf8' }
         );
     }
-    
+
+    var sceneCount = globalmodlist.length + _.flatten( _.values( scenemodlist ) ).length;
+
+    jsAddLogMessage( 'Found ' + sceneCount + ' ' + context + ' mod scenes', 4);
+
+    return sceneCount > 0;
+}
+
+var _updateModsJson = function(context, enabledmods) {
     // mods/mods.json
     
-    jsAddLogMessage("Writing " + context + " mods.json", 4);
-
+    var mount_order = _.pluck( enabledmods,'identifier');
+    jsAddLogMessage("Writing " + context + " mods.json with " + mount_order.length + " enabled mods", 4);
     var mods = { mount_order:mount_order };
     
     fs.writeFileSync(
