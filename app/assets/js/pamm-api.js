@@ -864,13 +864,17 @@ var _updateUnitList = function(context, enabledmods) {
     // mods/pamm/unit_list.json
     jsAddLogMessage("Processing " + context + " unit_list", 4);
 
-    var addedunits = [];
+    var add_units = [];
+    var remove_units = [];
     var unitmods = 0
     _.each(enabledmods, function(mod) {
         if ( mod.unit_list ) {
             unitmods = unitmods + 1
-            if ( mod.unit_list.units ) {
-                addedunits = addedunits.concat(mod.unit_list.units);
+            if ( mod.unit_list.add_units ) {
+                add_units = add_units.concat(mod.unit_list.add_units);
+            }
+            if ( mod.unit_list.remove_units ) {
+                remove_units = remove_units.concat(mod.unit_list.remove_units);
             }
         }
     });
@@ -902,7 +906,8 @@ var _updateUnitList = function(context, enabledmods) {
     {
         var unitlistpath = path.join(pa.streams[stream].media, "/pa_ex1/units/unit_list.json");
         var list = JSON.parse(fs.readFileSync(unitlistpath, {encoding: 'utf8'}));
-        list.units = list.units.concat(addedunits);
+        list.units = _.difference(list.units, remove_units);
+        list.units = _.union(list.units, add_units);
         var unit_list = JSON.stringify(list);
 
         jsAddLogMessage("Writing " + context + " unit_list.json", 4);
