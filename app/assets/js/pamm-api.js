@@ -674,7 +674,7 @@ var findInstalledMods = function() {
     _fixDependencies(mods);
     
     installed = mods;
-    
+
     _updateFiles();
 }
 
@@ -724,8 +724,9 @@ var _updateFiles = function(context) {
     );
 
     var scenesRequired = _updateUiModList(context, enabledmods);
+    var unitsRequired = _updateUnitList(context, enabledmods);
 
-    if ( scenesRequired )
+    if ( scenesRequired || unitsRequired )
     {
         jsAddLogMessage( 'Enabling PA ' + context + ' Mod Manager', 4);
     }
@@ -859,6 +860,71 @@ var _updateUiModList = function(context, enabledmods) {
     return sceneCount > 0;
 }
 
+var _updateUnitList = function(context, enabledmods) {
+    // mods/pamm/unit_list.json
+    jsAddLogMessage("Processing " + context + " unit_list", 4);
+
+    var addedunits = [];
+    var unitmods = 0
+    _.each(enabledmods, function(mod) {
+        if ( mod.unit_list ) {
+            unitmods = unitmods + 1
+            if ( mod.unit_list.units ) {
+                addedunits = addedunits.concat(mod.unit_list.units);
+            }
+        }
+    });
+
+    var pamm_path;
+
+    switch ( context )
+    {
+        case 'server':
+            pamm_path = paths.pamm_server;
+            break;
+        case 'client':
+            pamm_path = paths.pamm;
+            break;
+        default:
+            jsAddLogMessage("Unknown context " + context, 4);
+    }
+
+// some error checking
+
+    if ( ! pamm_path )
+    {
+        return;
+    }
+
+    var pamm_unit_list_path = path.join(pamm_path, 'pa/units/unit_list.json' );
+
+    if ( unitmods )
+    {
+        var unitlistpath = path.join(pa.streams[stream].media, "/pa_ex1/units/unit_list.json");
+        var list = JSON.parse(fs.readFileSync(unitlistpath, {encoding: 'utf8'}));
+        list.units = list.units.concat(addedunits);
+        var unit_list = JSON.stringify(list);
+
+        jsAddLogMessage("Writing " + context + " unit_list.json", 4);
+        fs.writeFileSync(
+            pamm_unit_list_path
+            ,unit_list
+            ,{ encoding: 'utf8' }
+        );
+    }
+    else
+    {
+        if ( fs.existsSync(pamm_unit_list_path) ) {
+          jsAddLogMessage("Clearing " + context + " unit_list.json", 4);
+          fs.unlinkSync(pamm_unit_list_path);
+        }
+    }
+
+    jsAddLogMessage( 'Found ' + unitmods + ' ' + context + ' mod units', 4);
+
+    return unitmods > 0;
+}
+
 var _updateModsJson = function(context, enabledmods) {
     // mods/mods.json
     
@@ -884,6 +950,8 @@ var initialize = function() {
     CreateFolderIfNotExists(strPammClientModDirectoryPath);
     CreateFolderIfNotExists(strPammClientModDirectoryPath + "/ui");
     CreateFolderIfNotExists(strPammClientModDirectoryPath + "/ui/mods");
+    CreateFolderIfNotExists(strPammClientModDirectoryPath + "/pa");
+    CreateFolderIfNotExists(strPammClientModDirectoryPath + "/pa/units");
     
     var modinfo = {
         "context": "client",
@@ -901,6 +969,8 @@ var initialize = function() {
     CreateFolderIfNotExists(strPammServerModDirectoryPath);
     CreateFolderIfNotExists(strPammServerModDirectoryPath + "/ui");
     CreateFolderIfNotExists(strPammServerModDirectoryPath + "/ui/mods");
+    CreateFolderIfNotExists(strPammServerModDirectoryPath + "/pa");
+    CreateFolderIfNotExists(strPammServerModDirectoryPath + "/pa/units");
 
     var server_modinfo = {
         "context": "server",
