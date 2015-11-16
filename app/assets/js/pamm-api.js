@@ -894,11 +894,12 @@ var _updateUnitList = function(context, enabledmods) {
     var unitmods = 0
     _.each(enabledmods, function(mod) {
         if ( mod.unit_list ) {
-            unitmods = unitmods + 1
             if ( mod.unit_list.add_units ) {
+                unitmods = unitmods + 1
                 add_units = add_units.concat(mod.unit_list.add_units);
             }
             if ( mod.unit_list.remove_units ) {
+                unitmods = unitmods + 1
                 remove_units = remove_units.concat(mod.unit_list.remove_units);
             }
         }
