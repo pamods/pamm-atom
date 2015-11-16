@@ -320,7 +320,7 @@ exports.install = function (id, callback, progressCallback) {
                 throw "no context property in modinfo"
             if(modinfo.context === 'server' || !modinfo.id)
                 modinfo.id = modinfo.identifier;
-            if (!modinfo.priority)
+            if (modinfo.priority === undefined)
                 modinfo.priority = 100;
             modinfo.enabled = true;
             modinfo.installpath = installpath;
@@ -594,7 +594,7 @@ var findInstalledMods = function() {
                     else
                         compat.push(mod.identifier, mod.id)
                     
-                    if (!mod.priority)
+                    if (mod.priority === undefined)
                         mod.priority = 100;
                     
                     mod.enabled = (_.indexOf(mounted, mod.identifier) !== -1);
@@ -641,7 +641,7 @@ var findInstalledMods = function() {
                             
                             mod.id = dirname;
                             
-                            if (!mod.priority)
+                            if (mod.priority === undefined)
                                 mod.priority = 100;
                             
                             mod.enabled = (_.indexOf(mounted, mod.identifier) !== -1);
