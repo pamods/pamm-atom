@@ -180,9 +180,9 @@ var getRequires = function(id) {
     requires[id] = id;
     
     var _fillrequires = function(id, requires) {
-        var mod = available[id];
+        var mod = installed[id];
         if(!mod) {
-            mod = installed[id];
+            mod = available[id];
             if(!mod) {
                 throw "Mod '" + id + "' not found.";
             }
