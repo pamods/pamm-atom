@@ -262,6 +262,7 @@ exports.install = function (id, callback, progressCallback) {
     
     var _finish = function(error, id) {
         _fixDependencies(installed);
+        _scanForUnitListChanges(installed);
         _updateFiles();
         if(error)
             error = "Failed to install '" + id + "'. " + error
@@ -672,6 +673,7 @@ var findInstalledMods = function() {
     }
     
     _fixDependencies(mods);
+    _scanForUnitListChanges(mods);
     
     installed = mods;
 
@@ -703,6 +705,29 @@ var _fixDependencies = function(mods) {
             if(!mismatch) {
                 var modinfopath = path.join(mod.installpath, "modinfo.json");
                 fs.writeFileSync(modinfopath, JSON.stringify(mod, null, 4), { encoding: 'utf8' });
+            }
+        }
+    }
+}
+
+var _scanForUnitListChanges = function(mods) {
+    var unitlistpath = path.join(pa.streams[stream].media, "/pa_ex1/units/unit_list.json");
+    var stocklist = JSON.parse(fs.readFileSync(unitlistpath, {encoding: 'utf8'}));
+    for (var identifier in mods) {
+        var mod = mods[identifier]
+        if (!mod.unit_list) {
+            if (!mod.installpath) {
+                jsAddLogMessage(identifier + " Missing installpath", 4);
+                continue;
+            }
+            unitlistpath = path.join(mod.installpath, '/pa/units/unit_list.json');
+            if (fs.existsSync(unitlistpath)) {
+                var modlist = JSON.parse(fs.readFileSync(unitlistpath, {encoding: 'utf8'}))
+                mod.unit_list = {
+                    add_units: _.difference(modlist.units, stocklist.units),
+                    remove_units: _.difference(stocklist.units, modlist.units)
+                }
+                //console.log([identifier, JSON.stringify(mod.unit_list)])
             }
         }
     }
@@ -966,7 +991,8 @@ var initialize = function() {
         "author": "pamm-atom",
         "version": "1.0.0",
         "signature": "not yet implemented",
-        "priority": 0
+        "priority": 0,
+        "unit_list": {}
     };
     fs.writeFileSync(path.join(strPammClientModDirectoryPath, "modinfo.json"), JSON.stringify(modinfo, null, 4));
 
@@ -985,7 +1011,8 @@ var initialize = function() {
         "author": "pamm-atom",
         "version": "1.0.0",
         "signature": "not yet implemented",
-        "priority": 0
+        "priority": 0,
+        "unit_list": {}
     };
     fs.writeFileSync(path.join(strPammServerModDirectoryPath, "modinfo.json"), JSON.stringify(server_modinfo, null, 4));
 
