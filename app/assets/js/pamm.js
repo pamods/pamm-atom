@@ -799,7 +799,7 @@ function jsDisplayPanel(strPanelName) {
 
 function jsPreInstallMod(strModID) {
     try {
-        var requires = pamm.getRequires(strModID);
+        var requires = pamm.getRequiredToInstall(strModID);
         if(requires.length) {
             var displaynames = [];
             for(var i = 0; i < requires.length; ++i) {

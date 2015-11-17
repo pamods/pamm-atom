@@ -175,17 +175,14 @@ exports.getPaths = function () {
     return paths;
 };
 
-var getRequires = function(id) {
+var getRequires = function(id, modpool) {
     var requires = {};
     requires[id] = id;
     
     var _fillrequires = function(id, requires) {
-        var mod = installed[id];
+        var mod = modpool[id];
         if(!mod) {
-            mod = available[id];
-            if(!mod) {
-                throw "Mod '" + id + "' not found.";
-            }
+            throw "Mod '" + id + "' not found.";
         }
         
         var dependencies = mod.dependencies;
@@ -205,7 +202,11 @@ var getRequires = function(id) {
     
     return _.toArray(requires);
 };
-exports.getRequires = getRequires;
+
+var getRequiredToInstall = function(id) {
+    return getRequires(id, available);
+}
+exports.getRequiredToInstall = getRequiredToInstall;
 
 var getRequiredBy = function(id) {
     requiredby = {};
@@ -250,7 +251,7 @@ exports.hasUpdate = function(id) {
 exports.install = function (id, callback, progressCallback) {
     var mod = available[id];
     
-    var ids = getRequires(id);
+    var ids = getRequires(id, available);
     ids.push(id);
     
     var _finish = function(error, id) {
@@ -497,7 +498,7 @@ exports.setAllEnabled = function(enabled, context) {
 var _enablemod = function(id, force) {
     var enabled = [];
     
-    var ids = getRequires(id); // should use "installed" list in this case
+    var ids = getRequires(id, installed);
     ids.push(id);
     
     for(var i = 0; i < ids.length; ++i) {
