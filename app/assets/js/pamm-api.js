@@ -22,6 +22,12 @@ var available = {};
 
 var paths = {};
 
+var isBuiltinMod = function(identifier) {
+  return identifier === PAMM_MOD_ID ||
+    identifier === PAMM_MOD_IDENTIFIER ||
+    identifier === PAMM_SERVER_MOD_IDENTIFIER;
+}
+
 exports.setStream = function(newstream) {
     stream = newstream;
     installed = {};
@@ -134,7 +140,7 @@ exports.getInstalledMods = function (context, force) {
         deferred.resolve(
             _.filter(
                 _.toArray(installed)
-                ,function(mod) { return mod.identifier !== PAMM_MOD_IDENTIFIER && mod.identifier !== PAMM_SERVER_MOD_IDENTIFIER && mod.context === context }
+                ,function(mod) { return !isBuiltinMod(mod.identifier) && mod.context === context }
             )
         );
     }).fail(function(err) {
@@ -468,7 +474,7 @@ exports.setEnabled = function(id, enabled) {
 exports.setAllEnabled = function(enabled, context) {
     var ids = [];
     for(var key in installed) {
-        if(key === PAMM_MOD_IDENTIFIER)
+        if(isBuiltinMod(key))
             continue;
         
         if (installed.hasOwnProperty(key)) {
@@ -524,7 +530,7 @@ var _enablemod = function(id, force) {
 var _disablemod = function(id) {
     var disabled = [];
     
-    if(id === PAMM_MOD_ID)
+    if(isBuiltinMod(id))
         return disabled;
     
     var ids = getRequiredBy(id);
