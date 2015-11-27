@@ -262,6 +262,7 @@ exports.install = function (id, callback, progressCallback) {
     
     var _finish = function(error, id) {
         _fixDependencies(installed);
+        _scanForUnitListChanges(installed);
         _updateFiles();
         if(error)
             error = "Failed to install '" + id + "'. " + error
@@ -672,9 +673,10 @@ var findInstalledMods = function() {
     }
     
     _fixDependencies(mods);
+    _scanForUnitListChanges(mods);
     
     installed = mods;
-    
+
     _updateFiles();
 }
 
@@ -708,6 +710,29 @@ var _fixDependencies = function(mods) {
     }
 }
 
+var _scanForUnitListChanges = function(mods) {
+    var unitlistpath = path.join(pa.streams[stream].media, "/pa_ex1/units/unit_list.json");
+    var stocklist = JSON.parse(fs.readFileSync(unitlistpath, {encoding: 'utf8'}));
+    for (var identifier in mods) {
+        var mod = mods[identifier]
+        if (!mod.unit_list) {
+            if (!mod.installpath) {
+                jsAddLogMessage(identifier + " Missing installpath", 4);
+                continue;
+            }
+            unitlistpath = path.join(mod.installpath, '/pa/units/unit_list.json');
+            if (fs.existsSync(unitlistpath)) {
+                var modlist = JSON.parse(fs.readFileSync(unitlistpath, {encoding: 'utf8'}))
+                mod.unit_list = {
+                    add_units: _.difference(modlist.units, stocklist.units),
+                    remove_units: _.difference(stocklist.units, modlist.units)
+                }
+                //console.log([identifier, JSON.stringify(mod.unit_list)])
+            }
+        }
+    }
+}
+
 var _updateFiles = function(context) {
     if(!context) {
         _updateFiles('client');
@@ -722,7 +747,38 @@ var _updateFiles = function(context) {
         )
         ,function(mod) { return mod.priority }
     );
-    
+
+    var scenesRequired = _updateUiModList(context, enabledmods);
+    var unitsRequired = _updateUnitList(context, enabledmods);
+
+    if ( scenesRequired || unitsRequired )
+    {
+        jsAddLogMessage( 'Enabling PA ' + context + ' Mod Manager', 4);
+    }
+    else
+    {
+        jsAddLogMessage( 'Disabling PA ' + context + ' Mod Manager as not needed', 4);
+
+        var pamm_mod;
+        switch ( context )
+        {
+            case 'server':
+                pamm_mod = PAMM_SERVER_MOD_IDENTIFIER;
+                break;
+            case 'client':
+                pamm_mod = PAMM_MOD_IDENTIFIER;
+                break;
+            default:
+                jsAddLogMessage("Unknown context " + context, 4);
+        }
+
+        enabledmods = _.filter( enabledmods, function(mod) {return mod.identifier != pamm_mod});
+    }
+
+    _updateModsJson(context, enabledmods)
+}
+
+var _updateUiModList = function(context, enabledmods) {
     // mods/pamm/uimodlist
     jsAddLogMessage("Processing " + context + " scenes", 4);
     
@@ -762,8 +818,6 @@ var _updateFiles = function(context) {
     
     var pamm_path, uimodlist;
  
-    var mount_order = _.pluck( enabledmods,'identifier'); // may be modified for server mods
-    
     switch ( context )
     {
         
@@ -774,22 +828,6 @@ var _updateFiles = function(context) {
             // server version of ui_mod_list.js loads local client copy of ui_mod_list_for_server.js then merges server scenes into client scenes
     
             uimodlist = "var global_server_mod_list = " + JSON.stringify(globalmodlist, null, 4) + ";\n\nvar scene_server_mod_list = " + JSON.stringify(scenemodlist, null, 4) + ";\n\ntry { \n\nloadScript('coui://ui/mods/ui_mod_list_for_server.js');\n\ntry { global_mod_list = _.union( global_mod_list, global_server_mod_list ) } catch (e) { console.log(e); } ;\n\ntry { _.forOwn( scene_server_mod_list, function( value, key ) { if ( scene_mod_list[ key ] ) { scene_mod_list[ key ] = _.union( scene_mod_list[ key ], value ) } else { scene_mod_list[ key ] = value } } ); } catch (e) { console.log(e); } \n\n\} catch (e) {\n\nconsole.log(e);\n\nvar global_mod_list = global_server_mod_list;\n\nvar scene_mod_list = scene_server_mod_list;\n\n}\n\n";
-    
-            // for server mods we only enable the PA Server Mod Manager if there are other server mods enabled that use scenes
-    
-            var sceneCount = globalmodlist.length + _.flatten( _.values( scenemodlist ) ).length;
-            
-            jsAddLogMessage( 'Found ' + sceneCount + ' server mod scenes', 4);
-            
-            if ( sceneCount == 0 )
-            {
-                jsAddLogMessage( 'Disabling PA Server Mod Manager as not needed', 4);
-                mount_order = _.without( mount_order, PAMM_SERVER_MOD_IDENTIFIER );
-            }
-            else
-            {
-                jsAddLogMessage( 'Enabling PA Server Mod Manager', 4);                
-            }
     
             break;
         
@@ -839,11 +877,90 @@ var _updateFiles = function(context) {
             ,{ encoding: 'utf8' }
         );
     }
-    
+
+    var sceneCount = globalmodlist.length + _.flatten( _.values( scenemodlist ) ).length;
+
+    jsAddLogMessage( 'Found ' + sceneCount + ' ' + context + ' mod scenes', 4);
+
+    return sceneCount > 0;
+}
+
+var _updateUnitList = function(context, enabledmods) {
+    // mods/pamm/unit_list.json
+    jsAddLogMessage("Processing " + context + " unit_list", 4);
+
+    var add_units = [];
+    var remove_units = [];
+    var unitmods = 0
+    _.each(enabledmods, function(mod) {
+        if ( mod.unit_list ) {
+            if ( mod.unit_list.add_units ) {
+                unitmods = unitmods + 1
+                add_units = add_units.concat(mod.unit_list.add_units);
+            }
+            if ( mod.unit_list.remove_units ) {
+                unitmods = unitmods + 1
+                remove_units = remove_units.concat(mod.unit_list.remove_units);
+            }
+        }
+    });
+
+    var pamm_path;
+
+    switch ( context )
+    {
+        case 'server':
+            pamm_path = paths.pamm_server;
+            break;
+        case 'client':
+            pamm_path = paths.pamm;
+            break;
+        default:
+            jsAddLogMessage("Unknown context " + context, 4);
+    }
+
+// some error checking
+
+    if ( ! pamm_path )
+    {
+        return;
+    }
+
+    var pamm_unit_list_path = path.join(pamm_path, 'pa/units/unit_list.json' );
+
+    if ( unitmods )
+    {
+        var unitlistpath = path.join(pa.streams[stream].media, "/pa_ex1/units/unit_list.json");
+        var list = JSON.parse(fs.readFileSync(unitlistpath, {encoding: 'utf8'}));
+        list.units = _.difference(list.units, remove_units);
+        list.units = _.union(list.units, add_units);
+        var unit_list = JSON.stringify(list);
+
+        jsAddLogMessage("Writing " + context + " unit_list.json", 4);
+        fs.writeFileSync(
+            pamm_unit_list_path
+            ,unit_list
+            ,{ encoding: 'utf8' }
+        );
+    }
+    else
+    {
+        if ( fs.existsSync(pamm_unit_list_path) ) {
+          jsAddLogMessage("Clearing " + context + " unit_list.json", 4);
+          fs.unlinkSync(pamm_unit_list_path);
+        }
+    }
+
+    jsAddLogMessage( 'Found ' + unitmods + ' ' + context + ' mod units', 4);
+
+    return unitmods > 0;
+}
+
+var _updateModsJson = function(context, enabledmods) {
     // mods/mods.json
     
-    jsAddLogMessage("Writing " + context + " mods.json", 4);
-
+    var mount_order = _.pluck( enabledmods,'identifier');
+    jsAddLogMessage("Writing " + context + " mods.json with " + mount_order.length + " enabled mods", 4);
     var mods = { mount_order:mount_order };
     
     fs.writeFileSync(
@@ -864,6 +981,8 @@ var initialize = function() {
     CreateFolderIfNotExists(strPammClientModDirectoryPath);
     CreateFolderIfNotExists(strPammClientModDirectoryPath + "/ui");
     CreateFolderIfNotExists(strPammClientModDirectoryPath + "/ui/mods");
+    CreateFolderIfNotExists(strPammClientModDirectoryPath + "/pa");
+    CreateFolderIfNotExists(strPammClientModDirectoryPath + "/pa/units");
     
     var modinfo = {
         "context": "client",
@@ -873,7 +992,8 @@ var initialize = function() {
         "author": "pamm-atom",
         "version": "1.0.0",
         "signature": "not yet implemented",
-        "priority": 0
+        "priority": 0,
+        "unit_list": {}
     };
     fs.writeFileSync(path.join(strPammClientModDirectoryPath, "modinfo.json"), JSON.stringify(modinfo, null, 4));
 
@@ -881,6 +1001,8 @@ var initialize = function() {
     CreateFolderIfNotExists(strPammServerModDirectoryPath);
     CreateFolderIfNotExists(strPammServerModDirectoryPath + "/ui");
     CreateFolderIfNotExists(strPammServerModDirectoryPath + "/ui/mods");
+    CreateFolderIfNotExists(strPammServerModDirectoryPath + "/pa");
+    CreateFolderIfNotExists(strPammServerModDirectoryPath + "/pa/units");
 
     var server_modinfo = {
         "context": "server",
@@ -890,7 +1012,8 @@ var initialize = function() {
         "author": "pamm-atom",
         "version": "1.0.0",
         "signature": "not yet implemented",
-        "priority": 0
+        "priority": 0,
+        "unit_list": {}
     };
     fs.writeFileSync(path.join(strPammServerModDirectoryPath, "modinfo.json"), JSON.stringify(server_modinfo, null, 4));
 

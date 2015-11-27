@@ -80,26 +80,31 @@ function createStreamObject(papath) {
     
     var binpath;
     var stockmodspath;
+    var mediapath;
     if (platform === 'win32') {
         binpath = path.join(papath, 'bin_x64/PA.exe');
-        stockmodspath = path.join(papath, '/media/stockmods');
+        mediapath = path.join(papath, '/media');
+        stockmodspath = path.join(mediapath, '/stockmods');
     }
     else if (platform === 'linux') {
         binpath = path.join(papath, 'PA');
-        stockmodspath = path.join(papath, '/media/stockmods');
+        mediapath = path.join(papath, '/media');
+        stockmodspath = path.join(mediapath, '/stockmods');
     }
     else if (platform === 'darwin') {
         binpath = path.join(papath, '/PA.app/Contents/MacOS/PA');
-        stockmodspath = path.join(papath, '/PA.app/Contents/Resources/stockmods/');
-        if(!fs.existsSync(stockmodspath)) {
-            stockmodspath = path.join(papath, '/PA.app/Contents/Resources/media/stockmods/');
+        mediapath = path.join(papath, '/PA.app/Contents/Resources/media/');
+        if(!fs.existsSync(mediapath)) {
+            mediapath = path.join(papath, '/PA.app/Contents/Resources/');
         }
+        stockmodspath = path.join(mediapath, '/stockmods/');
     }
     
     return {
         stream: stream
         ,build: version
         ,bin: binpath
+        ,media: mediapath
         ,stockmods: stockmodspath
     }
 }
