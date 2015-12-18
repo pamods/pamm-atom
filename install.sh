@@ -113,6 +113,7 @@ linux*)
     mv "$PAMMDIR/electron" "$PAMMDIR/pamm"
 
     # try to create desktop shortcut & protocol handler
+    mkdir -p $HOME/.local/share/applications/
     cat >$HOME/.local/share/applications/pamm.desktop <<EOL
 [Desktop Entry]
 Version=1.0
