@@ -110,7 +110,7 @@ rm -rf "$WORKINGDIR"
 
 case $OSTYPE in
 linux*)
-    mv "$PAMMDIR/atom" "$PAMMDIR/pamm"
+    mv "$PAMMDIR/electron" "$PAMMDIR/pamm"
 
     # try to create desktop shortcut & protocol handler
     cat >$HOME/.local/share/applications/pamm.desktop <<EOL
