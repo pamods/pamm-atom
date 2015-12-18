@@ -123,6 +123,7 @@ Exec=$PAMMDIR/pamm "%u"
 Icon=$PAMMDIR/resources/app/assets/img/pamm.png
 MimeType=x-scheme-handler/pamm;
 EOL
+    chmod u+x $HOME/.local/share/applications/pamm.desktop
     update-desktop-database ~/.local/share/applications
 
     echo "PAMM has been successfully installed."
