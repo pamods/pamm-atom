@@ -122,8 +122,9 @@ function jsSortOnlineMods() {
 function jsUpdateAll(context) {
     var mods = objInstalledMods[context];
     for (var i = 0; i < mods.length; i++) {
-        if (jsGetOnlineMod(mods[i].identifier) != null && mods[i].version !== jsGetOnlineMod(mods[i].identifier).version) {
-            jsPreInstallMod(mods[i].identifier);
+        var identifier = mods[i].identifier;
+        if (pamm.hasUpdate(identifier)) {
+            jsPreInstallMod(identifier);
         }
     }
 }
@@ -369,7 +370,7 @@ function jsGenerateModEntryHTML(objMod, boolIsInstalled) {
     }
     else {
         if(!modInstalled.stockmod) {
-            if (modOnline && modInstalled.version !== modOnline.version) {
+            if (pamm.hasUpdate(id)) {
                 strHTML_update_link = "<div class='mod_entry_link mod_entry_update_link'>[ <a href='#' data-action='install'>" + jsGetLocaleText('update') + "</a> ]</div>";
                 
                 // filter classe
@@ -798,7 +799,7 @@ function jsDisplayPanel(strPanelName) {
 
 function jsPreInstallMod(strModID) {
     try {
-        var requires = pamm.getRequires(strModID);
+        var requires = pamm.getRequiredToInstall(strModID);
         if(requires.length) {
             var displaynames = [];
             for(var i = 0; i < requires.length; ++i) {
@@ -905,7 +906,8 @@ function jsGetModsRequiringUpdates(context) {
     
     var mods = objInstalledMods[context];
     for(var i = 0; i < mods.length; i++) {
-        if (jsGetOnlineMod(mods[i]["identifier"]) != null && mods[i]["version"] !== jsGetOnlineMod(mods[i]["identifier"])["version"]) {
+        var identifier = mods[i].identifier;
+        if (pamm.hasUpdate(identifier)) {
             intModsRequiringUpdate++;
         }
     }
@@ -1282,14 +1284,15 @@ function initSettings() {
 }
 
 function LaunchPA(nomods) {
-    if(pamm.getStream() === 'steam') {
-        shell.openExternal('steam://rungameid/233250');
+    var stream = pa.streams[pamm.getStream()];
+    if(stream.stream === 'steam') {
+        shell.openExternal('steam://rungameid/' + stream.steamId);
     }
     else {
         var child_process = require('child_process');
         var path = require('path');
         
-        var binpath = pa.streams[pamm.getStream()].bin;
+        var binpath = stream.bin;
         var wd = path.dirname(binpath);
         
         var args = [];
@@ -1358,20 +1361,21 @@ function UpdatePAMM(info) {
     });
 }
 
-function rmdirRecurseSync(dir) {
-    var list = fs.readdirSync(dir);
-    for(var i = 0; i < list.length; ++i) {
-        var filename = dir + "/" + list[i];
-        var stat = fs.statSync(filename);
-        if(stat.isDirectory()) {
-            // rmdir recursively
-            rmdirRecurseSync(filename);
-        } else {
-            // rm filename
-            fs.unlinkSync(filename);
+function rmdirRecurseSync(path) {
+    var stat = fs.lstatSync(path);
+    if(stat.isDirectory()) {
+        // recurse
+        var list = fs.readdirSync(path);
+        for(var i = 0; i < list.length; ++i) {
+            var newpath = path + "/" + list[i];
+            rmdirRecurseSync(newpath);
         }
+        // rm dir
+        fs.rmdirSync(path);
+    } else {
+        // rm file / symlink
+        fs.unlinkSync(path);
     }
-    fs.rmdirSync(dir);
 };
 
 $(function() {
@@ -1436,7 +1440,7 @@ $.when(pamm.ready, $.ready).done(function() {
         $('#context > span').html('none');
     }
     else if (nbstreams === 1) {
-        $('#context > span').html(pa.last.stream + ' (' + pa.last.build + ')');
+        $('#context > span').html(pa.last.stream + (pa.last.steamLabel ? '/'+pa.last.steamLabel : '' )  + ' (' + pa.last.build + ')');
     }
     else {
         var _generateStreamInput = function(stream) {

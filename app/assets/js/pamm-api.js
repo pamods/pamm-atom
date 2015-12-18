@@ -22,6 +22,12 @@ var available = {};
 
 var paths = {};
 
+var isBuiltinMod = function(identifier) {
+  return identifier === PAMM_MOD_ID ||
+    identifier === PAMM_MOD_IDENTIFIER ||
+    identifier === PAMM_SERVER_MOD_IDENTIFIER;
+}
+
 exports.setStream = function(newstream) {
     stream = newstream;
     installed = {};
@@ -134,7 +140,7 @@ exports.getInstalledMods = function (context, force) {
         deferred.resolve(
             _.filter(
                 _.toArray(installed)
-                ,function(mod) { return mod.identifier !== PAMM_MOD_IDENTIFIER && mod.identifier !== PAMM_SERVER_MOD_IDENTIFIER && mod.context === context }
+                ,function(mod) { return !isBuiltinMod(mod.identifier) && mod.context === context }
             )
         );
     }).fail(function(err) {
@@ -175,17 +181,14 @@ exports.getPaths = function () {
     return paths;
 };
 
-var getRequires = function(id) {
+var getRequires = function(id, modpool) {
     var requires = {};
     requires[id] = id;
     
     var _fillrequires = function(id, requires) {
-        var mod = available[id];
+        var mod = modpool[id];
         if(!mod) {
-            mod = installed[id];
-            if(!mod) {
-                throw "Mod '" + id + "' not found.";
-            }
+            throw "Mod '" + id + "' not found.";
         }
         
         var dependencies = mod.dependencies;
@@ -205,7 +208,11 @@ var getRequires = function(id) {
     
     return _.toArray(requires);
 };
-exports.getRequires = getRequires;
+
+var getRequiredToInstall = function(id) {
+    return getRequires(id, available);
+}
+exports.getRequiredToInstall = getRequiredToInstall;
 
 var getRequiredBy = function(id) {
     requiredby = {};
@@ -232,10 +239,25 @@ var getRequiredBy = function(id) {
 };
 exports.getRequiredBy = getRequiredBy;
 
+exports.hasUpdate = function(id) {
+    var mod = installed[id];
+    var online = available[id];
+    
+    if(!mod || !online) {
+        return false;
+    }
+    
+    if(!semver.valid(mod.version) || !semver.valid(online.version)) {
+        return mod.version !== online.version;
+    }
+    
+    return semver.lt(mod.version, online.version);
+};
+
 exports.install = function (id, callback, progressCallback) {
     var mod = available[id];
     
-    var ids = getRequires(id);
+    var ids = getRequires(id, available);
     ids.push(id);
     
     var _finish = function(error, id) {
@@ -305,7 +327,7 @@ exports.install = function (id, callback, progressCallback) {
                 throw "no context property in modinfo"
             if(modinfo.context === 'server' || !modinfo.id)
                 modinfo.id = modinfo.identifier;
-            if (!modinfo.priority)
+            if (modinfo.priority === undefined)
                 modinfo.priority = 100;
             modinfo.enabled = true;
             modinfo.installpath = installpath;
@@ -452,7 +474,7 @@ exports.setEnabled = function(id, enabled) {
 exports.setAllEnabled = function(enabled, context) {
     var ids = [];
     for(var key in installed) {
-        if(key === PAMM_MOD_IDENTIFIER)
+        if(isBuiltinMod(key))
             continue;
         
         if (installed.hasOwnProperty(key)) {
@@ -482,7 +504,7 @@ exports.setAllEnabled = function(enabled, context) {
 var _enablemod = function(id, force) {
     var enabled = [];
     
-    var ids = getRequires(id); // should use "installed" list in this case
+    var ids = getRequires(id, installed);
     ids.push(id);
     
     for(var i = 0; i < ids.length; ++i) {
@@ -508,7 +530,7 @@ var _enablemod = function(id, force) {
 var _disablemod = function(id) {
     var disabled = [];
     
-    if(id === PAMM_MOD_ID)
+    if(isBuiltinMod(id))
         return disabled;
     
     var ids = getRequiredBy(id);
@@ -579,7 +601,7 @@ var findInstalledMods = function() {
                     else
                         compat.push(mod.identifier, mod.id)
                     
-                    if (!mod.priority)
+                    if (mod.priority === undefined)
                         mod.priority = 100;
                     
                     mod.enabled = (_.indexOf(mounted, mod.identifier) !== -1);
@@ -626,7 +648,7 @@ var findInstalledMods = function() {
                             
                             mod.id = dirname;
                             
-                            if (!mod.priority)
+                            if (mod.priority === undefined)
                                 mod.priority = 100;
                             
                             mod.enabled = (_.indexOf(mounted, mod.identifier) !== -1);
