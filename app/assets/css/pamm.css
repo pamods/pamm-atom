@@ -140,6 +140,18 @@ a:hover {
 	font-size: 18px;
 }
 
+.ui_tab_link.news-tab a {
+    color: #0a0!important;
+}
+
+.ui_tab_link.news-tab a {
+    color: #0a0!important;
+}
+
+.ui_tab_link.news-tab .ui_tab_link_selected {
+    color: #0d0!important;
+}
+
 /*******************************************
  * Installed Mods - Updates required alert *
  *******************************************/
