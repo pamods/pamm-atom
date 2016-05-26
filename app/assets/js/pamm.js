@@ -4,15 +4,16 @@ var JSZip = require('jszip');
 var shell = require('shell');
 var _ = require('lodash');
 
-var jsDownload = require('./assets/js/download.js').download;
-var pa = require('./assets/js/pa.js');
-var uberent = require('./assets/js/uberent.js');
-var pamm = require('./assets/js/pamm-api.js');
 //(function() {
 
 var url = require('url');
 var fs = require('fs');
 var path = require('path');
+
+var jsDownload = require('./assets/js/download.js').download;
+var pa = require('./assets/js/pa.js');
+var uberent = require('./assets/js/uberent.js');
+var pamm = require('./assets/js/pamm-api.js');
 
 var params = require('remote').getGlobal('params');
 var devmode = params.devmode;
@@ -40,6 +41,8 @@ var PAMM_OPTIONS_FILENAME = "pamm.json";
 var PA_VERSION_URL = "https://uberent.com/launcher/clientversion?titleid=4";
 var MOD_GENERIC_ICON_URL = "assets/img/generic.png";
 
+var communityModsHTML = '<div style="color: #0d0;margin: 10px 5px; font-size: 1.2em">Please uninstall all file system mods and use Community Mods in PA to reinstall your mods.<div>';
+        
 var strPAMMversion = params.info.version;
 
 $.ajaxSetup({ cache: false });
@@ -331,13 +334,16 @@ function jsGenerateModEntryHTML(objMod, boolIsInstalled) {
     
     /* enable/disable radio button */
     if(modInstalled) {
-        /* Enabled Checkbox, Image */
-        if (modInstalled.enabled == true) {
-            strHTML_checkbox = "<input type='checkbox' class='mod_entry_enabled' id='mod" + id + "' checked='checked'>";
-            strHTML_checkbox_image = "<div class='mod_entry_enabled_image'><img id='modimg" + id + "' src='assets/img/checkbox_checked.png' /></div>";
-        } else {
-            strHTML_checkbox = "<input type='checkbox' class='mod_entry_enabled' id='mod" + id + "'>";
-            strHTML_checkbox_image = "<div class='mod_entry_enabled_image'><img id='modimg" + id + "' src='assets/img/checkbox_unchecked.png' /></div>";
+        
+        if (!pamm.isCommunityMods()) {
+            /* Enabled Checkbox, Image */
+            if (modInstalled.enabled == true) {
+                strHTML_checkbox = "<input type='checkbox' class='mod_entry_enabled' id='mod" + id + "' checked='checked'>";
+                strHTML_checkbox_image = "<div class='mod_entry_enabled_image'><img id='modimg" + id + "' src='assets/img/checkbox_checked.png' /></div>";
+            } else {
+                strHTML_checkbox = "<input type='checkbox' class='mod_entry_enabled' id='mod" + id + "'>";
+                strHTML_checkbox_image = "<div class='mod_entry_enabled_image'><img id='modimg" + id + "' src='assets/img/checkbox_unchecked.png' /></div>";
+            }
         }
     }
     
@@ -460,7 +466,7 @@ function jsGenerateOnlineModsListHTML() {
             "<div class='filter_area_message'> " + jsGetLocaleText('One_or_more_filters_are_currently_applied') + " " +
                 "<span class='filter_area_link'>[ <a href='#'>" + jsGetLocaleText('clear') + "</a> ]</span>" +
             "</div>" +
-        "</div>" +
+        "</div>" + ( pamm.isCommunityMods() ? communityModsHTML : '' ) +
     "");
     
     $('#filter_area_available_text_filter').val(filters['available']);
@@ -517,7 +523,8 @@ function jsGenerateInstalledModsListHTML(context) {
                 "<td class='filter_area_filter_heading'>" + jsGetLocaleText('Category') + ":</td>" +
                 "<td class='filter_area_filter_list filter_area_filter_list_category'>" + strCategoryHTML + "</td>" +
             "</tr>" +
-            "<tr>" + 
+            "<tr>" + ( !pamm.isCommunityMods() ?
+
                 "<td class='filter_area_filter_heading'>" + jsGetLocaleText('Options') + ":</td>" +
                 "<td>" + 
                     "<div class='filter_area_option_img'><img src='assets/img/checkbox_checked.png' /></div>" +
@@ -525,14 +532,14 @@ function jsGenerateInstalledModsListHTML(context) {
                     "<div class='filter_area_option_img'><img src='assets/img/checkbox_unchecked.png' /></div>" +
                     "<div class='filter_area_option_text'>&nbsp;<a href='#' onClick='jsSetAllModStatus(false, \"" + context + "\")'>" + jsGetLocaleText('Disable_All') + "</a></div>" +
                 "</td>" +
-            "</tr>" +
+            "</tr>" : '' ) +
         "</table>" +
         "<div id='filters_on_" + installedcontext + "'>" +
             "<img class='filter_area_img' src='assets/img/filter.png'>" +
             "<div class='filter_area_message'> " + jsGetLocaleText('One_or_more_filters_are_currently_applied') + " " +
                 "<span class='filter_area_link'>[ <a href='#'>" + jsGetLocaleText('clear') + "</a> ]</span>" +
             "</div>" +
-        "</div>" +
+        "</div>" + ( pamm.isCommunityMods() ? communityModsHTML : '' ) +
     "");
     
     $("#filter_area_" + installedcontext + "_text_filter").val(filters[installedcontext]);
@@ -1362,7 +1369,11 @@ function UpdatePAMM(info) {
 }
 
 function rmdirRecurseSync(path) {
+    if (!fs.existsSync(path)) {
+        return;
+    }
     var stat = fs.lstatSync(path);
+
     if(stat.isDirectory()) {
         // recurse
         var list = fs.readdirSync(path);
@@ -1440,7 +1451,7 @@ $.when(pamm.ready, $.ready).done(function() {
         $('#context > span').html('none');
     }
     else if (nbstreams === 1) {
-        $('#context > span').html(pa.last.stream + (pa.last.steamLabel ? '/'+pa.last.steamLabel : '' )  + ' (' + pa.last.build + ')');
+        $('#context > span').html(pa.last.streamLabel + ' (' + pa.last.build + ')');
     }
     else {
         var _generateStreamInput = function(stream) {
@@ -1448,7 +1459,7 @@ $.when(pamm.ready, $.ready).done(function() {
             return '<input type="radio" name="stream"'
                 + (pa.last.stream === stream.stream ? ' checked="checked"' : '')
                 + ' value="' + stream.stream + '">'
-                + '<span>' + stream.stream + ' (' + stream.build + ')</span>'
+                + '<span>' + stream.streamLabel + ' (' + stream.build + ')</span>'
         }
         
         $('#context > span').html(_generateStreamInput('stable') + _generateStreamInput('PTE'));
