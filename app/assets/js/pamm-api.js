@@ -15,6 +15,8 @@ if(process.platform === 'win32') {
     PAMM_MOD_IDENTIFIER = "com.pa.raevn.rpamm";
 }
 
+var communityMods = pa.last && pa.last.communityMods;
+
 var stream = pa.last ? pa.last.stream : 'stable';
 
 var installed = {};
@@ -28,16 +30,21 @@ var isBuiltinMod = function(identifier) {
     identifier === PAMM_SERVER_MOD_IDENTIFIER;
 }
 
-exports.setStream = function(newstream) {
-    stream = newstream;
+exports.setStream = function(newStream) {
+    stream = newStream;
     installed = {};
     available = {};
+    setup(pa.streams[stream]);
     //TODO play with symlink for mods folders?
 };
 
 exports.getStream = function() {
     return stream;
 };
+
+exports.isCommunityMods = function() {
+    return !!communityMods;
+}
 
 exports.getAvailableMods = function (force) {
     available = {};
@@ -622,7 +629,7 @@ var findInstalledMods = function() {
     _loadUserMods('server');
     
     // load stock mods
-    if(pa.streams[stream]) {
+    if(!communityMods && pa.streams[stream]) {
         var _loadStockMods = function(context) {
             var stockmodspath = path.join(pa.streams[stream].stockmods, context);
             if(fs.existsSync(stockmodspath)) {
@@ -709,6 +716,11 @@ var _fixDependencies = function(mods) {
 }
 
 var _updateFiles = function(context) {
+
+    if (communityMods) {
+        return;
+    }
+
     if(!context) {
         _updateFiles('client');
         _updateFiles('server');
@@ -853,14 +865,44 @@ var _updateFiles = function(context) {
     );
 };
 
-var initialize = function() {
-    paths.cache = pa.cachepath;
-    paths.mods = pa.modspath;
+var setup = function(stream) {
+
+    communityMods = stream.communityMods;
+
+    var clientPath = pa.modspath['client'];
+    var serverPath = pa.modspath['server'];
     
-    paths.pamm = path.join(pa.modspath.client, PAMM_MOD_ID);
-    paths.pamm_server = path.join(pa.modspath.server, PAMM_SERVER_MOD_IDENTIFIER);
-    
+    var clientModsPath = path.join(clientPath, 'mods.json');
+    var serverModsPath = path.join(serverPath, 'mods.json');
+
+    var clientModsBackupPath = path.join(clientPath, 'pamm-mods.json');
+    var serverModsBackupPath = path.join(serverPath, 'pamm-mods.json');
+
+ 
+    if (communityMods) {
+        rmdirRecurseSync(paths.pamm);
+        rmdirRecurseSync(paths.pamm_server);
+        
+        if (fs.existsSync(clientModsPath)) {
+            fs.renameSync(clientModsPath, clientModsBackupPath);
+        }
+
+        if (fs.existsSync(serverModsPath)) {
+            fs.renameSync(serverModsPath, serverModsBackupPath);
+        }
+        return;
+    }
+
+    if (!fs.existsSync(clientModsPath) && fs.existsSync(clientModsBackupPath)) {
+        fs.renameSync(clientModsBackupPath, clientModsPath);
+    }
+
+    if (!fs.existsSync(serverModsPath) && fs.existsSync(serverModsBackupPath)) {
+        fs.renameSync(serverModsBackupPath, serverModsPath);
+    }
+
     var strPammClientModDirectoryPath = paths.pamm;
+
     CreateFolderIfNotExists(strPammClientModDirectoryPath);
     CreateFolderIfNotExists(strPammClientModDirectoryPath + "/ui");
     CreateFolderIfNotExists(strPammClientModDirectoryPath + "/ui/mods");
@@ -894,6 +936,16 @@ var initialize = function() {
     };
     fs.writeFileSync(path.join(strPammServerModDirectoryPath, "modinfo.json"), JSON.stringify(server_modinfo, null, 4));
 
+};
+
+var initialize = function() {
+    paths.cache = pa.cachepath;
+    paths.mods = pa.modspath;
+    
+    paths.pamm = path.join(pa.modspath.client, PAMM_MOD_ID);
+    paths.pamm_server = path.join(pa.modspath.server, PAMM_SERVER_MOD_IDENTIFIER);
+    
+    setup(pa.last);
 };
 
 var deferredInitialize = $.Deferred();

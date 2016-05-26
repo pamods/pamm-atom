@@ -50,6 +50,7 @@ function findLastRunPath() {
             var spos = line.indexOf('"') + 1;
             var epos = line.lastIndexOf('"');
             var papath = line.substring(spos, epos);
+            var osxapp;
             
             if(platform === "win32") {
                 papath = path.join(papath, '../..'); // remove /x64/host
@@ -58,49 +59,89 @@ function findLastRunPath() {
                 papath = path.join(papath, '..'); // remove /host
             }
             else {
+                osxapp = path.basename(path.join(papath, '../../..'));
                 papath = path.join(papath, '../../../..') // remove /PA.app/Contents/MacOS/host
             }
             
-            return papath;
+            return {papath: papath, osxapp: osxapp};
         }
     }
     
     return "";
 };
 
-function createStreamObject(papath) {
+function createStreamObject(paPath, osxapp) {
     var platform = process.platform;
-    var stream = path.basename(papath);
+    var stream = path.basename(paPath);
+    var streamLabel = stream;
     
-    var versionpath = path.join(papath, platform === 'darwin' ? '/PA.app/Contents/Resources' : '', 'version.txt');
-    if(!fs.existsSync(versionpath))
+    var resourcesPath = paPath;
+        
+    if (platform === 'darwin') {
+        if (osxapp && osxapp != 'PA.app' ) {
+            stream = osxapp;
+            streamLabel = osxapp;
+        } else {
+            osxapp = 'PA.app';
+        }
+        resourcesPath = path.join(paPath, '/' + osxapp + '/Contents/Resources');
+    }
+
+    var versionPath = path.join(resourcesPath, 'version.txt');
+
+    if(!fs.existsSync(versionPath))
         return;
-    var version = fs.readFileSync(versionpath, { encoding: 'utf8' });
+    var version = fs.readFileSync(versionPath, { encoding: 'utf8' });
     version = (version.split(/\r?\n/))[0];
     
-    var binpath;
-    var stockmodspath;
-    if (platform === 'win32') {
-        binpath = path.join(papath, 'bin_x64/PA.exe');
-        stockmodspath = path.join(papath, '/media/stockmods');
-    }
-    else if (platform === 'linux') {
-        binpath = path.join(papath, 'PA');
-        stockmodspath = path.join(papath, '/media/stockmods');
-    }
-    else if (platform === 'darwin') {
-        binpath = path.join(papath, '/PA.app/Contents/MacOS/PA');
-        stockmodspath = path.join(papath, '/PA.app/Contents/Resources/stockmods/');
-        if(!fs.existsSync(stockmodspath)) {
-            stockmodspath = path.join(papath, '/PA.app/Contents/Resources/media/stockmods/');
-        }
-    }
+    var buildidPath = path.join(resourcesPath, 'buildid.txt');
+    if(!fs.existsSync(buildidPath))
+        return;
+    var buildid = fs.readFileSync(buildidPath, { encoding: 'utf8' });
     
+    var binPath = path.join(resourcesPath, 'PA');
+
+    if (platform === 'win32') {
+        binPath = path.join(paPath, 'bin_x64/PA.exe');
+    }
+
+    var stockmodspath = path.join(resourcesPath, '/media/stockmods');
+
+    var titans = paPath.indexOf('Planetary Annihilation Titans') != -1;
+
+    var steam = paPath.toLowerCase().indexOf('steamapps') != -1;
+    var uberLauncher = !steam;
+
+    var steamId;
+    var steamLabel;
+
+    if (steam) {
+        stream = 'steam';
+        steamId = titans ? '386070' : '233250';
+        streamLabel = 'Steam ' + ( titans ? 'Titans' : 'Classic' );
+    }
+
+    var communityMods = buildid.substr(0,4) == '2016';
+    
+    if (communityMods) {
+        streamLabel = streamLabel + ' with Community Mods';
+    }
+
     return {
-        stream: stream
-        ,build: version
-        ,bin: binpath
-        ,stockmods: stockmodspath
+        stream: stream,
+        streamLabel: streamLabel,
+        paPath: paPath,
+        resourcesPath: resourcesPath,
+        bin: binPath,
+        build: version,
+        stockmods: stockmodspath,
+        buildid: buildid,
+        uberLauncher: uberLauncher,
+        steam: steam,
+        steamId: steamId,
+        steamLabel: steamLabel,
+        titans: titans,
+        communityMods: communityMods
     }
 }
 
@@ -146,41 +187,37 @@ var initialize = function() {
     
     var lastrunpath = findLastRunPath();
     if (lastrunpath) {
-        var obj = createStreamObject(lastrunpath);
-        var obj2;
+        var papath = lastrunpath.papath;
+        var osxapp = lastrunpath.osxapp;
         
-        if(obj) {
-            if (obj.stream === 'stable') {
-                var obj2 = createStreamObject(path.join(lastrunpath, '../PTE'));
-            }
-            else if (obj.stream === 'PTE') {
-                var obj2 = createStreamObject(path.join(lastrunpath, '../stable'));
-            }
-            else {
-                // Steam distrib ?
-                obj.stream = 'steam';
-                
-                if(path.basename(lastrunpath) == 'Planetary Annihilation') {
-                    obj.steamId = '233250';
-                    obj.steamLabel = 'classic';
+        var last = createStreamObject(papath, osxapp);
+
+        if(last) {
+            var stream = last.stream;
+
+            streams[stream] = last;
+
+            if (last.uberLauncher) {
+
+                if (last.stream !== 'stable') {
+                    var stablePath = path.join(papath, '../stable');
+                    var stable = createStreamObject(stablePath);
+                    if (stable) {
+                        streams['stable'] = stable;
+                    }
                 }
-                else if(path.basename(lastrunpath) == 'Planetary Annihilation Titans') {
-                    obj.steamId = '386070';
-                    obj.steamLabel = 'titans';
+
+                if (last.stream !== 'PTE') {
+                    var ptePath = path.join(papath, '../PTE');
+                    var pte = createStreamObject(ptePath);
+                    if (pte) {
+                        streams['PTE'] = pte;
+                    }
                 }
-                else {
-                    obj.stream = 'unknown';
-                }
-            }
-            
-            streams[obj.stream] = obj;
-            last = obj;
-            if(obj2) {
-                streams[obj2.stream] = obj2;
             }
         }
     }
-    
+
     exports.rootpath = rootpath;
     exports.modspath = modspath;
     exports.cachepath = cachepath;
