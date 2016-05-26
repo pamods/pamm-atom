@@ -1462,7 +1462,13 @@ $.when(pamm.ready, $.ready).done(function() {
                 + '<span>' + stream.streamLabel + ' (' + stream.build + ')</span>'
         }
         
-        $('#context > span').html(_generateStreamInput('stable') + _generateStreamInput('PTE'));
+        var streamsHtml = '';
+
+        _.forEach(pa.streams, function(streamInfo, stream) {
+            streamsHtml = streamsHtml + _generateStreamInput(stream);
+        });
+
+        $('#context > span').html(streamsHtml);
         
         $('#context').on('click', 'input[name="stream"]', function() {
             pamm.setStream(this.value);
