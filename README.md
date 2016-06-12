@@ -9,35 +9,4 @@ This is a port of the Windows version which already use a html engine.
 
 ## Installation
 
-Download this project and uncompress it : 
-https://github.com/pamods/pamm-atom/archive/stable.zip
-
-Download the atom-shell release for your platform and uncompress it : 
-https://github.com/atom/atom-shell/releases
-
-Run atom with the path to the `app` folder as parameter
-
-Or put the `app` folder under atom-shell's resources directory (on OS X it is
-`Atom.app/Contents/Resources/`, and on Linux and Windows it is `resources/`),
-like this:
-
-On Mac OS X:
-
-```text
-atom-shell/Atom.app/Contents/Resources/app/
-├── package.json
-├── main.js
-└── index.html
-```
-
-On Windows and Linux:
-
-```text
-atom-shell/resources/app
-├── package.json
-├── main.js
-└── index.html
-```
-
-Then execute `Atom.app` (or `atom` on Linux, and `atom.exe` on Windows), and
-atom-shell will start PAMM.
+DON'T. Planetary Annihilation now provide a in-game mod manager and conflict with PAMM.
