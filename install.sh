@@ -12,7 +12,7 @@ darwin*)
     PLATFORM="darwin"
     PAMMDIR="$HOME/Library/Application Support/Uber Entertainment/Planetary Annihilation/pamm"
     #PAMMDIR="$WORKINGDIR/tmp/pamm"
-    APPDIR="$PAMMDIR/Atom.app/Contents/Resources/app"
+    APPDIR="$PAMMDIR/Electron.app/Contents/Resources/app"
     ;;
 *)
     echo Unsupported platform: $OSTYPE
@@ -47,7 +47,7 @@ fi
 
 echo "Find latest Atom Shell release..."
 
-LATEST_ATOM_URL=https://github.com/atom/electron/releases/tag/v0.19.5
+LATEST_ATOM_URL=https://github.com/atom/electron/releases/latest
 
 if [ $HTTPCLIENT == "wget" ]; then
     HTML=`wget -qO- $LATEST_ATOM_URL`
@@ -60,7 +60,7 @@ if [ $? -gt 0 ]; then
     exit 1
 fi
 
-ATOM_ARCHIVE_URL=`echo $HTML | egrep -o "/atom/electron/releases/download/[^\"]+-$PLATFORM-x64.zip" | head -1`
+ATOM_ARCHIVE_URL=`echo $HTML | egrep -o "/atom/electron/releases/download/[^/]*/electron-[^/]*-$PLATFORM-x64.zip"`
 ATOM_ARCHIVE_URL="https://github.com$ATOM_ARCHIVE_URL"
 
 ATOM_ARCHIVE=`echo $ATOM_ARCHIVE_URL | sed -E 's/.+\/(.+)/\1/'`
@@ -110,9 +110,10 @@ rm -rf "$WORKINGDIR"
 
 case $OSTYPE in
 linux*)
-    mv "$PAMMDIR/atom" "$PAMMDIR/pamm"
+    mv "$PAMMDIR/electron" "$PAMMDIR/pamm"
 
     # try to create desktop shortcut & protocol handler
+    mkdir -p $HOME/.local/share/applications/
     cat >$HOME/.local/share/applications/pamm.desktop <<EOL
 [Desktop Entry]
 Version=1.0
@@ -123,6 +124,7 @@ Exec=$PAMMDIR/pamm "%u"
 Icon=$PAMMDIR/resources/app/assets/img/pamm.png
 MimeType=x-scheme-handler/pamm;
 EOL
+    chmod u+x $HOME/.local/share/applications/pamm.desktop
     update-desktop-database ~/.local/share/applications
 
     echo "PAMM has been successfully installed."
@@ -130,12 +132,8 @@ EOL
     $PAMMDIR/pamm
     ;;
 darwin*)
-    #mv "$PAMMDIR/Atom.app/Contents/MacOS/Atom" "$PAMMDIR/Atom.app/Contents/MacOS/PAMM"
-    mv "$PAMMDIR/Atom.app" "$PAMMDIR/PAMM.app"
+    mv "$PAMMDIR/Electron.app" "$PAMMDIR/PAMM.app"
     open "$PAMMDIR/PAMM.app"
     echo "PAMM has been successfully installed."
     ;;
 esac
-
-
-
